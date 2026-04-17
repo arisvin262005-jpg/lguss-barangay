@@ -181,16 +181,17 @@ try {
   console.warn('[Firebase] Warning: Could not initialize Firebase Credential. Ensure FIREBASE_SERVICE_ACCOUNT env is set or serviceAccountKey.json exists.');
 }
 
+let firestore = null;
 if (credential) {
   admin.initializeApp({
     credential: credential,
     databaseURL: process.env.FIREBASE_DATABASE_URL || "https://lguss-mamburao-default-rtdb.firebaseio.com"
   });
+  firestore = admin.firestore();
 }
 
-const firestore = admin.firestore();
-
 async function syncToFirebase(collection, record) {
+  if (!firestore) return;
   try {
     const docRef = firestore.collection(collection).doc(record.id);
     await docRef.set({ ...record, collectionType: collection }, { merge: true });
@@ -201,6 +202,7 @@ async function syncToFirebase(collection, record) {
 }
 
 async function deleteFromFirebase(collection, id) {
+  if (!firestore) return;
   try {
     const docRef = firestore.collection(collection).doc(id);
     await docRef.delete();
