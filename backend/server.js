@@ -1,0 +1,74 @@
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const { apiLimiter } = require('./src/middleware/rateLimiter');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Security middleware
+app.use(helmet());
+const allowedOrigins = [
+  // Local development
+  'http://localhost:5173', 
+  'http://localhost:3000', 
+  'http://127.0.0.1:5173',
+  // Production — i-replace ng iyong actual na domain
+  'https://lguss.vercel.app',
+  'https://lguss-barangay.vercel.app',
+  process.env.FRONTEND_URL,           // Set this in Railway env vars
+  process.env.FRONTEND_URL_CUSTOM,    // Optional custom .com domain
+].filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
+app.use(cookieParser());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// General rate limiter
+app.use('/api/', apiLimiter);
+
+// Routes
+app.use('/api/auth', require('./src/routes/auth'));
+app.use('/api/residents', require('./src/routes/residents'));
+app.use('/api/households', require('./src/routes/households'));
+app.use('/api/certifications', require('./src/routes/certifications'));
+app.use('/api/cases', require('./src/routes/cases'));
+app.use('/api/legislation', require('./src/routes/legislation'));
+app.use('/api/incidents', require('./src/routes/incidents'));
+app.use('/api/assets', require('./src/routes/assets'));
+app.use('/api/drrm', require('./src/routes/drrm'));
+app.use('/api/audit', require('./src/routes/audit'));
+app.use('/api/tracking', require('./src/routes/tracking'));
+app.use('/api/reports', require('./src/routes/reports'));
+app.use('/api/ai', require('./src/routes/ai'));
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', system: 'Barangay Management System', timestamp: new Date().toISOString() });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.listen(PORT, () => {
+  console.log(`\n🏛️  Barangay Management System Backend`);
+  console.log(`✅  Server running on http://localhost:${PORT}`);
+  console.log(`📡  API Health: http://localhost:${PORT}/api/health\n`);
+});
+
+module.exports = app;
