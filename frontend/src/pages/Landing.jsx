@@ -93,6 +93,7 @@ export default function Landing() {
   const [authModal, setAuthModal] = useState(null);
   const [scrolled, setScrolled]   = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 100);
@@ -100,6 +101,9 @@ export default function Landing() {
     window.addEventListener('scroll', handleScroll);
     return () => { clearTimeout(t); window.removeEventListener('scroll', handleScroll); };
   }, []);
+
+  // Close mobile nav on click
+  const closeNav = () => setMobileNavOpen(false);
 
   return (
     <div style={{ fontFamily: "'Inter', 'Roboto', sans-serif", color: '#1e293b', background: '#f8fafc', overflowX: 'hidden' }}>
@@ -114,17 +118,19 @@ export default function Landing() {
         /* ── Nav ── */
         .lp-header {
           position: sticky; top: 0; z-index: 200;
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(0px);
+          background: rgba(255,255,255,1);
           border-bottom: 1px solid transparent;
-          transition: backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s;
+          transition: all 0.4s;
         }
         .lp-header.scrolled {
+          background: rgba(255,255,255,0.85);
           backdrop-filter: blur(18px);
           border-color: rgba(10,49,97,0.1);
           box-shadow: 0 4px 24px rgba(10,49,97,0.08);
         }
         .lp-nav { display:flex; align-items:center; justify-content:space-between; height:72px; }
+        .lp-nav-desktop { display: flex; gap: 0.25rem; align-items: center; }
+        
         .lp-nav-link {
           text-decoration:none; color:#475569; font-weight:600; font-size:0.9rem;
           padding:0.4rem 0.6rem; border-radius:6px; transition:all 0.2s; position:relative;
@@ -136,6 +142,33 @@ export default function Landing() {
         }
         .lp-nav-link:hover { color:${GOV_BLUE}; }
         .lp-nav-link:hover::after { left:0.6rem; right:0.6rem; }
+
+        /* ── Mobile Nav ── */
+        .mobile-nav-toggle { display: none; background: transparent; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; cursor: pointer; color: ${GOV_BLUE}; }
+        
+        .mobile-nav-drawer {
+          position: fixed; top: 72px; left: 0; right: 0; 
+          background: #fff; border-bottom: 1px solid #e2e8f0;
+          padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+          z-index: 190; transform: translateY(-110%);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .mobile-nav-drawer.open { transform: translateY(0); }
+        .mobile-nav-item { text-decoration: none; color: ${GOV_BLUE}; font-weight: 700; font-size: 1.1rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
+        
+        @media (max-width: 960px) {
+          .lp-nav-desktop { display: none; }
+          .mobile-nav-toggle { display: flex; }
+          .lp-logo-text { display: none; }
+        }
+
+        @media (max-width: 480px) {
+          .section-heading { font-size: 1.75rem !important; }
+          .lp-nav { height: 60px; }
+          .mobile-nav-drawer { top: 60px; }
+          .lp-logo-group img:not(:first-child) { display: none; }
+        }
 
         /* ── Hero particles ── */
         @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-25px) rotate(8deg)} }
@@ -315,18 +348,19 @@ export default function Landing() {
       <div style={{ background:'linear-gradient(90deg,#0a3161,#1a5296)', padding:'0.45rem 0', fontSize:'0.73rem', color:'rgba(255,255,255,0.75)' }}>
         <div className="lp-container" style={{ display:'flex', alignItems:'center', gap:'0.6rem' }}>
           <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" style={{ width:14, height:14, objectFit:'contain', opacity:0.9 }} alt="Gov" />
-          <span>Official digital platform of the Local Government of Mamburao, Republic of the Philippines</span>
+          <span className="hide-mobile">Official digital platform of the Local Government of Mamburao, Republic of the Philippines</span>
+          <span className="show-mobile">Gov.ph · LGU Mamburao</span>
         </div>
       </div>
 
       {/* ── Header / Nav ── */}
       <header className={`lp-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="lp-container lp-nav">
-          <div style={{ display:'flex', alignItems:'center', gap:'0.9rem' }}>
-            <img src="https://toppng.com/uploads/preview/dilg-logo-11550728661mdmkpc6xag.png" alt="DILG" style={{ width:44, height:44, objectFit:'contain' }} />
-            <img src="https://gimgs2.nohat.cc/thumb/f/640/barangay-3-balansay-mamburao-municipal-gymnasium-logo-appraisals-pennant--5281772497534976.jpg" alt="Mamburao" style={{ width:40, height:40, borderRadius:'50%', objectFit:'cover', border:'2px solid #e2e8f0' }} />
-            <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:44, height:44, objectFit:'contain' }} />
-            <div>
+          <div className="lp-logo-group" style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
+            <img src="https://toppng.com/uploads/preview/dilg-logo-11550728661mdmkpc6xag.png" alt="DILG" style={{ width:40, height:40, objectFit:'contain' }} />
+            <img src="https://gimgs2.nohat.cc/thumb/f/640/barangay-3-balansay-mamburao-municipal-gymnasium-logo-appraisals-pennant--5281772497534976.jpg" alt="Mamburao" style={{ width:38, height:38, borderRadius:'50%', objectFit:'cover', border:'2px solid #e2e8f0' }} />
+            <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:40, height:40, objectFit:'contain' }} />
+            <div className="lp-logo-text">
               <div style={{ fontWeight:900, fontSize:'1.1rem', color:GOV_BLUE, lineHeight:1.2, letterSpacing:'-0.01em' }}>
                 LGUSS — Mamburao
               </div>
@@ -335,7 +369,9 @@ export default function Landing() {
               </div>
             </div>
           </div>
-          <nav style={{ display:'flex', gap:'0.25rem', alignItems:'center' }}>
+
+          {/* Desktop Nav */}
+          <nav className="lp-nav-desktop">
             {['home','subsystems','about','barangays','faq'].map(id => (
               <a key={id} href={`#${id}`} className="lp-nav-link">
                 {id === 'home' ? 'Home' : id === 'subsystems' ? 'Modules' : id === 'about' ? 'Background' : id === 'barangays' ? 'Coverage' : 'FAQs'}
@@ -350,6 +386,27 @@ export default function Landing() {
               Portal Access
             </button>
           </nav>
+
+          {/* Mobile Toggle */}
+          <button className="mobile-nav-toggle" onClick={() => setMobileNavOpen(!mobileNavOpen)}>
+            {mobileNavOpen ? <X size={22} /> : <LogIn size={22} />}
+          </button>
+        </div>
+
+        {/* Mobile Nav Drawer */}
+        <div className={`mobile-nav-drawer ${mobileNavOpen ? 'open' : ''}`}>
+          {['home','subsystems','about','barangays','faq'].map(id => (
+            <a key={id} href={`#${id}`} className="mobile-nav-item" onClick={closeNav}>
+              {id === 'home' ? '🏠 Home' : id === 'subsystems' ? '🛠️ Systems' : id === 'about' ? 'ℹ️ Background' : id === 'barangays' ? '📍 Coverage' : '❓ FAQs'}
+            </a>
+          ))}
+          <button onClick={() => { closeNav(); setAuthModal('login'); }} style={{
+            background:`linear-gradient(135deg,${GOV_BLUE},${GOV_LIGHT})`,
+            color:'#fff', border:'none', padding:'0.85rem', borderRadius:10,
+            fontWeight:700, cursor:'pointer', fontSize:'1rem', marginTop: '0.5rem'
+          }}>
+            Sign In to Portal Access
+          </button>
         </div>
       </header>
 
