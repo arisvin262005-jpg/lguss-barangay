@@ -45,14 +45,15 @@ export const AuthProvider = ({ children }) => {
         if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
         persistUser(data);
       }
-    } catch {
-      // Server unreachable but user has a saved session
+    } catch (err) {
+      // Server unreachable (Cold Start or No Internet) but user has a saved session
       const saved = localStorage.getItem(SESSION_KEY);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           setUser(parsed);
-          toast('⚡ Server unreachable — Using saved session', { icon: '📱', duration: 3000 });
+          // Only toast if it's a legitimate connection failure to avoid noise
+          toast('⚡ Working Offline (Server is waking up)', { icon: '📱', duration: 4000 });
         } catch { setUser(null); }
       } else {
         setUser(null);
