@@ -169,10 +169,10 @@ export default function Residents() {
       </div>
 
       {/* Table */}
-      <div className="gov-card" style={{ overflow: 'hidden' }}>
+      <div className="table-responsive">
         <table className="gov-table">
           <thead>
-            <tr><th>Name</th><th>Age / Sex</th><th>Civil Status</th><th>Barangay</th><th>Contact</th><th>Tags</th><th>Actions</th></tr>
+            <tr><th>Name</th><th>Age / Sex</th><th>Civil Status</th><th className="hide-mobile">Barangay</th><th className="hide-mobile">Contact</th><th>Tags</th><th>Actions</th></tr>
           </thead>
           <tbody>
             {loading ? Array.from({length: 5}).map((_, i) => (
@@ -194,8 +194,8 @@ export default function Residents() {
                 </td>
                 <td><div style={{ fontWeight: 600 }}>{calcAge(r.birthDate)} yrs</div><div style={{ fontSize: '0.72rem', color: '#64748b' }}>{r.gender}</div></td>
                 <td style={{ fontSize: '0.82rem' }}>{r.civilStatus}</td>
-                <td><span className="badge badge-blue" style={{ fontSize: '0.68rem' }}>{r.barangay}</span></td>
-                <td style={{ fontSize: '0.8rem' }}>{r.contactNumber || '—'}</td>
+                <td className="hide-mobile"><span className="badge badge-blue" style={{ fontSize: '0.68rem' }}>{r.barangay}</span></td>
+                <td className="hide-mobile" style={{ fontSize: '0.8rem' }}>{r.contactNumber || '—'}</td>
                 <td><div style={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>{tagBadge(r.tags)}</div></td>
                 <td>
                   <div style={{ display: 'flex', gap: '0.3rem' }}>
@@ -241,7 +241,7 @@ export default function Residents() {
 
                 {/* Section: Personal Info */}
                 <div className="section-stripe" style={{ marginBottom: '1rem' }}>Personal Information</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 0.5fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 0.5fr' : '1fr', marginBottom: '0.75rem' }}>
                   {[['firstName','First Name *'],['lastName','Last Name *'],['middleName','Middle Name'],['suffix','Suffix']].map(([k,l]) => (
                     <div key={k}>
                       <label className="form-label">{l}</label>
@@ -249,7 +249,7 @@ export default function Residents() {
                     </div>
                   ))}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 1fr' : '1fr', marginBottom: '0.75rem' }}>
                   <div>
                     <label className="form-label">Birth Date *</label>
                     <input className="form-input" type="date" required value={form.birthDate} onChange={e=>setForm({...form,birthDate:e.target.value})} />
@@ -274,7 +274,7 @@ export default function Residents() {
                     </select>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.75rem', marginBottom:'0.75rem' }}>
+                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Religion</label><input className="form-input" value={form.religion||''} onChange={e=>setForm({...form,religion:e.target.value})} /></div>
                   <div><label className="form-label">Citizenship</label><input className="form-input" value={form.citizenship} onChange={e=>setForm({...form,citizenship:e.target.value})} /></div>
                   <div><label className="form-label">Birthplace</label><input className="form-input" value={form.birthplace||''} onChange={e=>setForm({...form,birthplace:e.target.value})} /></div>
@@ -282,7 +282,7 @@ export default function Residents() {
 
                 {/* Section: Address */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Address & Contact</div>
-                <div style={{ display: 'grid', gridTemplateColumns:'2fr 1fr 1fr', gap:'0.75rem', marginBottom:'0.75rem' }}>
+                <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr 1fr' : '1fr', marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e=>setForm({...form,address:e.target.value})} placeholder="House No., Street" /></div>
                   <div>
                     <label className="form-label">Barangay *</label>
@@ -293,14 +293,14 @@ export default function Residents() {
                   </div>
                   <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem', marginBottom:'0.75rem' }}>
+                <div className="grid-2" style={{ marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Email</label><input className="form-input" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></div>
-                  <div><label className="form-label">Relationship to Household Head</label><input className="form-input" value={form.relationToHead} onChange={e=>setForm({...form,relationToHead:e.target.value})} /></div>
+                  <div><label className="form-label">Relationship to Head</label><input className="form-input" value={form.relationToHead} onChange={e=>setForm({...form,relationToHead:e.target.value})} /></div>
                 </div>
 
                 {/* Section: Socioeconomic */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Socioeconomic Information</div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.75rem', marginBottom:'0.75rem' }}>
+                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
                   <div>
                     <label className="form-label">Educational Attainment</label>
                     <select className="form-select" value={form.education||''} onChange={e=>setForm({...form,education:e.target.value})}>

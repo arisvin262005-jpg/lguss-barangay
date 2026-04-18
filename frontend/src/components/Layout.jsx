@@ -106,7 +106,22 @@ export default function Layout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState({});
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  // Handle window resize to reset mobile states
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) setMobileOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Auto-open the group that contains the active path
   useEffect(() => {
@@ -137,16 +152,26 @@ export default function Layout({ children }) {
 
   return (
     <div className="app-shell">
+      {/* ========== SIDEBAR BACKDROP (Mobile) ========== */}
+      {mobileOpen && (
+        <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} />
+      )}
+
       {/* ========== SIDEBAR ========== */}
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         {/* Header */}
         <div className="sidebar-header">
           <div className="sidebar-logo">🏛️</div>
-          {!collapsed && (
+          {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
               <div className="sidebar-title">Barangay MIS</div>
               <div className="sidebar-sub">Mamburao, Occ. Mindoro</div>
             </div>
+          )}
+          {mobileOpen && (
+            <button onClick={() => setMobileOpen(false)} className="show-mobile btn-icon" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: '#fff' }}>
+              <X size={20} />
+            </button>
           )}
         </div>
 
@@ -163,9 +188,9 @@ export default function Layout({ children }) {
               return visibleItems.map((item) => (
                 <NavLink key={item.path} to={item.path}
                   className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-                  title={collapsed ? item.label : ''}>
+                  title={collapsed && !mobileOpen ? item.label : ''}>
                   <item.icon size={17} className="nav-item-icon" />
-                  {!collapsed && <span className="nav-item-label">{item.label}</span>}
+                  {(!collapsed || mobileOpen) && <span className="nav-item-label">{item.label}</span>}
                 </NavLink>
               ));
             }
@@ -174,16 +199,16 @@ export default function Layout({ children }) {
 
             return (
               <div key={group.label}>
-                {!collapsed && <div className="nav-group-label">{group.label}</div>}
+                {(!collapsed || mobileOpen) && <div className="nav-group-label">{group.label}</div>}
 
                 {visibleItems.map((item) => {
                   const isActive = location.pathname.startsWith(item.path);
                   return (
                     <NavLink key={item.path} to={item.path}
                       className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-                      title={collapsed ? item.label : ''}>
+                      title={collapsed && !mobileOpen ? item.label : ''}>
                       <item.icon size={16} className="nav-item-icon" />
-                      {!collapsed && (
+                      {(!collapsed || mobileOpen) && (
                         <>
                           <span className="nav-item-label">{item.label}</span>
                           {item.path === '/sync' && syncStats.pending > 0 && (
@@ -205,7 +230,7 @@ export default function Layout({ children }) {
             <div className="sidebar-avatar">
               {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
             </div>
-            {!collapsed && (
+            {(!collapsed || mobileOpen) && (
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 <div style={{ fontWeight: 600, fontSize: '0.8rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
                 <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)' }}>{user?.role} • {user?.barangay?.split(' ')[0]}</div>
@@ -223,26 +248,30 @@ export default function Layout({ children }) {
       <div className="main-area">
         {/* Topbar */}
         <header className="topbar">
-          <button onClick={() => setCollapsed(!collapsed)}
+          <button onClick={() => {
+            if (window.innerWidth <= 768) setMobileOpen(true);
+            else setCollapsed(!collapsed);
+          }}
             className="btn-icon" title="Toggle Sidebar">
-            {collapsed ? <Menu size={18} /> : <X size={18} />}
+            <Menu size={18} />
           </button>
 
           <span className="topbar-title">{currentPageName()}</span>
 
           {/* Online/Offline Badge */}
-          <div className={`online-badge ${isOnline ? 'online' : 'offline'}`}>
+          <div className={`online-badge ${isOnline ? 'online' : 'offline'}`} 
+            style={{ padding: window.innerWidth <= 480 ? '0.3rem 0.4rem' : '0.3rem 0.75rem' }}>
             {isOnline ? <Wifi size={13} /> : <WifiOff size={13} />}
-            {isOnline ? 'Online' : 'Offline'}
+            <span className="hide-mobile">{isOnline ? 'Online' : 'Offline'}</span>
             {!isOnline && syncStats.pending > 0 && (
               <span style={{ marginLeft: '0.25rem', background: '#dc2626', color: '#fff', borderRadius: 100, padding: '0 0.4rem', fontSize: '0.65rem' }}>
-                {syncStats.pending} pending
+                {syncStats.pending}
               </span>
             )}
           </div>
 
-          {/* User avatar shortcut */}
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+          {/* User avatar shortcut — profile menu placeholder */}
+          <div className="hide-mobile" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
             title={`${user?.name} (${user?.role})`}>
             {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
           </div>

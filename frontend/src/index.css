@@ -634,22 +634,107 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
 .font-bold    { font-weight: 700; }
 .divider      { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-.grid-responsive { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.grid-responsive { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
 
+/* Responsive Table Wrapper */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-bottom: 1rem;
+}
+
+/* Visibility Utilities */
+.hide-mobile { display: block; }
+.show-mobile { display: none; }
+
+/* ============================================================
+   RESPONSIVENESS & MOBILE DRAWER
+   ============================================================ */
+
+/* Tablet (Small laptops/large tablets) */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile (Tablets and Phones) */
 @media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: flex !important; }
+
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .sidebar { width: 64px; min-width: 64px; }
+  
+  .app-shell { position: relative; }
+
+  /* Mobile Sidebar as Overflow Drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px; /* Hidden by default */
+    bottom: 0;
+    width: 280px;
+    height: 100vh;
+    box-shadow: 20px 0 50px rgba(0,0,0,0.15);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 45;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .main-area { width: 100%; }
+  
+  .topbar {
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+
   .page-content { padding: 1rem; }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header .btn { width: 100%; }
+
+  .modal {
+    margin-top: auto;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 85vh;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+  .topbar-title { font-size: 0.875rem; }
+  .stat-value { font-size: 1.5rem; }
 }
 
 /* ============================================================
    ADVANCED & UNIQUE UI ADDITIONS
    ============================================================ */
-
-/* Glassmorphism Classes */
+/* (Keeping the existing glassmorphism classes below) */
 .glass-panel {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
@@ -665,7 +750,6 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* Dynamic Gradients */
 .gradient-bg-primary {
   background: linear-gradient(-45deg, #0f2d52, #1a4f8a, #2563a8, #0f2d52);
   background-size: 400% 400%;
@@ -678,7 +762,6 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   background-clip: text;
 }
 
-/* Advanced Hover Animations */
 .hover-float {
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
 }
@@ -695,7 +778,6 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   border-color: rgba(26, 79, 138, 0.5);
 }
 
-/* Advanced Forms */
 .form-input-advanced {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--border);
@@ -710,7 +792,6 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   transform: translateY(-1px);
 }
 
-/* Custom Keyframes */
 @keyframes gradientFlow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }

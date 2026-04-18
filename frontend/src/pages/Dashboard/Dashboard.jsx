@@ -111,9 +111,9 @@ export default function Dashboard() {
       </div>
 
       {/* Charts row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
+      <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
         {/* Bar: monthly certs */}
-        <div className="gov-card" style={{ gridColumn: 'span 2' }}>
+        <div className="gov-card" style={{ gridColumn: window.innerWidth > 1024 ? 'span 2' : 'span 1' }}>
           <div className="gov-card-header"><div className="gov-card-title"><FileText size={16} color="#1a4f8a" />Monthly Certifications Issued</div></div>
           <div style={{ padding: '1.25rem', height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -146,7 +146,7 @@ export default function Dashboard() {
       </div>
 
       {/* Age distribution + Activity feed */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '1.25rem' }}>
+      <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 1024 ? '1fr 360px' : '1fr' }}>
         {/* Age bar */}
         <div className="gov-card">
           <div className="gov-card-header"><div className="gov-card-title"><Users size={16} color="#1a4f8a" />Resident Age Distribution</div></div>
