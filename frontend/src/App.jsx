@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SyncProvider } from './context/SyncContext';
+import { PWAProvider } from './context/PWAContext';
 import Layout from './components/Layout';
 
 // Public pages
@@ -78,10 +78,11 @@ import { Toaster } from 'react-hot-toast';
 export default function App() {
   return (
     <AuthProvider sessionTimeout={SESSION_TIMEOUT}>
-      <SyncProvider>
-        <BrowserRouter>
-          <Toaster />
-          <Routes>
+      <PWAProvider>
+        <SyncProvider>
+          <BrowserRouter>
+            <Toaster />
+            <Routes>
             {/* Public */}
             <Route path="/"         element={<Landing />} />
             <Route path="/login"    element={<Navigate to="/" replace />} />
@@ -126,9 +127,10 @@ export default function App() {
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </SyncProvider>
+            </Routes>
+          </BrowserRouter>
+        </SyncProvider>
+      </PWAProvider>
     </AuthProvider>
   );
 }

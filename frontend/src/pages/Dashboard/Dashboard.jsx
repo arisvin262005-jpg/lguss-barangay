@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSync } from '../../context/SyncContext';
 import api from '../../services/api';
-import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit } from 'lucide-react';
+import { usePWA } from '../../context/PWAContext';
+import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit, Download, MonitorCheck } from 'lucide-react';
 
 const PIE_COLORS = ['#2563a8','#16a34a','#d97706','#dc2626','#7c3aed'];
 
@@ -24,6 +25,7 @@ const StatCard = ({ icon: Icon, label, value, sub, color = '#1a4f8a', loading })
 export default function Dashboard() {
   const { user, hasRole } = useAuth();
   const { isOnline, syncStats } = useSync();
+  const { installPrompt, isInstalled, showInstallPrompt } = usePWA();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,6 +63,36 @@ export default function Dashboard() {
           <div className="page-title">{greeting}, {user?.name?.split(' ')[0]}! 👋</div>
           <div className="page-subtitle">{user?.barangay} • {user?.role} • {new Date().toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
+        <div>
+          {installPrompt && !isInstalled && (
+            <button 
+              onClick={showInstallPrompt} 
+              className="btn btn-primary"
+              style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+            >
+              <Download size={16} /> Install App for Offline Use
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* PWA Install Banner (Large) */}
+      {installPrompt && !isInstalled && (
+        <div className="install-banner" onClick={showInstallPrompt}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div className="install-banner-icon">
+              <MonitorCheck size={28} color="#10b981" />
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1e293b' }}>Install LGUSS on your {window.innerWidth < 768 ? 'Phone' : 'Desktop'}</div>
+              <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Access records instantly even without internet. Guaranteed 100% offline-first performance.</div>
+            </div>
+          </div>
+          <button className="btn btn-primary" style={{ background: '#10b981', whiteSpace: 'nowrap' }}>
+            Install Now
+          </button>
+        </div>
+      )}
         {hasRole('Admin', 'Secretary') && (
           <div style={{ display: 'flex', gap: '0.625rem' }}>
             <Link to="/residents" className="btn btn-outline btn-sm"><Plus size={14} /> Add Resident</Link>

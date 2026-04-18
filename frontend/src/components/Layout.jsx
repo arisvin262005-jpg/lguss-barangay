@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSync } from '../context/SyncContext';
+import { usePWA } from '../context/PWAContext';
 import {
   LayoutDashboard, Users, Home, UserCheck, Accessibility, Vote,
   FileText, Scale, BookOpen, AlertTriangle, Building2, Shield,
   Heart, Map, Bot, Link2, BarChart3, Settings,
   ChevronRight, LogOut, Wifi, WifiOff, RefreshCw,
   Menu, X, Bell, User, ClipboardList, Calendar,
-  BrainCircuit
+  BrainCircuit, Download
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -103,6 +104,7 @@ const NAV_GROUPS = [
 export default function Layout({ children }) {
   const { user, logout, hasRole } = useAuth();
   const { isOnline, syncStats } = useSync();
+  const { installPrompt, isInstalled, showInstallPrompt } = usePWA();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -226,6 +228,12 @@ export default function Layout({ children }) {
 
         {/* Footer */}
         <div className="sidebar-footer">
+          {installPrompt && !isInstalled && (!collapsed || mobileOpen) && (
+            <button onClick={showInstallPrompt} className="nav-item" style={{ color: '#10b981', marginBottom: '0.5rem' }}>
+              <Download size={17} className="nav-item-icon" />
+              <span className="nav-item-label">Install App</span>
+            </button>
+          )}
           <div className="sidebar-user">
             <div className="sidebar-avatar">
               {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
