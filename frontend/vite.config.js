@@ -11,7 +11,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: null,
-      includeAssets: ['favicon.svg', 'icons.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'LGUSS | Mamburao Barangay MIS',
         short_name: 'LGUSS',
@@ -92,17 +91,12 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'vendor-react';
-            }
-            if (id.includes('recharts')) return 'vendor-charts';
-            if (id.includes('leaflet')) return 'vendor-maps';
-            if (id.includes('jspdf')) return 'vendor-pdf';
-            if (id.includes('pouchdb')) return 'vendor-pouchdb';
-            return 'vendor-misc';
-          }
+        // Simple chunking to avoid initialization errors
+        manualChunks: {
+          'vendor-core': ['react', 'react-dom', 'react-router-dom', 'lucide-react'],
+          'vendor-utils': ['axios', 'pouchdb-browser', 'date-fns'],
+          'vendor-charts': ['recharts'],
+          'vendor-maps': ['leaflet', 'react-leaflet']
         }
       }
     }
