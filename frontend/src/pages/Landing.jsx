@@ -887,6 +887,7 @@ function LoginForm({ onSwitch }) {
     } catch (err) {
       const n = attempts + 1; setAttempts(n);
       if (n >= 5 || err.response?.data?.lockout) { startLockoutTimer(); setError('Too many failed attempts. Account locked for 15 minutes.'); }
+      else if (!err.response) setError('Server is waking up or unreachable. Please try again or use Demo Access.');
       else setError((err.response?.data?.error || 'Invalid credentials') + `. ${5 - n} attempt(s) remaining.`);
     } finally { setLoading(false); }
   };
@@ -981,7 +982,10 @@ function RegisterForm({ onSwitch }) {
       });
       setSuccess(true);
       setTimeout(() => onSwitch(), 3000);
-    } catch (err) { setError(err.response?.data?.error || 'Registration failed.'); }
+    } catch (err) { 
+        if (!err.response) setError('Server unreachable. Please check your internet or retry when online.');
+        else setError(err.response?.data?.error || 'Registration failed.'); 
+    }
     finally { setLoading(false); }
   };
 
