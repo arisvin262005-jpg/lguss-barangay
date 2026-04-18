@@ -801,7 +801,13 @@ export default function Landing() {
 
         <div className="grad-divider" />
         <div style={{ textAlign:'center', padding:'1.25rem', fontSize:'0.82rem', color:'#475569' }}>
-          © 2024 Centralized Residents Profiling System (CRPS) · Local Government of Mamburao, Occ. Mindoro
+          <div style={{ marginBottom: '0.4rem' }}>
+            © 2024 Centralized Residents Profiling System (CRPS) · Local Government of Mamburao, Occ. Mindoro
+          </div>
+          <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+            System developed by <strong style={{ color: '#94a3b8' }}>Arvin Dela Rosa Marasigan</strong> (Full Stack Developer). 
+            Frontend by <strong style={{ color: '#94a3b8' }}>Hannah Alfaro</strong> and <strong style={{ color: '#94a3b8' }}>Lanibel Cabrera</strong>.
+          </div>
         </div>
       </footer>
     </div>
