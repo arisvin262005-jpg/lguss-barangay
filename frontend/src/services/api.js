@@ -13,7 +13,15 @@ const getCache = {};
 
 api.interceptors.request.use((config) => {
   const isLoginEndpoint = config.url?.includes('/auth/login') && config.method === 'post';
-  const isOffline = !navigator.onLine;
+  const isLogoutEndpoint = config.url?.includes('/auth/logout');
+  
+  let isOfflineModeUser = false;
+  try {
+    const sessionUser = JSON.parse(localStorage.getItem('lguss_user_session'));
+    if (sessionUser && sessionUser.isOfflineMode) isOfflineModeUser = true;
+  } catch {}
+
+  const isOffline = !navigator.onLine || isOfflineModeUser;
 
   // ── OFFLINE LOGIN: works for ALL accounts using saved session ──
   if (isLoginEndpoint && isOffline) {
@@ -49,6 +57,13 @@ api.interceptors.request.use((config) => {
         message: 'Login successful (Offline Mode)',
         user: { ...offlineUser, isOfflineMode: true },
       },
+      status: 200, statusText: 'OK', config, headers: {},
+    });
+  }
+  
+  if (isLogoutEndpoint && isOffline) {
+    return Promise.resolve({
+      data: { message: 'Logged out successful (Offline Mode)' },
       status: 200, statusText: 'OK', config, headers: {},
     });
   }
