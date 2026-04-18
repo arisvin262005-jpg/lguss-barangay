@@ -39,9 +39,13 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const { data } = await api.get('/auth/me');
+      
+      // Critical Fix: Read directly from localStorage to avoid stale closure state
+      const currentLocalSession = localStorage.getItem(SESSION_KEY);
+
       if (data && data.authenticated === false) {
-        // Only clear if we don't already have a valid user (prevents login race condition)
-        if (!user) persistUser(null);
+        // Only clear if no session exists (avoids wiping fresh logins)
+        if (!currentLocalSession) persistUser(null);
       } else {
         if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
         persistUser(data);

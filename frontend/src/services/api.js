@@ -169,11 +169,14 @@ api.interceptors.response.use(
     // Auto-logout on 401 Unauthorized (except for /auth/me checks)
     if (err.response?.status === 401 && !isAuthMeFail) {
       const currentSession = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
-      // Only force redirect if they are not in an offline-ready demo/bypass session
-      if (!currentSession?.isOfflineMode) {
+      
+      // Only force redirect if they are not in an offline-ready demo/bypass session 
+      // AND it's not a temporary glitch during login
+      if (currentSession && !currentSession.isOfflineMode) {
         localStorage.removeItem('lguss_user_session');
         localStorage.removeItem('lguss_jwt_token');
-        window.location.href = '/';
+        // Use a slight delay to allow any in-flight state updates to finish
+        setTimeout(() => { if (!localStorage.getItem('lguss_user_session')) window.location.href = '/'; }, 500);
       }
       return Promise.reject(err);
     }
