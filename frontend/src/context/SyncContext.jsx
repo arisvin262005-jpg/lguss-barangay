@@ -75,6 +75,9 @@ export const SyncProvider = ({ children }) => {
     }
 
     localStorage.setItem('offlineQueue', JSON.stringify(remainingQueue));
+    if (syncedThisRun > 0) {
+      localStorage.removeItem('offline_registered_users');
+    }
     
     setSyncStats((prev) => {
       const total = prev.synced + syncedThisRun + prev.failed + failedThisRun + remainingQueue.length;

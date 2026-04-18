@@ -909,9 +909,12 @@ function LoginForm({ onSwitch }) {
       navigate('/dashboard');
     } catch (err) {
       const n = attempts + 1; setAttempts(n);
-      if (n >= 5 || err.response?.data?.lockout) { startLockoutTimer(); setError('Too many failed attempts. Account locked for 15 minutes.'); }
-      else if (!err.response) setError('Server is waking up or unreachable. Please try again or use Demo Access.');
-      else setError((err.response?.data?.error || 'Invalid credentials') + `. ${5 - n} attempt(s) remaining.`);
+      if (n >= 5 || err.response?.status === 429) { 
+        startLockoutTimer(); 
+        setError('Security Lockout (DILG Standard): Too many attempts. Please wait 15 minutes or use Offline Demo Access.'); 
+      }
+      else if (!err.response) setError('Server connection lost or waking up. You can continue using Offline Mode / Demo Access for now.');
+      else setError((err.response?.data?.error || 'Invalid credentials') + `. ${5 - n} security attempt(s) remaining.`);
     } finally { setLoading(false); }
   };
 

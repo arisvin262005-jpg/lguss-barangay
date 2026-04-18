@@ -42,7 +42,23 @@ api.interceptors.request.use((config) => {
       }
     } catch {}
 
-    // Fallback to demo accounts if no saved session found
+    // Fallback: Check for accounts registered while offline
+    if (!offlineUser) {
+      try {
+        const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
+        const found = offlineRegs.find(u => u.email === payload.email);
+        if (found) {
+          offlineUser = {
+            ...found,
+            id: 'offline-reg-' + Date.now(),
+            isOfflineMode: true,
+            isDraftAccount: true 
+          };
+        }
+      } catch {}
+    }
+
+    // Fallback to demo accounts if still no match
     if (!offlineUser) {
       const role = payload.email?.includes('admin') ? 'Admin' : 'Secretary';
       offlineUser = {
@@ -103,6 +119,22 @@ api.interceptors.request.use((config) => {
     } else if (!isLoginEndpoint) {
       config.adapter = async () => {
         const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+        const payload = JSON.parse(config.data || '{}');
+        
+        // Special case: If this is a registration, save it so they can login immediately
+        if (config.url?.includes('/auth/register')) {
+          const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
+          offlineRegs.push({
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            name: `${payload.firstName} ${payload.lastName}`,
+            email: payload.email,
+            role: payload.role || 'Secretary',
+            barangay: payload.barangay || 'Pending Sync'
+          });
+          localStorage.setItem('offline_registered_users', JSON.stringify(offlineRegs));
+        }
+
         const task = {
           method: config.method,
           url: config.url,
@@ -112,8 +144,8 @@ api.interceptors.request.use((config) => {
         queue.push(task);
         localStorage.setItem('offlineQueue', JSON.stringify(queue));
         window.dispatchEvent(new CustomEvent('offline-action-added', { detail: queue.length }));
-        toast.success('Saved to Offline Queue — will sync when online', { icon: '📦', position: 'bottom-right' });
-        const fakeResponse = { data: JSON.parse(config.data || '{}'), success: true, message: 'Saved Offline' };
+        toast.success(config.url?.includes('/auth/register') ? 'Registration saved to Offline Queue!' : 'Saved to Offline Queue — will sync when online', { icon: '📦', position: 'bottom-right' });
+        const fakeResponse = { data: payload, success: true, message: 'Saved Offline' };
         return { data: { data: fakeResponse }, status: 200, statusText: 'OK (Saved Offline)', config, headers: {} };
       };
     }
