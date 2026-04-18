@@ -166,8 +166,8 @@ export default function Layout({ children }) {
           <div className="sidebar-logo">🏛️</div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
-              <div className="sidebar-title">Barangay MIS</div>
-              <div className="sidebar-sub">Mamburao, Occ. Mindoro</div>
+              <div className="sidebar-title">CRPS System</div>
+              <div className="sidebar-sub">Centralized Residents Profiling</div>
             </div>
           )}
           {mobileOpen && (

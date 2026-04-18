@@ -364,7 +364,7 @@ export default function Landing() {
             <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:40, height:40, objectFit:'contain' }} />
             <div className="lp-logo-text">
               <div style={{ fontWeight:900, fontSize:'1.1rem', color:GOV_BLUE, lineHeight:1.2, letterSpacing:'-0.01em' }}>
-                LGUSS — Mamburao
+                CRPS — Mamburao
               </div>
               <div style={{ fontSize:'0.7rem', color:'#64748b', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em' }}>
                 DILG · Occ. Mindoro
@@ -476,12 +476,12 @@ export default function Landing() {
             transform: heroVisible ? 'translateY(0)' : 'translateY(28px)',
             transition:'all 0.8s ease 0.25s',
           }}>
-            <span style={{ display:'block', color:'#e2e8f0' }}>Local Government Unit</span>
+            <span style={{ display:'block', color:'#e2e8f0' }}>Centralized Residents</span>
             <span style={{
               display:'block',
               background:'linear-gradient(90deg,#60a5fa,#93c5fd,#a5b4fc)',
               WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            }}>Support System</span>
+            }}>Profiling System</span>
           </h1>
 
           {/* Sub */}

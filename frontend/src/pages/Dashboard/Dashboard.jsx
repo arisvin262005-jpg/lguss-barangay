@@ -94,7 +94,7 @@ export default function Dashboard() {
               <MonitorCheck size={28} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1e293b' }}>Install LGUSS on your {window.innerWidth < 768 ? 'Phone' : 'Desktop'}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1e293b' }}>Install CRPS on your {window.innerWidth < 768 ? 'Phone' : 'Desktop'}</div>
               <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Access records instantly even without internet. Guaranteed 100% offline-first performance.</div>
             </div>
           </div>

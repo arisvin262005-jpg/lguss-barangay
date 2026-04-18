@@ -81,4 +81,62 @@ Respond concisely and professionally.`;
   }
 });
 
+/**
+ * POST /api/ai/chat
+ * Handles conversational queries for the CRPS Chatbot.
+ */
+router.post('/chat', async (req, res) => {
+  const { message, history = [] } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message is required.' });
+
+  const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+  const NVIDIA_BASE_URL = process.env.NVIDIA_API_BASE_URL || 'https://integrate.api.nvidia.com/v1';
+  const MODEL = process.env.NVIDIA_MODEL || 'meta/llama-3.3-70b-instruct';
+
+  if (!NVIDIA_API_KEY) {
+    return res.status(503).json({ error: 'NVIDIA API key not configured on server. Please add it to your .env file.' });
+  }
+
+  const systemPrompt = `You are the AI Assistant for the CRPS (Centralized Residents Profiling System), previously known as LGUSS, used by barangays in Mamburao, Occidental Mindoro. You are helpful, professional, and knowledgeable. Answer any question the user has, but maintain your persona as the CRPS Assistant. If they ask about the system, tell them CRPS handles resident profiling, cases, and certifications with offline-first capabilities and Blockchain audit trails. Keep responses relatively brief and conversational.`;
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-10), // keep trailing context lean
+    { role: 'user', content: message }
+  ];
+
+  try {
+    const response = await fetch(`${NVIDIA_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NVIDIA_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages,
+        temperature: 0.5,
+        top_p: 0.9,
+        max_tokens: 512,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('NVIDIA Chat API Error:', errText);
+      return res.status(502).json({ error: 'Failed to contact NVIDIA AI service.' });
+    }
+
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content || 'I could not generate a response.';
+
+    return res.json({ reply: content });
+  } catch (err) {
+    console.error('Chat Route Error:', err);
+    return res.status(500).json({ error: 'Internal server error processing chat.' });
+  }
+});
+
 module.exports = router;

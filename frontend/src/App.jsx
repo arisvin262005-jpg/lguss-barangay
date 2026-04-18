@@ -4,6 +4,7 @@ import { SyncProvider } from './context/SyncContext';
 import { PWAProvider } from './context/PWAContext';
 import Layout from './components/Layout';
 import PageLoader from './components/PageLoader';
+import Chatbot from './components/Chatbot';
 
 // Public pages
 import Landing     from './pages/Landing';
@@ -123,6 +124,7 @@ export default function App() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            <Chatbot />
           </BrowserRouter>
         </SyncProvider>
       </PWAProvider>
