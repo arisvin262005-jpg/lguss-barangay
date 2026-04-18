@@ -10,8 +10,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      injectRegister: null,
+      includeAssets: ['favicon.svg', 'icons.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'LGUSS | Mamburao Barangay MIS',
         short_name: 'LGUSS',
@@ -25,14 +25,14 @@ export default defineConfig({
         categories: ['government', 'productivity'],
         icons: [
           {
-            src: '/favicon.svg',
+            src: '/icon-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/png'
           },
           {
-            src: '/favicon.svg',
+            src: '/icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
