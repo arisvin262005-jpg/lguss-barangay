@@ -127,7 +127,9 @@ api.interceptors.response.use(
   },
   (err) => {
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
-    if (!isOfflineErr) {
+    const isAuthMeFail = err.response?.status === 401 && err.config?.url?.includes('/auth/me');
+    
+    if (!isOfflineErr && !isAuthMeFail) {
       const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
       toast.error(msg, { position: 'bottom-right' });
     }
