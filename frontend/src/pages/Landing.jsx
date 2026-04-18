@@ -412,7 +412,10 @@ export default function Landing() {
 
       {/* ══════════════════════ HERO ══════════════════════ */}
       <section id="home" style={{
-        background:`linear-gradient(150deg, #060f2e 0%, #0a2057 40%, #0d3b8a 75%, #1a5296 100%)`,
+        backgroundImage: `url('https://i.ytimg.com/vi/oDFXnl_3vW8/maxresdefault.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         color:'#ffffff', padding:'7rem 0 6rem', position:'relative', overflow:'hidden', minHeight:'92vh',
         display:'flex', alignItems:'center',
       }}>
@@ -423,6 +426,11 @@ export default function Landing() {
         <div className="hero-particle p4" />
         <div className="hero-particle p5" />
 
+        {/* Dark overlay for readability over the photo */}
+        <div style={{
+          position:'absolute', inset:0,
+          background: 'linear-gradient(150deg, rgba(6,15,46,0.82) 0%, rgba(10,32,87,0.78) 50%, rgba(13,59,138,0.7) 100%)',
+        }}/>
         {/* Grid overlay */}
         <div style={{
           position:'absolute', inset:0, opacity:0.04,
@@ -663,12 +671,14 @@ export default function Landing() {
                 justifyContent: 'center'
               }}>
                 <img 
-                  src="/mamburao_map.png" 
-                  alt="Mamburao Map" 
+                  src="/mamburao_map.png"
+                  onError={e => { e.currentTarget.src = 'https://i.ytimg.com/vi/oDFXnl_3vW8/maxresdefault.jpg'; }}
+                  alt="Mamburao Municipal Map - showing all 15 barangays" 
                   style={{ 
                     width: '100%', 
                     maxHeight: '600px', 
                     objectFit: 'contain',
+                    display: 'block',
                     transition: 'transform 0.5s ease'
                   }} 
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
