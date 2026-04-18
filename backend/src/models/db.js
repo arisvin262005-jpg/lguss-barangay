@@ -5,17 +5,17 @@ const { v4: uuidv4 } = require('uuid');
 
 let users = [
   { id: 'admin-001', firstName: 'Juan', lastName: 'dela Cruz', email: 'admin@barangay.gov.ph',
-    password: '$2b$10$xLAUhlWMFDtZEuLihOUlGu8LTFSOWacBdAIvdDq9JdruhWfB6UkAO',
+    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
     barangay: 'Barangay 1 (Poblacion)', role: 'Admin', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
   { id: 'sec-001', firstName: 'Maria', lastName: 'Santos', email: 'secretary@barangay.gov.ph',
-    password: '$2b$10$xLAUhlWMFDtZEuLihOUlGu8LTFSOWacBdAIvdDq9JdruhWfB6UkAO',
+    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
     barangay: 'Barangay 2 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
   { id: 'tanod-001', firstName: 'Pedro', lastName: 'Reyes', email: 'tanod@barangay.gov.ph',
-    password: '$2b$10$xLAUhlWMFDtZEuLihOUlGu8LTFSOWacBdAIvdDq9JdruhWfB6UkAO',
+    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
     barangay: 'Barangay 1 (Poblacion)', role: 'Tanod', isVerified: true,
     lat: 13.2236, lng: 120.5989, onDuty: true, createdAt: '2024-01-01T00:00:00.000Z' },
   { id: 'tanod-002', firstName: 'Roberto', lastName: 'Flores', email: 'tanod2@barangay.gov.ph',
-    password: '$2b$10$xLAUhlWMFDtZEuLihOUlGu8LTFSOWacBdAIvdDq9JdruhWfB6UkAO',
+    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
     barangay: 'Barangay 1 (Poblacion)', role: 'Tanod', isVerified: true,
     lat: 13.2251, lng: 120.6012, onDuty: true, createdAt: '2024-01-10T00:00:00.000Z' },
 ];
