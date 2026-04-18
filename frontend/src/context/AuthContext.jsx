@@ -1,19 +1,57 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
 
+const SESSION_KEY = 'lguss_user_session';
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null);
+  const [user, setUser]       = useState(() => {
+    // Load user from localStorage immediately (enables offline session restore)
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch { return null; }
+  });
   const [loading, setLoading] = useState(true);
   let inactivityTimer = null;
 
+  const persistUser = (u) => {
+    setUser(u);
+    if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+    else    localStorage.removeItem(SESSION_KEY);
+  };
+
   const fetchMe = async () => {
+    if (!navigator.onLine) {
+      // Offline: restore from localStorage session
+      const saved = localStorage.getItem(SESSION_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setUser(parsed);
+          toast('⚡ Offline Mode — Using saved session', { icon: '📱', duration: 3000 });
+        } catch { setUser(null); }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data } = await api.get('/auth/me');
-      setUser(data);
+      persistUser(data);
     } catch {
-      setUser(null);
+      // Server unreachable but user has a saved session
+      const saved = localStorage.getItem(SESSION_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setUser(parsed);
+          toast('⚡ Server unreachable — Using saved session', { icon: '📱', duration: 3000 });
+        } catch { setUser(null); }
+      } else {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -40,14 +78,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    setUser(data.user);
+    persistUser(data.user);
     return data;
   };
 
   const logout = async () => {
-    await api.post('/auth/logout');
-    setUser(null);
-    window.location.href = '/login';
+    try { await api.post('/auth/logout'); } catch {}
+    persistUser(null);
+    window.location.href = '/';
   };
 
   const register = async (formData) => {
@@ -56,12 +94,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasRole = (...roles) => roles.includes(user?.role);
-  const isAdmin = () => user?.role === 'Admin';
-  const isSecretary = () => user?.role === 'Secretary';
-  const isTanod = () => user?.role === 'Tanod';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, hasRole, isAdmin, isSecretary, isTanod }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

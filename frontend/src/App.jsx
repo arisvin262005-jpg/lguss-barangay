@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { SyncProvider } from './context/SyncContext';
 import { PWAProvider } from './context/PWAContext';
 import Layout from './components/Layout';
+import PageLoader from './components/PageLoader';
 
 // Public pages
 import Landing     from './pages/Landing';
@@ -82,7 +83,8 @@ export default function App() {
       <PWAProvider>
         <SyncProvider>
           <BrowserRouter>
-            <Toaster />
+            <PageLoader />
+            <Toaster position="bottom-right" toastOptions={{ style: { borderRadius: 10, fontWeight: 600, fontSize: '0.85rem' } }} />
             <Routes>
             {/* Public */}
             <Route path="/"         element={<Landing />} />
