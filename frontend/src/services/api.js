@@ -8,22 +8,24 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Cache for GET requests so the UI still loads data offline
+// Cache for GET requests so the UI still has data when offline
 const getCache = {};
 
-// Helper to generate a valid-looking offline login response
+// ─────────────────────────────────────────────────────────────
+// Helper: Build an offline login response (used as fail-over)
+// ─────────────────────────────────────────────────────────────
 const createOfflineLoginResponse = (config) => {
   const payload = JSON.parse(config.data || '{}');
   const SESSION_KEY = 'lguss_user_session';
   let offlineUser = null;
 
-  // 1. Match against last session
+  // 1. Match against last saved session
   try {
     const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
     if (saved && saved.email === payload.email) offlineUser = saved;
   } catch {}
 
-  // 2. Match against offline-registered users
+  // 2. Match against accounts registered while offline
   if (!offlineUser) {
     try {
       const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
@@ -34,7 +36,7 @@ const createOfflineLoginResponse = (config) => {
     } catch {}
   }
 
-  // 3. Fallback to demo accounts
+  // 3. Fallback: generic demo user based on email
   if (!offlineUser) {
     const role = payload.email?.includes('admin') ? 'Admin' : 'Secretary';
     offlineUser = {
@@ -47,7 +49,7 @@ const createOfflineLoginResponse = (config) => {
     };
   }
 
-  toast.success('⚡ Entered in Offline Mode (Server Wake-up)', { icon: '📱', duration: 4000 });
+  toast.success('⚡ Entered Offline Mode (Server unreachable)', { icon: '📱', duration: 4000 });
 
   return {
     data: {
@@ -58,103 +60,106 @@ const createOfflineLoginResponse = (config) => {
   };
 };
 
+// ─────────────────────────────────────────────────────────────
+// REQUEST INTERCEPTOR
+// ─────────────────────────────────────────────────────────────
 api.interceptors.request.use((config) => {
+  // Attach JWT Bearer token on every request
   const token = localStorage.getItem('lguss_jwt_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  const isLoginEndpoint = config.url?.includes('/auth/login') && config.method === 'post';
-  const isLogoutEndpoint = config.url?.includes('/auth/logout');
-  
-  let isOfflineModeUser = false;
-  try {
-    const sessionUser = JSON.parse(localStorage.getItem('lguss_user_session'));
-    if (sessionUser && sessionUser.isOfflineMode) isOfflineModeUser = true;
-  } catch {}
+  const isLoginEndpoint   = config.url?.includes('/auth/login') && config.method === 'post';
+  const isLogoutEndpoint  = config.url?.includes('/auth/logout');
 
-  const isOffline = !navigator.onLine || isOfflineModeUser;
+  // ── Use navigator.onLine ONLY — never block online users ──
+  const isOffline = !navigator.onLine;
 
-  // ── OFFLINE LOGIN: works for ALL accounts using saved session ──
+  // ── Offline Login ──
   if (isLoginEndpoint && isOffline) {
     return Promise.resolve(createOfflineLoginResponse(config));
   }
-  
+
+  // ── Offline Logout ──
   if (isLogoutEndpoint && isOffline) {
     return Promise.resolve({
-      data: { message: 'Logged out successful (Offline Mode)' },
+      data: { message: 'Logged out (Offline Mode)' },
       status: 200, statusText: 'OK', config, headers: {},
     });
   }
 
-  // ── OFFLINE: Cache GET requests, Queue write requests ──
-  if (isOffline) {
-    if (config.method === 'get') {
-      config.adapter = async () => {
-        let cachedData = getCache[config.url] ? JSON.parse(JSON.stringify(getCache[config.url])) : { data: [] };
+  // ── Offline GET → serve from cache ──
+  if (isOffline && config.method === 'get') {
+    config.adapter = async () => {
+      let cachedData = getCache[config.url]
+        ? JSON.parse(JSON.stringify(getCache[config.url]))
+        : { data: [] };
 
-        // Optimistically merge offline queued POSTs
-        const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-        const endpoint = config.url.split('?')[0];
-
-        queue.forEach((task) => {
-          if (task.method === 'post' && task.url === endpoint) {
-            const newDoc = {
-              ...JSON.parse(task.data || '{}'),
-              id: 'offline-' + Math.random().toString(36).substr(2, 9),
-              _isOfflineDraft: true,
-            };
-            if (Array.isArray(cachedData)) {
-              cachedData.push(newDoc);
-            } else if (cachedData.data && Array.isArray(cachedData.data)) {
-              cachedData.data.push(newDoc);
-            }
-          }
-        });
-
-        return { data: cachedData, status: 200, statusText: 'OK', config, headers: {} };
-      };
-    } else if (!isLoginEndpoint) {
-      config.adapter = async () => {
-        const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-        const payload = JSON.parse(config.data || '{}');
-        
-        // Special case: If this is a registration, save it so they can login immediately
-        if (config.url?.includes('/auth/register')) {
-          const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
-          offlineRegs.push({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            name: `${payload.firstName} ${payload.lastName}`,
-            email: payload.email,
-            role: payload.role || 'Secretary',
-            barangay: payload.barangay || 'Pending Sync'
-          });
-          localStorage.setItem('offline_registered_users', JSON.stringify(offlineRegs));
+      // Merge offline queued POSTs optimistically
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      const endpoint = config.url.split('?')[0];
+      queue.forEach((task) => {
+        if (task.method === 'post' && task.url === endpoint) {
+          const newDoc = {
+            ...JSON.parse(task.data || '{}'),
+            id: 'offline-' + Math.random().toString(36).substr(2, 9),
+            _isOfflineDraft: true,
+          };
+          if (Array.isArray(cachedData)) cachedData.push(newDoc);
+          else if (cachedData.data && Array.isArray(cachedData.data)) cachedData.data.push(newDoc);
         }
+      });
 
-        const task = {
-          method: config.method,
-          url: config.url,
-          data: config.data,
-          timestamp: new Date().toISOString(),
-        };
-        queue.push(task);
-        localStorage.setItem('offlineQueue', JSON.stringify(queue));
-        window.dispatchEvent(new CustomEvent('offline-action-added', { detail: queue.length }));
-        toast.success(config.url?.includes('/auth/register') ? 'Registration saved to Offline Queue!' : 'Saved to Offline Queue — will sync when online', { icon: '📦', position: 'bottom-right' });
-        const fakeResponse = { data: payload, success: true, message: 'Saved Offline' };
-        return { data: { data: fakeResponse }, status: 200, statusText: 'OK (Saved Offline)', config, headers: {} };
-      };
-    }
+      return { data: cachedData, status: 200, statusText: 'OK', config, headers: {} };
+    };
+  }
+
+  // ── Offline WRITE → queue for later sync ──
+  if (isOffline && !isLoginEndpoint && config.method !== 'get') {
+    config.adapter = async () => {
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      const payload = JSON.parse(config.data || '{}');
+
+      // If registering offline, cache credentials so user can login immediately
+      if (config.url?.includes('/auth/register')) {
+        const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
+        offlineRegs.push({
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          name: `${payload.firstName} ${payload.lastName}`,
+          email: payload.email,
+          role: payload.role || 'Secretary',
+          barangay: payload.barangay || 'Pending Sync',
+        });
+        localStorage.setItem('offline_registered_users', JSON.stringify(offlineRegs));
+      }
+
+      const task = { method: config.method, url: config.url, data: config.data, timestamp: new Date().toISOString() };
+      queue.push(task);
+      localStorage.setItem('offlineQueue', JSON.stringify(queue));
+      window.dispatchEvent(new CustomEvent('offline-action-added', { detail: queue.length }));
+
+      toast.success(
+        config.url?.includes('/auth/register')
+          ? '📦 Registration saved — will sync when online'
+          : '📦 Saved to Offline Queue — will sync when online',
+        { position: 'bottom-right' }
+      );
+
+      return { data: { data: payload, success: true }, status: 200, statusText: 'OK (Saved Offline)', config, headers: {} };
+    };
   }
 
   return config;
 });
 
+// ─────────────────────────────────────────────────────────────
+// RESPONSE INTERCEPTOR
+// ─────────────────────────────────────────────────────────────
 api.interceptors.response.use(
   (res) => {
-    // Cache successful GET responses for offline use
+    // Cache successful GET responses for offline fallback
     if (res.config?.method === 'get' && res.data) {
       getCache[res.config.url] = res.data;
     }
@@ -164,28 +169,29 @@ api.interceptors.response.use(
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
     const isAuthRoute  = err.config?.url?.includes('/auth/');
 
-    // ── HYBRID FAIL-OVER: If login fails due to network, silently switch to Offline Mode ──
+    // ── Hybrid Fail-over: login network failure → offline mode ──
     const isLoginAttempt = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
     if (isLoginAttempt && isOfflineErr) {
       return Promise.resolve(createOfflineLoginResponse(err.config));
     }
 
-    // ── Suppress noisy 401 toasts for auth routes (handled by UI) ──
     const is401 = err.response?.status === 401;
     const is429 = err.response?.status === 429;
 
-    if (!isOfflineErr && !is401 && !is429 && !isAuthRoute) {
-      const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
-      toast.error(msg, { position: 'bottom-right' });
-    }
-
+    // ── 429 Rate-limit: show friendly message ──
     if (is429) {
       toast.error('⚠️ Too many attempts. Please wait 15 minutes.', { position: 'bottom-right', duration: 6000 });
+      return Promise.reject(err);
+    }
+
+    // ── Suppress noisy 401 toasts (auth routes handle their own errors) ──
+    if (!isOfflineErr && !is401 && !isAuthRoute) {
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
+      toast.error(msg, { position: 'bottom-right' });
     }
 
     return Promise.reject(err);
   }
 );
-
 
 export default api;
