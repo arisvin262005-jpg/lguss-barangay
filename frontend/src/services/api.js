@@ -168,9 +168,13 @@ api.interceptors.response.use(
     
     // Auto-logout on 401 Unauthorized (except for /auth/me checks)
     if (err.response?.status === 401 && !isAuthMeFail) {
-      localStorage.removeItem('lguss_user_session');
-      localStorage.removeItem('lguss_jwt_token');
-      window.location.href = '/';
+      const currentSession = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+      // Only force redirect if they are not in an offline-ready demo/bypass session
+      if (!currentSession?.isOfflineMode) {
+        localStorage.removeItem('lguss_user_session');
+        localStorage.removeItem('lguss_jwt_token');
+        window.location.href = '/';
+      }
       return Promise.reject(err);
     }
     

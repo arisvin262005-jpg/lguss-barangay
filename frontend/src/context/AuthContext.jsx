@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.get('/auth/me');
       if (data && data.authenticated === false) {
-        persistUser(null);
+        // Only clear if we don't already have a valid user (prevents login race condition)
+        if (!user) persistUser(null);
       } else {
         if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
         persistUser(data);
