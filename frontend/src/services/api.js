@@ -162,36 +162,30 @@ api.interceptors.response.use(
   },
   (err) => {
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
-    const isAuthMeFail = err.response?.status === 401 && err.config?.url?.includes('/auth/me');
-    
-    // Auto-logout on 401 Unauthorized (except for /auth/me checks)
-    if (err.response?.status === 401 && !isAuthMeFail) {
-      const currentSession = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
-      
-      // Only force redirect if they are not in an offline-ready demo/bypass session 
-      // AND it's not a temporary glitch during login
-      if (currentSession && !currentSession.isOfflineMode) {
-        localStorage.removeItem('lguss_user_session');
-        localStorage.removeItem('lguss_jwt_token');
-        // Use a slight delay to allow any in-flight state updates to finish
-        setTimeout(() => { if (!localStorage.getItem('lguss_user_session')) window.location.href = '/'; }, 500);
-      }
-      return Promise.reject(err);
+    const isAuthRoute  = err.config?.url?.includes('/auth/');
+
+    // ── HYBRID FAIL-OVER: If login fails due to network, silently switch to Offline Mode ──
+    const isLoginAttempt = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
+    if (isLoginAttempt && isOfflineErr) {
+      return Promise.resolve(createOfflineLoginResponse(err.config));
     }
-    
-    if (!isOfflineErr && !isAuthMeFail) {
+
+    // ── Suppress noisy 401 toasts for auth routes (handled by UI) ──
+    const is401 = err.response?.status === 401;
+    const is429 = err.response?.status === 429;
+
+    if (!isOfflineErr && !is401 && !is429 && !isAuthRoute) {
       const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
       toast.error(msg, { position: 'bottom-right' });
     }
 
-    // ── HYBRID FAIL-OVER: If login fails due to connection, use offline login logic ──
-    const isLoginEndpoint = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
-    if (isLoginEndpoint && isOfflineErr) {
-      return Promise.resolve(createOfflineLoginResponse(err.config));
+    if (is429) {
+      toast.error('⚠️ Too many attempts. Please wait 15 minutes.', { position: 'bottom-right', duration: 6000 });
     }
 
     return Promise.reject(err);
   }
 );
+
 
 export default api;

@@ -1,102 +1,110 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
 
 const SESSION_KEY = 'lguss_user_session';
+const TOKEN_KEY   = 'lguss_jwt_token';
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(() => {
-    // Load user from localStorage immediately (enables offline session restore)
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch { return null; }
+  // ── 1. Trust localStorage FIRST — no loading flicker ──
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; }
+    catch { return null; }
   });
-  const [loading, setLoading] = useState(true);
-  let inactivityTimer = null;
+
+  // If a stored session already exists we are NOT loading — skip fetchMe entirely
+  const hasSavedSession = !!localStorage.getItem(SESSION_KEY);
+  const [loading, setLoading] = useState(!hasSavedSession);
+
+  const inactivityTimerRef = useRef(null);
+  const fetchMeRunning = useRef(false); // prevent duplicate calls
 
   const persistUser = (u) => {
     setUser(u);
     if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
-    else    localStorage.removeItem(SESSION_KEY);
+    else {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+    }
   };
 
-  const fetchMe = async () => {
-    if (!navigator.onLine) {
-      // Offline: restore from localStorage session
-      const saved = localStorage.getItem(SESSION_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setUser(parsed);
-          toast('⚡ Offline Mode — Using saved session', { icon: '📱', duration: 3000 });
-        } catch { setUser(null); }
-      } else {
-        setUser(null);
-      }
+  // ── 2. Only call fetchMe when there is NO saved session ──
+  const fetchMe = useCallback(async () => {
+    if (fetchMeRunning.current) return;
+    fetchMeRunning.current = true;
+
+    // Already have a session in localStorage → trust it, skip network check
+    const savedRaw = localStorage.getItem(SESSION_KEY);
+    if (savedRaw) {
+      try {
+        const saved = JSON.parse(savedRaw);
+        setUser(saved);
+      } catch {}
       setLoading(false);
+      fetchMeRunning.current = false;
+      return;
+    }
+
+    // No saved session → check if server has a cookie session
+    if (!navigator.onLine) {
+      setUser(null);
+      setLoading(false);
+      fetchMeRunning.current = false;
       return;
     }
 
     try {
       const { data } = await api.get('/auth/me');
-      
-      // Critical Fix: Read directly from localStorage to avoid stale closure state
-      const currentLocalSession = localStorage.getItem(SESSION_KEY);
-
       if (data && data.authenticated === false) {
-        // Only clear if no session exists (avoids wiping fresh logins)
-        if (!currentLocalSession) persistUser(null);
-      } else {
-        if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
+        // Verify AGAIN that nothing was written since we started
+        const latestSession = localStorage.getItem(SESSION_KEY);
+        if (!latestSession) setUser(null);
+      } else if (data && data.id) {
+        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
         persistUser(data);
       }
-    } catch (err) {
-      // Server unreachable (Cold Start or No Internet) but user has a saved session
-      const saved = localStorage.getItem(SESSION_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setUser(parsed);
-          // Only toast if it's a legitimate connection failure to avoid noise
-          toast('⚡ Working Offline (Server is waking up)', { icon: '📱', duration: 4000 });
-        } catch { setUser(null); }
-      } else {
-        setUser(null);
-      }
+    } catch {
+      // Server unreachable but no saved session → user is a guest
+      setUser(null);
     } finally {
       setLoading(false);
+      fetchMeRunning.current = false;
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchMe(); }, []);
+  useEffect(() => { fetchMe(); }, [fetchMe]);
 
-  // 30-min inactivity timeout
+  // ── 3. Inactivity timer ──
   const resetTimer = useCallback(() => {
-    clearTimeout(inactivityTimer);
+    clearTimeout(inactivityTimerRef.current);
     if (user) {
-      inactivityTimer = setTimeout(() => { logout(); }, 30 * 60 * 1000);
+      inactivityTimerRef.current = setTimeout(() => { logout(); }, 30 * 60 * 1000);
     }
   }, [user]);
 
   useEffect(() => {
-    ['mousemove', 'keydown', 'click', 'scroll'].forEach((e) => window.addEventListener(e, resetTimer));
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, resetTimer));
     resetTimer();
     return () => {
-      ['mousemove', 'keydown', 'click', 'scroll'].forEach((e) => window.removeEventListener(e, resetTimer));
-      clearTimeout(inactivityTimer);
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+      clearTimeout(inactivityTimerRef.current);
     };
   }, [resetTimer]);
 
+  // ── 4. Login — persist immediately, never overwritten by fetchMe ──
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
+    if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
     persistUser(data.user);
     return data;
   };
 
+  // ── 5. Logout — clear everything ──
   const logout = async () => {
     try { await api.post('/auth/logout'); } catch {}
-    localStorage.removeItem('lguss_jwt_token');
     persistUser(null);
     window.location.href = '/';
   };
