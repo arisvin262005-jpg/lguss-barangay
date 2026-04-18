@@ -11,6 +11,53 @@ const api = axios.create({
 // Cache for GET requests so the UI still loads data offline
 const getCache = {};
 
+// Helper to generate a valid-looking offline login response
+const createOfflineLoginResponse = (config) => {
+  const payload = JSON.parse(config.data || '{}');
+  const SESSION_KEY = 'lguss_user_session';
+  let offlineUser = null;
+
+  // 1. Match against last session
+  try {
+    const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if (saved && saved.email === payload.email) offlineUser = saved;
+  } catch {}
+
+  // 2. Match against offline-registered users
+  if (!offlineUser) {
+    try {
+      const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
+      const found = offlineRegs.find(u => u.email === payload.email);
+      if (found) {
+        offlineUser = { ...found, id: 'offline-reg-' + Date.now(), isOfflineMode: true, isDraftAccount: true };
+      }
+    } catch {}
+  }
+
+  // 3. Fallback to demo accounts
+  if (!offlineUser) {
+    const role = payload.email?.includes('admin') ? 'Admin' : 'Secretary';
+    offlineUser = {
+      id: 'offline-' + role.toLowerCase(),
+      name: role === 'Admin' ? 'Juan dela Cruz' : 'Maria Santos',
+      email: payload.email,
+      role,
+      barangay: 'Barangay 1 (Poblacion)',
+      isOfflineMode: true,
+    };
+  }
+
+  toast.success('⚡ Entered in Offline Mode (Server Wake-up)', { icon: '📱', duration: 4000 });
+
+  return {
+    data: {
+      message: 'Login successful (Offline Fail-over)',
+      user: { ...offlineUser, isOfflineMode: true },
+    },
+    status: 200, statusText: 'OK', config, headers: {},
+  };
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('lguss_jwt_token');
   if (token) {
@@ -30,56 +77,7 @@ api.interceptors.request.use((config) => {
 
   // ── OFFLINE LOGIN: works for ALL accounts using saved session ──
   if (isLoginEndpoint && isOffline) {
-    const payload = JSON.parse(config.data || '{}');
-
-    // Try to match against any previously saved session
-    const SESSION_KEY = 'lguss_user_session';
-    let offlineUser = null;
-    try {
-      const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
-      if (saved && saved.email === payload.email) {
-        offlineUser = saved;
-      }
-    } catch {}
-
-    // Fallback: Check for accounts registered while offline
-    if (!offlineUser) {
-      try {
-        const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
-        const found = offlineRegs.find(u => u.email === payload.email);
-        if (found) {
-          offlineUser = {
-            ...found,
-            id: 'offline-reg-' + Date.now(),
-            isOfflineMode: true,
-            isDraftAccount: true 
-          };
-        }
-      } catch {}
-    }
-
-    // Fallback to demo accounts if still no match
-    if (!offlineUser) {
-      const role = payload.email?.includes('admin') ? 'Admin' : 'Secretary';
-      offlineUser = {
-        id: 'offline-' + role.toLowerCase(),
-        name: role === 'Admin' ? 'Juan dela Cruz' : 'Maria Santos',
-        email: payload.email,
-        role,
-        barangay: 'Barangay 1 (Poblacion)',
-        isOfflineMode: true,
-      };
-    }
-
-    toast.success('⚡ Offline Login Successful', { icon: '📱', duration: 4000 });
-
-    return Promise.resolve({
-      data: {
-        message: 'Login successful (Offline Mode)',
-        user: { ...offlineUser, isOfflineMode: true },
-      },
-      status: 200, statusText: 'OK', config, headers: {},
-    });
+    return Promise.resolve(createOfflineLoginResponse(config));
   }
   
   if (isLogoutEndpoint && isOffline) {
@@ -185,6 +183,13 @@ api.interceptors.response.use(
       const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
       toast.error(msg, { position: 'bottom-right' });
     }
+
+    // ── HYBRID FAIL-OVER: If login fails due to connection, use offline login logic ──
+    const isLoginEndpoint = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
+    if (isLoginEndpoint && isOfflineErr) {
+      return Promise.resolve(createOfflineLoginResponse(err.config));
+    }
+
     return Promise.reject(err);
   }
 );
