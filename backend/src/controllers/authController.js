@@ -40,7 +40,15 @@ const login = async (req, res) => {
       { id: user.id, email: user.email, role: user.role, barangay: user.barangay, name: `${user.firstName} ${user.lastName}` },
       JWT_SECRET, { expiresIn: JWT_EXPIRES }
     );
-    res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 30 * 60 * 1000 });
+    const isProd = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: isProd ? 'none' : 'lax',
+      secure: isProd,
+      maxAge: 30 * 60 * 1000
+    };
+    
+    res.cookie('token', token, cookieOptions);
     addBlock({ action: 'USER_LOGIN', recordType: 'user', recordId: user.id, actor: email, actorRole: user.role, details: { ip: req.ip } });
     res.json({ message: 'Login successful', user: { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, barangay: user.barangay } });
   } catch (err) {
@@ -49,7 +57,12 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie('token');
+  const isProd = process.env.NODE_ENV === 'production';
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd
+  });
   res.json({ message: 'Logged out successfully' });
 };
 
