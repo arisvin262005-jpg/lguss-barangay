@@ -134,6 +134,14 @@ api.interceptors.response.use(
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
     const isAuthMeFail = err.response?.status === 401 && err.config?.url?.includes('/auth/me');
     
+    // Auto-logout on 401 Unauthorized (except for /auth/me checks)
+    if (err.response?.status === 401 && !isAuthMeFail) {
+      localStorage.removeItem('lguss_user_session');
+      localStorage.removeItem('lguss_jwt_token');
+      window.location.href = '/';
+      return Promise.reject(err);
+    }
+    
     if (!isOfflineErr && !isAuthMeFail) {
       const msg = err.response?.data?.message || err.response?.data?.error || 'Something went wrong';
       toast.error(msg, { position: 'bottom-right' });
