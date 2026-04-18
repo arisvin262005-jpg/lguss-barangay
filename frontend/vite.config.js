@@ -91,13 +91,7 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Simple chunking to avoid initialization errors
-        manualChunks: {
-          'vendor-core': ['react', 'react-dom', 'react-router-dom', 'lucide-react'],
-          'vendor-utils': ['axios', 'pouchdb-browser', 'date-fns'],
-          'vendor-charts': ['recharts'],
-          'vendor-maps': ['leaflet', 'react-leaflet']
-        }
+        // Letting Vite handle chunking to avoid initialization errors
       }
     }
   },
