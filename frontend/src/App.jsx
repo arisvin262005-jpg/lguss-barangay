@@ -60,17 +60,9 @@ function AuthGuard({ children, roles }) {
 import { useState, useEffect } from 'react';
 
 function ProtectedLayout({ children, roles }) {
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  useEffect(() => {
-    const handleRefresh = () => setRefreshKey(k => k + 1);
-    window.addEventListener('global-refresh', handleRefresh);
-    return () => window.removeEventListener('global-refresh', handleRefresh);
-  }, []);
-
   return (
     <AuthGuard roles={roles}>
-      <Layout key={refreshKey}>{children}</Layout>
+      <Layout>{children}</Layout>
     </AuthGuard>
   );
 }

@@ -92,9 +92,12 @@ export const SyncProvider = ({ children }) => {
     
     setSyncStatus('complete');
     
-    // Tell the whole app to refresh its data (so the synced items appear perfectly in lists)
-    if (syncedThisRun > 0 || prev.pending > 0) { // Fix: use remainingQueue.length etc to be safe, wait, just dispatch always
-        window.dispatchEvent(new Event('global-refresh'));
+    // Dispatch sync-complete — individual pages listen and refetch without full remount
+    if (syncedThisRun > 0) {
+      window.dispatchEvent(new CustomEvent('sync-complete', { detail: { synced: syncedThisRun, failed: failedThisRun } }));
+    }
+    if (failedThisRun > 0 && syncedThisRun === 0) {
+      setSyncStatus('error');
     }
     
     setTimeout(() => setSyncStatus('idle'), 3000);

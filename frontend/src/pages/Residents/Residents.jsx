@@ -49,12 +49,28 @@ export default function Residents() {
   const canEdit = hasRole('Admin', 'Secretary');
   const canDelete = hasRole('Admin');
 
-  useEffect(() => {
+  const fetchResidents = () => {
     api.get('/residents', { params: { search, barangay: filterBarangay } })
       .then(({ data }) => setResidents(data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchResidents();
   }, [search, filterBarangay]);
+
+  // Listen for sync-complete: refetch data but DON'T clear list first (no flicker)
+  useEffect(() => {
+    const handleSyncComplete = () => {
+      api.get('/residents', { params: { search, barangay: filterBarangay } })
+        .then(({ data }) => { if (data.data?.length) setResidents(data.data); })
+        .catch(() => {});
+    };
+    window.addEventListener('sync-complete', handleSyncComplete);
+    return () => window.removeEventListener('sync-complete', handleSyncComplete);
+  }, [search, filterBarangay]);
+
 
   const filtered = residents.filter(r => !filterTag || r.tags?.[filterTag]);
 
