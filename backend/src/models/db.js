@@ -244,15 +244,44 @@ const db = {
   },
 };
 
-// INITIAL SEED - Let's seed the mock data into Firestore immediately when server starts
-setTimeout(() => {
-  console.log('[Firebase] Seeding mock data into live Firestore database...');
-  Object.keys(db).forEach(key => {
-    if (Array.isArray(db[key])) {
-      db[key].forEach(record => syncToFirebase(key, record));
+// ── STARTUP: Restore data from Firestore (prevents data loss on Render restart) ──
+async function restoreFromFirebase() {
+  if (!firestore) {
+    console.warn('[Firebase] No Firestore connection. Running with default in-memory data only.');
+    return;
+  }
+
+  console.log('[Firebase] Restoring data from Firestore...');
+  const collections = ['residents', 'households', 'users', 'cases', 'certifications', 'legislation', 'incidents', 'assets', 'drrmPlans', 'gadPrograms'];
+  
+  for (const col of collections) {
+    try {
+      const snapshot = await firestore.collection(col).get();
+      if (!snapshot.empty) {
+        const docs = snapshot.docs.map(d => d.data());
+        // Replace in-memory data with Firestore data
+        if (Array.isArray(db[col])) {
+          db[col].length = 0; // clear default seed
+          docs.forEach(d => db[col].push(d));
+        }
+        console.log(`[Firebase] Restored ${docs.length} records from '${col}'`);
+      } else {
+        // No Firestore data yet → seed defaults into Firestore
+        console.log(`[Firebase] No Firestore data for '${col}', seeding defaults...`);
+        if (Array.isArray(db[col])) {
+          db[col].forEach(record => syncToFirebase(col, record));
+        }
+      }
+    } catch (err) {
+      console.error(`[Firebase] Failed to restore '${col}':`, err.message);
     }
-  });
-}, 2000);
+  }
+
+  console.log('[Firebase] ✅ Restore complete. Server is ready.');
+}
+
+// Run restore on server startup (with slight delay to allow all modules to load)
+setTimeout(restoreFromFirebase, 1500);
 
 module.exports = db;
 // forced restart for CouchDB seeder
