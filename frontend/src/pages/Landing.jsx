@@ -401,6 +401,7 @@ export default function Landing() {
             <a key={id} href={`#${id}`} className="mobile-nav-item" onClick={closeNav}>
               {id === 'home' ? '🏠 Home' : id === 'subsystems' ? '🛠️ Systems' : id === 'about' ? 'ℹ️ Background' : id === 'barangays' ? '📍 Coverage' : '❓ FAQs'}
             </a>
+          ))}
           {isInstallable && !isInstalled && (
             <button onClick={() => { closeNav(); installApp(); }} style={{
               background:`linear-gradient(135deg,#10b981,#059669)`,
