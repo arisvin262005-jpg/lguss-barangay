@@ -2,11 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BARANGAYS } from '../config/barangays';
 import { useAuth } from '../context/AuthContext';
+import { usePWA } from '../context/PWAContext';
 import {
   Eye, EyeOff, LogIn, AlertCircle, UserPlus, CheckCircle2, X,
   ChevronRight, Server, Target, BrainCircuit, Scale, Users,
   FileText, Map, Link2, ShieldAlert, ChevronDown, Sparkles,
-  Shield, Wifi, Database, ArrowRight, Star
+  Shield, Wifi, Database, ArrowRight, Star, Download
 } from 'lucide-react';
 
 const GOV_BLUE   = '#0a3161';
@@ -94,6 +95,7 @@ export default function Landing() {
   const [scrolled, setScrolled]   = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { isInstallable, isInstalled, installApp } = usePWA();
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 100);
@@ -399,7 +401,16 @@ export default function Landing() {
             <a key={id} href={`#${id}`} className="mobile-nav-item" onClick={closeNav}>
               {id === 'home' ? '🏠 Home' : id === 'subsystems' ? '🛠️ Systems' : id === 'about' ? 'ℹ️ Background' : id === 'barangays' ? '📍 Coverage' : '❓ FAQs'}
             </a>
-          ))}
+          {isInstallable && !isInstalled && (
+            <button onClick={() => { closeNav(); installApp(); }} style={{
+              background:`linear-gradient(135deg,#10b981,#059669)`,
+              color:'#fff', border:'none', padding:'0.85rem', borderRadius:10,
+              fontWeight:700, cursor:'pointer', fontSize:'1rem', marginTop: '0.5rem',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+            }}>
+              <Download size={20} /> Install Mobile App
+            </button>
+          )}
           <button onClick={() => { closeNav(); setAuthModal('login'); }} style={{
             background:`linear-gradient(135deg,${GOV_BLUE},${GOV_LIGHT})`,
             color:'#fff', border:'none', padding:'0.85rem', borderRadius:10,
@@ -498,6 +509,11 @@ export default function Landing() {
             <button onClick={() => setAuthModal('login')} className="btn-glass" style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
               <LogIn size={18} /> Sign In to Portal
             </button>
+            {isInstallable && !isInstalled && (
+              <button onClick={installApp} className="btn-primary" style={{ display:'flex', alignItems:'center', gap:'0.5rem', background: 'linear-gradient(135deg,#10b981,#059669)', border: 'none' }}>
+                <Download size={18} /> Install App
+              </button>
+            )}
           </div>
 
           {/* Trust badges */}
