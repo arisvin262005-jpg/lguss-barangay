@@ -38,7 +38,36 @@ const incidentIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const defaultCenter = [13.2236, 120.5989]; // Mamburao
+// Barangay Hall icon
+const brgyIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [20, 32],
+  iconAnchor: [10, 32],
+  popupAnchor: [1, -28],
+  shadowSize: [32, 32]
+});
+
+const defaultCenter = [13.2236, 120.5989]; // Mamburao Town Proper
+
+// 15 Barangays of Mamburao (Approximate central coordinates)
+const BRGY_MARKERS = [
+  { name: 'Poblacion 1', lat: 13.2240, lng: 120.5960 },
+  { name: 'Poblacion 2', lat: 13.2250, lng: 120.5970 },
+  { name: 'Poblacion 3', lat: 13.2260, lng: 120.5980 },
+  { name: 'Poblacion 4', lat: 13.2230, lng: 120.5990 },
+  { name: 'Poblacion 5', lat: 13.2220, lng: 120.6000 },
+  { name: 'Poblacion 6', lat: 13.2200, lng: 120.5980 },
+  { name: 'Poblacion 7', lat: 13.2180, lng: 120.5970 },
+  { name: 'Poblacion 8', lat: 13.2190, lng: 120.5950 },
+  { name: 'Tayamaan',    lat: 13.2500, lng: 120.5800 },
+  { name: 'Balansay',    lat: 13.2700, lng: 120.5700 },
+  { name: 'Payompon',    lat: 13.2100, lng: 120.6100 },
+  { name: 'Tangkalan',   lat: 13.2000, lng: 120.6300 },
+  { name: 'Fatima',      lat: 13.1900, lng: 120.6400 },
+  { name: 'San Luis',    lat: 13.2800, lng: 120.6500 },
+  { name: 'Talabaan',    lat: 13.2400, lng: 120.6500 },
+];
 
 // Component to dynamically pan the map
 function MapUpdater({ userLoc, shouldCenter }) {
@@ -169,9 +198,23 @@ export default function Tracking() {
                 <TileLayer
                   attribution='&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
                   url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  maxNativeZoom={19}
+                  maxZoom={22} /* Allows deep zooming mimicking 3D closeups */
                 />
                 
                 <MapUpdater userLoc={userLocation} shouldCenter={centerOnUser} />
+
+                {/* 15 Barangay Hall Markers */}
+                {BRGY_MARKERS.map(b => (
+                  <Marker key={b.name} position={[b.lat, b.lng]} icon={brgyIcon}>
+                    <Popup>
+                      <div style={{ textAlign: 'center', minWidth: 100 }}>
+                        <div style={{ fontWeight: 800, color: '#d97706', fontSize: '0.9rem' }}>🏛️ {b.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>Barangay Hall Official Pin</div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
 
                 {/* Real-time User Location Marker */}
                 {userLocation && (
