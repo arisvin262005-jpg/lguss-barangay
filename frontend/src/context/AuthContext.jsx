@@ -39,7 +39,11 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const { data } = await api.get('/auth/me');
-      persistUser(data);
+      if (data && data.authenticated === false) {
+        persistUser(null);
+      } else {
+        persistUser(data);
+      }
     } catch {
       // Server unreachable but user has a saved session
       const saved = localStorage.getItem(SESSION_KEY);
