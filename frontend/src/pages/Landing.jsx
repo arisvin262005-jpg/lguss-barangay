@@ -634,15 +634,68 @@ export default function Landing() {
           <AnimatedCard>
             <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
               <span className="section-tag">Coverage Area</span>
-              <h2 className="section-heading" style={{ textAlign:'center', margin:'0 auto 1rem' }}>Mamburao Coverage</h2>
+              <h2 className="section-heading" style={{ textAlign:'center', margin:'0 auto 1rem' }}>Mamburao Municipal Coverage</h2>
               <p className="section-subtext" style={{ textAlign:'center', margin:'0 auto' }}>
-                Unifying operations across all 15 constituent barangays of Mamburao, Occidental Mindoro
+                Unifying operations across all 15 constituent barangays of Mamburao, Occidental Mindoro.
+                Our digital infrastructure ensures every resident is accounted for, even in the most remote areas.
               </p>
             </div>
           </AnimatedCard>
+
+          {/* Map Display Card */}
+          <AnimatedCard delay={100}>
+            <div style={{ 
+              background: '#fff', 
+              borderRadius: 24, 
+              padding: '1.5rem', 
+              boxShadow: '0 20px 50px rgba(10,49,97,0.12)', 
+              border: '1px solid #e8edf5',
+              marginBottom: '3.5rem',
+              overflow: 'hidden'
+            }}>
+              <div style={{ 
+                borderRadius: 16, 
+                overflow: 'hidden', 
+                border: '1px solid #f1f5f9',
+                background: '#f8fafc',
+                position: 'relative',
+                display: 'flex',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src="/mamburao_map.png" 
+                  alt="Mamburao Map" 
+                  style={{ 
+                    width: '100%', 
+                    maxHeight: '600px', 
+                    objectFit: 'contain',
+                    transition: 'transform 0.5s ease'
+                  }} 
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                />
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: '1rem', 
+                  right: '1rem', 
+                  background: 'rgba(255,255,255,0.85)', 
+                  backdropFilter: 'blur(8px)',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: 8,
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: '#475569',
+                  border: '1px solid rgba(0,0,0,0.05)'
+                }}>
+                  📍 OFFICIAL MUNICIPAL GEOLOCATION
+                </div>
+              </div>
+            </div>
+          </AnimatedCard>
+
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'1rem' }}>
             {BARANGAYS.map((b, i) => (
-              <AnimatedCard key={b.id} delay={i * 40}>
+              <AnimatedCard key={b.id} delay={i * 40 + 200}>
                 <div className="brgy-card">
                   <div style={{
                     width:40, height:40, borderRadius:'50%', background:'#eff6ff',
