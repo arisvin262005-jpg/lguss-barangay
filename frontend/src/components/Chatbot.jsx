@@ -35,10 +35,14 @@ export default function Chatbot() {
         message: userMessage.text,
         history: apiHistory
       });
-      setHistory(prev => [...prev, { role: 'assistant', text: res.data.reply }]);
+      // Handle case where it was intercepted by offline queue (returns 200 but no reply string)
+      if (res.data && res.data.success && !res.data.reply) {
+        throw new Error('AI Chat requires an active internet connection. Your message was queued.');
+      }
+      setHistory(prev => [...prev, { role: 'assistant', text: res.data.reply || 'No readable response.' }]);
     } catch (err) {
-      let errText = 'Sorry, there was an issue connecting to the AI brain.';
-      if (err.response?.status === 503) errText = 'NVIDIA API key is missing on the server. Please configure it in .env.';
+      let errText = err.response?.data?.error || err.message || 'Sorry, there was an issue connecting to the AI brain.';
+      if (err.response?.status === 503) errText = 'NVIDIA API key configuration missing on server.';
       setHistory(prev => [...prev, { role: 'assistant', text: errText, error: true }]);
     } finally {
       setLoading(false);

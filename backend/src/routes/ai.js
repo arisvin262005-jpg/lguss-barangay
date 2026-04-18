@@ -91,7 +91,7 @@ router.post('/chat', async (req, res) => {
 
   const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
   const NVIDIA_BASE_URL = process.env.NVIDIA_API_BASE_URL || 'https://integrate.api.nvidia.com/v1';
-  const MODEL = process.env.NVIDIA_MODEL || 'meta/llama-3.3-70b-instruct';
+  const MODEL = process.env.NVIDIA_MODEL || 'meta/llama-3.1-405b-instruct';
 
   if (!NVIDIA_API_KEY) {
     return res.status(503).json({ error: 'NVIDIA API key not configured on server. Please add it to your .env file.' });
