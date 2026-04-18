@@ -63,15 +63,22 @@ export default function Dashboard() {
           <div className="page-title">{greeting}, {user?.name?.split(' ')[0]}! 👋</div>
           <div className="page-subtitle">{user?.barangay} • {user?.role} • {new Date().toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
           {installPrompt && !isInstalled && (
             <button 
               onClick={showInstallPrompt} 
               className="btn btn-primary"
               style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
             >
-              <Download size={16} /> Install App for Offline Use
+              <Download size={16} /> Install App
             </button>
+          )}
+          {hasRole('Admin', 'Secretary') && (
+            <>
+              <Link to="/residents" className="btn btn-outline btn-sm"><Plus size={14} /> Add Resident</Link>
+              <Link to="/cases"     className="btn btn-outline btn-sm"><Plus size={14} /> File Case</Link>
+              <Link to="/certifications" className="btn btn-primary btn-sm"><Plus size={14} /> Issue Cert</Link>
+            </>
           )}
         </div>
       </div>
@@ -93,14 +100,6 @@ export default function Dashboard() {
           </button>
         </div>
       )}
-        {hasRole('Admin', 'Secretary') && (
-          <div style={{ display: 'flex', gap: '0.625rem' }}>
-            <Link to="/residents" className="btn btn-outline btn-sm"><Plus size={14} /> Add Resident</Link>
-            <Link to="/cases"     className="btn btn-outline btn-sm"><Plus size={14} /> File Case</Link>
-            <Link to="/certifications" className="btn btn-primary btn-sm"><Plus size={14} /> Issue Cert</Link>
-          </div>
-        )}
-      </div>
 
       {/* AI Insight Shortcut */}
       <div className="gov-card" style={{ marginBottom: '1.25rem', background: 'linear-gradient(90deg, #f8fafc, #eff6ff)', borderLeft: '4px solid #7c3aed', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
