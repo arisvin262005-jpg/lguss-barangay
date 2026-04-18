@@ -50,7 +50,7 @@ const login = async (req, res) => {
     
     res.cookie('token', token, cookieOptions);
     addBlock({ action: 'USER_LOGIN', recordType: 'user', recordId: user.id, actor: email, actorRole: user.role, details: { ip: req.ip } });
-    res.json({ message: 'Login successful', user: { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, barangay: user.barangay } });
+    res.json({ message: 'Login successful', token, user: { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, barangay: user.barangay } });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
   }
@@ -77,7 +77,13 @@ const getMe = (req, res) => {
   const user = db.findById('users', req.user.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
   const { password, ...userData } = user;
-  res.json(userData);
+  
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role, barangay: user.barangay, name: `${user.firstName} ${user.lastName}` },
+    JWT_SECRET, { expiresIn: JWT_EXPIRES }
+  );
+
+  res.json({ ...userData, token });
 };
 
 module.exports = { register, login, logout, forgotPassword, getMe };

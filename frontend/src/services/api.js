@@ -12,6 +12,11 @@ const api = axios.create({
 const getCache = {};
 
 api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('lguss_jwt_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   const isLoginEndpoint = config.url?.includes('/auth/login') && config.method === 'post';
   const isLogoutEndpoint = config.url?.includes('/auth/logout');
   

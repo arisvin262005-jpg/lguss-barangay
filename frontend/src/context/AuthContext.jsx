@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }) => {
       if (data && data.authenticated === false) {
         persistUser(null);
       } else {
+        if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
         persistUser(data);
       }
     } catch {
@@ -82,12 +83,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
+    if (data.token) localStorage.setItem('lguss_jwt_token', data.token);
     persistUser(data.user);
     return data;
   };
 
   const logout = async () => {
     try { await api.post('/auth/logout'); } catch {}
+    localStorage.removeItem('lguss_jwt_token');
     persistUser(null);
     window.location.href = '/';
   };
