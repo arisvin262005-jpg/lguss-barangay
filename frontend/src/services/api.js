@@ -12,21 +12,38 @@ const api = axios.create({
 const getCache = {};
 
 api.interceptors.request.use((config) => {
-  // If we are offline
-  if (!navigator.onLine) {
-    if (config.method === 'post' && config.url.includes('/auth/login')) {
-      const payload = JSON.parse(config.data);
-      if (payload.email === 'admin@barangay.gov.ph' || payload.email === 'secretary@barangay.gov.ph') {
-         // Capstone Defense Bypass: Allow offline login for demo accounts
-         const role = payload.email.includes('admin') ? 'Admin' : 'Secretary';
-         const name = role === 'Admin' ? 'Juan dela Cruz' : 'Maria Santos';
-         toast.success('Offline Authentication Mode: Active', { icon: '⚡' });
-         return {
-           data: { message: 'Login successful', user: { id: 'offline-001', name, email: payload.email, role, barangay: 'Barangay 1 (Poblacion)' } },
-           status: 200, statusText: 'OK', config, headers: {}
-         };
-      }
+  const isLoginPage = config.url.includes('/auth/login') && config.method === 'post';
+  const isOffline = !navigator.onLine;
+
+  // Force offline logic for specific demo accounts if connection is weak or off
+  if (isLoginPage) {
+    const payload = JSON.parse(config.data || '{}');
+    const isDemoAccount = payload.email === 'admin@barangay.gov.ph' || payload.email === 'secretary@barangay.gov.ph';
+
+    if (isOffline && isDemoAccount) {
+       const role = payload.email.includes('admin') ? 'Admin' : 'Secretary';
+       const name = role === 'Admin' ? 'Juan dela Cruz' : 'Maria Santos';
+       
+       toast.success('Offline Mode: Active — Bypassing Server', { icon: '⚡', duration: 4000 });
+       
+       return {
+         data: { 
+           message: 'Login successful (Offline Mode)', 
+           user: { 
+             id: 'offline-' + role.toLowerCase(), 
+             name, 
+             email: payload.email, 
+             role, 
+             barangay: 'Barangay 1 (Poblacion)',
+             isOfflineMode: true 
+           } 
+         },
+         status: 200, statusText: 'OK', config, headers: {}
+       };
     }
+  }
+
+  if (isOffline) {
 
     if (config.method === 'get') {
       config.adapter = async () => {
