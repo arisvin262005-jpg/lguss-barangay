@@ -22,8 +22,9 @@ const getDashboardStats = (req, res) => {
   // 2. Age Distribution
   const ageDistributionObj = { '0-17': 0, '18-35': 0, '36-59': 0, '60+': 0 };
   residents.forEach(r => {
-    if (!r.dateOfBirth) return;
-    const age = new Date().getFullYear() - new Date(r.dateOfBirth).getFullYear();
+    const dob = r.birthDate || r.dateOfBirth;
+    if (!dob) return;
+    const age = new Date().getFullYear() - new Date(dob).getFullYear();
     if (age <= 17) ageDistributionObj['0-17']++;
     else if (age <= 35) ageDistributionObj['18-35']++;
     else if (age <= 59) ageDistributionObj['36-59']++;
@@ -62,14 +63,24 @@ const getDashboardStats = (req, res) => {
 };
 
 const generateRecentActivity = (role, barangay) => {
-  const activities = [
-    { id: 1, type: 'resident', action: 'New resident registered', user: 'Maria Santos', time: '5 minutes ago', icon: 'user' },
-    { id: 2, type: 'certification', action: 'Barangay Clearance issued to Ana Ramos', user: 'Maria Santos', time: '12 minutes ago', icon: 'document' },
-    { id: 3, type: 'case', action: 'KP Case KP-2024-001 status updated to Mediation', user: 'Juan dela Cruz', time: '1 hour ago', icon: 'scale' },
-    { id: 4, type: 'sync', action: 'Offline data synced — 12 records uploaded', user: 'System', time: '2 hours ago', icon: 'sync' },
-    { id: 5, type: 'dss', action: 'DSS evaluation — Hold decision for clearance request', user: 'Maria Santos', time: '3 hours ago', icon: 'shield' },
-  ];
-  return activities;
+  const { getRecentBlocks } = require('../services/blockchain');
+  try {
+    const blocks = getRecentBlocks ? getRecentBlocks(10) : [];
+    if (blocks && blocks.length > 0) {
+      return blocks.map(b => ({
+        id: b.index,
+        type: b.action?.toLowerCase().includes('cert') ? 'certification' :
+              b.action?.toLowerCase().includes('case') ? 'case' :
+              b.action?.toLowerCase().includes('resident') ? 'resident' :
+              b.action?.toLowerCase().includes('login') ? 'auth' : 'sync',
+        action: `${b.action} — ${b.recordType || ''}`.trim(),
+        user: b.actor || 'System',
+        time: b.timestamp ? new Date(b.timestamp).toLocaleString('en-PH') : 'recently',
+        icon: 'activity'
+      }));
+    }
+  } catch {}
+  return [];
 };
 
 const getMonthlyCertReport = (req, res) => {

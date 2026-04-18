@@ -29,31 +29,34 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchStats = () => {
     api.get('/reports/dashboard-stats')
       .then(({ data }) => setStats(data))
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchStats();
+    // Auto-refresh every 30s for near real-time dashboard
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Also refresh when sync completes
+  useEffect(() => {
+    const onSync = () => fetchStats();
+    window.addEventListener('sync-complete', onSync);
+    return () => window.removeEventListener('sync-complete', onSync);
   }, []);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
-  const certChartData = stats?.certsByMonth || [
-    { month: 'Jan', count: 12 }, { month: 'Feb', count: 19 },
-    { month: 'Mar', count: 15 }, { month: 'Apr', count: 24 },
-    { month: 'May', count: 18 }, { month: 'Jun', count: 21 },
-  ];
-
-  const caseStatusData = stats?.caseStatus || [
-    { name: 'Filed', value: 3 }, { name: 'Under Mediation', value: 2 },
-    { name: 'Settled', value: 8 }, { name: 'Escalated', value: 1 }, { name: 'Dismissed', value: 4 },
-  ];
-
-  const ageDistData = stats?.ageDistribution || [
-    { group: '0-17', count: 28 }, { group: '18-35', count: 45 },
-    { group: '36-59', count: 38 }, { group: '60+', count: 14 },
-  ];
+  // Use real data from API — show empty arrays if no data yet (new account)
+  const certChartData = stats?.certsByMonth?.length ? stats.certsByMonth : [];
+  const caseStatusData = stats?.caseStatus?.filter(c => c.value > 0) || [];
+  const ageDistData    = stats?.ageDistribution || [];
 
   return (
     <div style={{ maxWidth: 1200 }}>
@@ -133,12 +136,12 @@ export default function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid-responsive" style={{ marginBottom: '1.5rem' }}>
-        <StatCard icon={Users}      label="Total Residents"       value={stats?.residents   ?? 7}    sub="Registered profiles"        color="#1a4f8a" loading={loading} />
-        <StatCard icon={Home}       label="Total Households"      value={stats?.households  ?? 3}    sub="Registered households"      color="#7c3aed" loading={loading} />
-        <StatCard icon={FileText}   label="Pending Certifications"value={stats?.pendingCerts?? 1}    sub="Awaiting processing"        color="#d97706" loading={loading} />
-        <StatCard icon={Scale}      label="Active KP Cases"       value={stats?.activeCases ?? 2}    sub="Filed or Under Mediation"   color="#dc2626" loading={loading} />
-        <StatCard icon={RefreshCw}  label="Sync Success Rate"     value={`${syncStats.successRate}%`}sub={`${syncStats.pending} pending`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
-        <StatCard icon={TrendingUp} label="Certs Issued (Month)"  value={stats?.certThisMonth??12}   sub="This calendar month"        color="#0284c7" loading={loading} />
+        <StatCard icon={Users}      label="Total Residents"        value={stats?.residents   ?? 0}    sub="Registered profiles"        color="#1a4f8a" loading={loading} />
+        <StatCard icon={Home}       label="Total Households"       value={stats?.households  ?? 0}    sub="Registered households"      color="#7c3aed" loading={loading} />
+        <StatCard icon={FileText}   label="Pending Certifications" value={stats?.pendingCerts?? 0}    sub="Awaiting processing"        color="#d97706" loading={loading} />
+        <StatCard icon={Scale}      label="Active KP Cases"        value={stats?.activeCases ?? 0}    sub="Filed or Under Mediation"   color="#dc2626" loading={loading} />
+        <StatCard icon={RefreshCw}  label="Sync Success Rate"      value={`${syncStats.successRate}%`}sub={`${syncStats.pending} pending`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
+        <StatCard icon={TrendingUp} label="Certs Issued (Month)"   value={stats?.certThisMonth?? 0}   sub="This calendar month"        color="#0284c7" loading={loading} />
       </div>
 
       {/* Charts row */}
@@ -201,21 +204,21 @@ export default function Dashboard() {
             <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Last 10 actions</span>
           </div>
           <div className="gov-card-body" style={{ padding: '0.5rem 0' }}>
-            {(stats?.recentActivity || [
-              { action: 'Certification issued for Ana Ramos', user: 'sec-001', time: '2m ago', type: 'cert' },
-              { action: 'KP Case KP-2024-003 filed', user: 'admin-001', time: '18m ago', type: 'case' },
-              { action: 'New resident Carlos Magno registered', user: 'sec-001', time: '1h ago', type: 'resident' },
-              { action: 'DSS check: CLEAR for Lourdes dela Vega', user: 'sec-001', time: '2h ago', type: 'dss' },
-              { action: 'Login: Admin Juan dela Cruz', user: 'admin-001', time: '3h ago', type: 'auth' },
-            ]).map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', padding: '0.6rem 1.25rem', borderBottom: '1px solid #f8fafc' }}>
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.type === 'cert' ? '#16a34a' : item.type === 'case' ? '#dc2626' : item.type === 'dss' ? '#7c3aed' : '#1a4f8a', flexShrink: 0, marginTop: 5 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 500, lineHeight: 1.4 }}>{item.action}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: 2 }}>{item.time}</div>
+            {stats?.recentActivity?.length > 0 ? (
+              stats.recentActivity.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', padding: '0.6rem 1.25rem', borderBottom: '1px solid #f8fafc' }}>
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: item.type === 'certification' ? '#16a34a' : item.type === 'case' ? '#dc2626' : item.type === 'auth' ? '#7c3aed' : '#1a4f8a', flexShrink: 0, marginTop: 5 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 500, lineHeight: 1.4 }}>{item.action}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: 2 }}>{item.user} &bull; {item.time}</div>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div style={{ padding: '2rem 1.25rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.82rem' }}>
+                No activity yet. Start by adding residents or issuing certificates.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
