@@ -842,7 +842,14 @@ function RegisterForm({ onSwitch }) {
     if (!form.privacyAgreed) return setError('You must agree to the Data Privacy Act.');
     setError(''); setLoading(true);
     try {
-      await register(form.firstName, form.lastName, form.email, form.password, form.barangay, form.role);
+      await register({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        password: form.password,
+        barangay: form.barangay,
+        role: form.role
+      });
       setSuccess(true);
       setTimeout(() => onSwitch(), 3000);
     } catch (err) { setError(err.response?.data?.error || 'Registration failed.'); }
