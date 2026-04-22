@@ -63,9 +63,11 @@ const getDashboardStats = (req, res) => {
 };
 
 const generateRecentActivity = (role, barangay) => {
-  const { getRecentBlocks } = require('../services/blockchain');
+  const { getAllBlocks } = require('../services/blockchain');
   try {
-    const blocks = getRecentBlocks ? getRecentBlocks(10) : [];
+    const allBlocks = getAllBlocks ? getAllBlocks() : [];
+    // Get last 10 blocks (most recent) — reverse so newest first
+    const blocks = allBlocks.slice(-10).reverse();
     if (blocks && blocks.length > 0) {
       return blocks.map(b => ({
         id: b.index,
@@ -143,6 +145,9 @@ const getDuplicateCaseReport = (req, res) => {
   const cases = db.cases;
   
   const flagged = residents.filter((r) => {
+    // Guard: skip residents with missing identity fields
+    if (!r.firstName || !r.lastName || !r.birthDate) return false;
+
     // Identity Matching: Find all IDs for this person across the system
     const allIdentities = residents.filter(other => 
       other.firstName.toLowerCase() === r.firstName.toLowerCase() &&

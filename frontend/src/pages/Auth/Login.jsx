@@ -47,7 +47,7 @@ export default function Login() {
 
   const demos = [
     { role: 'Admin',     email: 'admin@barangay.gov.ph' },
-    { role: 'Secretary', email: 'sec@barangay.gov.ph' },
+    { role: 'Secretary', email: 'secretary@barangay.gov.ph' },
   ];
 
   return (

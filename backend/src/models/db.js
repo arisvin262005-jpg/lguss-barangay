@@ -166,28 +166,41 @@ let syncQueue = [];
 
 const admin = require('firebase-admin');
 
-// Initialize Firebase App
-let credential;
+// Initialize Firebase App — fully isolated so any failure never crashes the server
+let firestore = null;
 try {
+  let credential;
+
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // For Cloud Deployment (Railway/Render/etc)
-    credential = admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT));
+    // Cloud deployment (Render/Railway): pass JSON string as env var
+    const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    credential = admin.credential.cert(parsed);
   } else {
-    // For Local Development
-    const serviceAccount = require('../../serviceAccountKey.json');
-    credential = admin.credential.cert(serviceAccount);
+    // Local development: use serviceAccountKey.json file
+    try {
+      const serviceAccount = require('../../serviceAccountKey.json');
+      credential = admin.credential.cert(serviceAccount);
+    } catch {
+      console.warn('[Firebase] serviceAccountKey.json not found. Running with in-memory data only.');
+    }
+  }
+
+  if (credential) {
+    // Only initialize if not already initialized (prevents re-init errors on hot reload)
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential,
+        databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://lguss-mamburao-default-rtdb.firebaseio.com',
+      });
+    }
+    firestore = admin.firestore();
+    console.log('[Firebase] ✅ Firestore connected.');
+  } else {
+    console.warn('[Firebase] No credentials found. Running with in-memory data only.');
   }
 } catch (err) {
-  console.warn('[Firebase] Warning: Could not initialize Firebase Credential. Ensure FIREBASE_SERVICE_ACCOUNT env is set or serviceAccountKey.json exists.');
-}
-
-let firestore = null;
-if (credential) {
-  admin.initializeApp({
-    credential: credential,
-    databaseURL: process.env.FIREBASE_DATABASE_URL || "https://lguss-mamburao-default-rtdb.firebaseio.com"
-  });
-  firestore = admin.firestore();
+  console.error('[Firebase] Initialization failed (non-fatal):', err.message);
+  firestore = null;
 }
 
 async function syncToFirebase(collection, record) {

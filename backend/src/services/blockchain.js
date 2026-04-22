@@ -47,6 +47,11 @@ const getAuditTrail = (recordId) => {
 const getAllBlocks = () => chain;
 
 /**
+ * Get last N blocks (used in dashboard recent activity)
+ */
+const getRecentBlocks = (n = 10) => chain.slice(-n).reverse();
+
+/**
  * Verify chain integrity
  */
 const verifyChain = () => {
@@ -60,4 +65,4 @@ const verifyChain = () => {
   return { valid: true, blocks: chain.length };
 };
 
-module.exports = { addBlock, getAuditTrail, getAllBlocks, verifyChain };
+module.exports = { addBlock, getAuditTrail, getAllBlocks, getRecentBlocks, verifyChain };
