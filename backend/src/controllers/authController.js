@@ -32,6 +32,12 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const user = db.findByEmail(email);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    
+    if (!user.password) {
+      console.error(`[Login] User ${email} has no password set in database.`);
+      return res.status(401).json({ error: 'Invalid credentials (missing password)' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
     if (!user.isVerified) return res.status(403).json({ error: 'Email not verified' });
@@ -49,9 +55,10 @@ const login = async (req, res) => {
     };
     
     res.cookie('token', token, cookieOptions);
-    addBlock({ action: 'USER_LOGIN', recordType: 'user', recordId: user.id, actor: email, actorRole: user.role, details: { ip: req.ip } });
+    addBlock({ action: 'USER_LOGIN', recordType: 'user', recordId: user.id, actor: email, actorRole: user.role, details: { ip: req.ip || '0.0.0.0' } });
     res.json({ message: 'Login successful', token, user: { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, barangay: user.barangay } });
   } catch (err) {
+    console.error('[Login Error]', err);
     res.status(500).json({ error: 'Login failed', details: err.message });
   }
 };
