@@ -14,3 +14,4 @@ get_firebase_string.js
 .vscode/
 log.txt
 *.log
+firebase_key.txt
