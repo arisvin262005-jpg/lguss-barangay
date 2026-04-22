@@ -1,13 +1,13 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/(sw.js|manifest.webmanifest|icon-192.png|icon-512.png)", "destination": "/$1" },
-    { "source": "/api/(.*)", "destination": "https://lguss-api-backend.onrender.com/api/$1" },
+    { "source": "/(sw.js|manifest.webmanifest|icon-.*|workbox-.*.js)", "destination": "/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
-      "source": "/sw.js",
+      "source": "/(sw.js|workbox-.*.js)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
         { "key": "Service-Worker-Allowed", "value": "/" }

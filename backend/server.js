@@ -25,11 +25,17 @@ const allowedOrigins = [
 // Custom CORS to guarantee cross-origin capability for all Vercel domains
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin) {
+  
+  // Dynamic CORS reflection to allow credentials (which requires specific origin, not '*')
+  if (origin && (origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else {
+    // Fallback for non-credentialed requests
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
+
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');

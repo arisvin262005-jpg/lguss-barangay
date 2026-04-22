@@ -1,8 +1,22 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const getBaseURL = () => {
+  // If VITE_API_URL is set (e.g. in Vercel env vars), use it as is.
+  let envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes('YOUR-BACKEND-URL')) {
+    // Ensure it ends with /api to match backend routes
+    if (!envUrl.endsWith('/api') && !envUrl.endsWith('/api/')) {
+      envUrl = envUrl.endsWith('/') ? `${envUrl}api` : `${envUrl}/api`;
+    }
+    return envUrl;
+  }
+  // Default to relative for local development
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseURL(),
   withCredentials: true,
   timeout: 60000, // 60 seconds for Render cold starts
   headers: { 'Content-Type': 'application/json' },
