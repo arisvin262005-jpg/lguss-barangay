@@ -48,6 +48,12 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   
+  // ── Prevent Vercel & Browser Caching ──
+  // This is critical so that after creating a resident, refreshing the page gets the fresh data instead of stale Vercel cache
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
