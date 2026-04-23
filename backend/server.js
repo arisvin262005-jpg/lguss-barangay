@@ -8,6 +8,14 @@ const { apiLimiter } = require('./src/middleware/rateLimiter');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ── Global safety net: never crash the server ──
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT EXCEPTION - non-fatal]', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[UNHANDLED REJECTION - non-fatal]', reason);
+});
+
 // Security middleware
 app.use(helmet());
 const allowedOrigins = [
