@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSync } from '../../context/SyncContext';
 import api from '../../services/api';
 import { usePWA } from '../../context/PWAContext';
-import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit, Download, MonitorCheck } from 'lucide-react';
+import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit, Download, MonitorCheck, Shield } from 'lucide-react';
 
 const PIE_COLORS = ['#2563a8','#16a34a','#d97706','#dc2626','#7c3aed'];
 
