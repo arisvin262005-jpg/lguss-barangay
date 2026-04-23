@@ -108,10 +108,31 @@ const getById = (req, res) => {
 
 const create = (req, res) => {
   try {
-    const resident = db.insert('residents', req.body);
+    const { role, barangay: userBarangay } = req.user || {};
+    const residentData = { ...req.body };
+
+    // Security & Consistency: If user is not Admin, enforce their own barangay
+    if (role !== ROLES.ADMIN && userBarangay) {
+      console.log(`[create Resident] Enforcing barangay ${userBarangay} for Secretary ${req.user?.email}`);
+      residentData.barangay = userBarangay;
+    }
+
+    const resident = db.insert('residents', residentData);
+    console.log(`[create Resident] Success - ID: ${resident.id}, Name: ${resident.firstName} ${resident.lastName}, Barangay: ${resident.barangay}`);
+
     try {
-      addBlock({ action: 'RESIDENT_CREATED', recordType: 'resident', recordId: resident.id, actor: req.user?.email || 'unknown', actorRole: req.user?.role || 'unknown', details: { name: `${resident.firstName} ${resident.lastName}` } });
-    } catch (bcErr) {}
+      addBlock({ 
+        action: 'RESIDENT_CREATED', 
+        recordType: 'resident', 
+        recordId: resident.id, 
+        actor: req.user?.email || 'unknown', 
+        actorRole: role || 'unknown', 
+        details: { name: `${resident.firstName} ${resident.lastName}`, barangay: resident.barangay } 
+      });
+    } catch (bcErr) {
+      console.error('[Blockchain Error]', bcErr.message);
+    }
+
     res.status(201).json(resident);
   } catch (err) {
     console.error('[create Resident Error]', err);
@@ -121,17 +142,35 @@ const create = (req, res) => {
 
 const update = (req, res) => {
   try {
-    const updated = db.update('residents', req.params.id, req.body);
+    const { role, barangay: userBarangay } = req.user || {};
+    const updateData = { ...req.body };
+
+    // Safety: Secretaries cannot move residents to another barangay
+    if (role !== ROLES.ADMIN && userBarangay) {
+      updateData.barangay = userBarangay;
+    }
+
+    const updated = db.update('residents', req.params.id, updateData);
     if (!updated) return res.status(404).json({ error: 'Resident not found' });
+
     try {
-      addBlock({ action: 'RESIDENT_UPDATED', recordType: 'resident', recordId: updated.id, actor: req.user?.email || 'unknown', actorRole: req.user?.role || 'unknown', details: { fields: Object.keys(req.body) } });
+      addBlock({ 
+        action: 'RESIDENT_UPDATED', 
+        recordType: 'resident', 
+        recordId: updated.id, 
+        actor: req.user?.email || 'unknown', 
+        actorRole: role || 'unknown', 
+        details: { fields: Object.keys(req.body) } 
+      });
     } catch (bcErr) {}
+
     res.json(updated);
   } catch (err) {
     console.error('[update Resident Error]', err);
     res.status(500).json({ error: 'Failed to update resident', details: err.message });
   }
 };
+
 
 const remove = (req, res) => {
   try {

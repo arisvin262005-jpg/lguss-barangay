@@ -74,7 +74,15 @@ export default function Residents() {
 
   const filtered = residents.filter(r => !filterTag || r.tags?.[filterTag]);
 
-  const openAdd  = () => { setForm(emptyForm); setSelected(null); setModal('form'); setError(''); };
+  const openAdd  = () => { 
+    setForm({ 
+      ...emptyForm, 
+      barangay: !hasRole('Admin') ? (useAuth().user?.barangay || '') : '' 
+    }); 
+    setSelected(null); 
+    setModal('form'); 
+    setError(''); 
+  };
   const openEdit = (r) => { setForm(r); setSelected(r); setModal('form'); setError(''); };
   const openView = (r) => { setSelected(r); setModal('view'); };
 
@@ -83,12 +91,16 @@ export default function Residents() {
     // Auto-tag senior if age >= 60
     const age = parseInt(calcAge(form.birthDate));
     const tags = { ...form.tags, senior: age >= 60 };
+    
+    // Ensure barangay is set if user is secretary (extra safety)
+    const finalBarangay = !hasRole('Admin') ? (useAuth().user?.barangay || form.barangay) : form.barangay;
+
     try {
       if (!selected) {
-        const { data } = await api.post('/residents', { ...form, tags });
+        const { data } = await api.post('/residents', { ...form, barangay: finalBarangay, tags });
         setResidents(prev => [data, ...prev]);
       } else {
-        const { data } = await api.put(`/residents/${selected.id}`, { ...form, tags });
+        const { data } = await api.put(`/residents/${selected.id}`, { ...form, barangay: finalBarangay, tags });
         setResidents(prev => prev.map(r => r.id === data.id ? data : r));
       }
       setModal(null);
@@ -266,6 +278,7 @@ export default function Residents() {
                   ))}
                 </div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 1fr' : '1fr', marginBottom: '0.75rem' }}>
+                  {/* ... (birthDate, gender, civilStatus, bloodType inputs remain same) ... */}
                   <div>
                     <label className="form-label">Birth Date *</label>
                     <input className="form-input" type="date" required value={form.birthDate} onChange={e=>setForm({...form,birthDate:e.target.value})} />
@@ -290,23 +303,27 @@ export default function Residents() {
                     </select>
                   </div>
                 </div>
-                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
-                  <div><label className="form-label">Religion</label><input className="form-input" value={form.religion||''} onChange={e=>setForm({...form,religion:e.target.value})} /></div>
-                  <div><label className="form-label">Citizenship</label><input className="form-input" value={form.citizenship} onChange={e=>setForm({...form,citizenship:e.target.value})} /></div>
-                  <div><label className="form-label">Birthplace</label><input className="form-input" value={form.birthplace||''} onChange={e=>setForm({...form,birthplace:e.target.value})} /></div>
-                </div>
-
-                {/* Section: Address */}
+                {/* ... */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Address & Contact</div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr 1fr' : '1fr', marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e=>setForm({...form,address:e.target.value})} placeholder="House No., Street" /></div>
                   <div>
                     <label className="form-label">Barangay *</label>
-                    <select className="form-select" required value={form.barangay} onChange={e=>setForm({...form,barangay:e.target.value})}>
+                    <select 
+                      className="form-select" 
+                      required 
+                      disabled={!hasRole('Admin')} 
+                      value={form.barangay} 
+                      onChange={e=>setForm({...form,barangay:e.target.value})}
+                      style={{ background: !hasRole('Admin') ? '#f1f5f9' : '#fff' }}
+                    >
                       <option value="">Select</option>
                       {BARANGAY_NAMES.map(b=><option key={b} value={b}>{b}</option>)}
                     </select>
+                    {!hasRole('Admin') && <div style={{ fontSize: '0.65rem', color: '#64748b', marginTop: 4 }}>Locked to your assigned barangay</div>}
                   </div>
+                  <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
+                </div>
                   <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
                 </div>
                 <div className="grid-2" style={{ marginBottom:'0.75rem' }}>
