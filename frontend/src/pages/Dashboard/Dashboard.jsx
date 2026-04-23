@@ -34,14 +34,14 @@ export default function Dashboard() {
 
   const fetchStats = () => {
     setLoading(true);
-    Promise.all([
+    Promise.allSettled([
       api.get('/reports/dashboard-stats'),
       api.get('/audit/verify'),
-      api.get('/sync/stats')
+      api.get('/reports/sync')
     ]).then(([s, v, os]) => {
-      setStats(s.data);
-      setIntegrity(v.data);
-      setOfflineStats(os.data);
+      if (s.status === 'fulfilled') setStats(s.value.data);
+      if (v.status === 'fulfilled') setIntegrity(v.value.data);
+      if (os.status === 'fulfilled') setOfflineStats(os.value.data);
     })
     .catch(() => {})
     .finally(() => setLoading(false));

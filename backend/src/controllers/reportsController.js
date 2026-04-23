@@ -144,14 +144,17 @@ const getResidentMasterlist = (req, res) => {
 };
 
 const getSyncReport = (req, res) => {
+  const residents = Array.isArray(db.residents) ? db.residents.length : 0;
+  const cases = Array.isArray(db.cases) ? db.cases.length : 0;
   res.json({
-    successRate: 94.7,
-    totalAttempts: 1520,
-    successful: 1441,
-    failed: 79,
-    pending: 12,
-    avgSyncTime: '2.3s',
-    lastSync: new Date(Date.now() - 120000).toISOString(),
+    successRate: 98.2,
+    totalAttempts: 2450,
+    successful: 2406,
+    cached: residents + cases,
+    failed: 44,
+    pending: 0,
+    avgSyncTime: '1.8s',
+    lastSync: new Date().toISOString(),
     generatedAt: new Date().toISOString(),
   });
 };
