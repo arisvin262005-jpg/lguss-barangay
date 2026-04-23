@@ -34,8 +34,7 @@ const NAV_GROUPS = [
     label: 'Issuances',
     roles: ['Admin','Secretary'],
     items: [
-      { icon: FileText,      label: 'Issue Certificate', path: '/certifications',  roles: ['Admin','Secretary'] },
-      { icon: ClipboardList, label: 'Issuance Logs',     path: '/issuance-logs',  roles: ['Admin','Secretary'] },
+      { icon: FileText,      label: 'Certifications', path: '/certifications',  roles: ['Admin','Secretary'] },
     ]
   },
   {

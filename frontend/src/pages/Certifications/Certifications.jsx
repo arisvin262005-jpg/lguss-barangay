@@ -199,7 +199,7 @@ export default function Certifications() {
   return (
     <div style={{ maxWidth:1150 }}>
       <div className="page-header">
-        <div><div className="page-title">Certifications & Issuances</div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
+        <div><div className="page-title">Certifications & Issuances <small style={{ fontSize:'0.7rem', color:'#94a3b8' }}>v2.5</small></div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
         <div>
           <button className="btn btn-secondary" onClick={fetchData} style={{ marginRight: '0.5rem' }}><Clock size={16}/> Refresh</button>
           {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
@@ -236,41 +236,37 @@ export default function Certifications() {
                 <td style={{ fontSize:'0.78rem',color:'#64748b' }}>{c.issuedAt ? new Date(c.issuedAt).toLocaleDateString('en-PH') : '—'}</td>
                 <td style={{ whiteSpace:'nowrap', minWidth: 200 }}>
                   <div style={{ display:'flex', gap: '0.4rem', alignItems: 'center' }}>
-                    {/* Processing → [Release] [Hold] */}
-                    {String(c.status).toLowerCase() === 'processing' && (
+                    {/* Normalized status check */}
+                    {String(c.status || '').toLowerCase() === 'processing' && (
                       <>
-                        <button onClick={() => handleStatusUpdate(c.id, 'Released')} className="btn btn-primary btn-sm" style={{ padding: '2px 10px' }}>Release</button>
-                        <button onClick={() => handleStatusUpdate(c.id, 'On Hold')} className="btn btn-outline btn-sm" style={{ borderColor: '#f59e0b', color: '#f59e0b', padding: '2px 10px' }}>Hold</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Released')} className="btn btn-primary btn-sm" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>Release</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'On Hold')} className="btn btn-outline btn-sm" style={{ borderColor: '#f59e0b', color: '#f59e0b', padding: '4px 12px', fontSize: '0.75rem' }}>Hold</button>
                       </>
                     )}
                     
-                    {/* Released → [View OR] [Print] */}
-                    {String(c.status).toLowerCase() === 'released' && (
+                    {String(c.status || '').toLowerCase() === 'released' && (
                       <>
-                        <button onClick={() => alert(`OR Number: ${c.orNumber}`)} className="btn btn-outline btn-sm" style={{ padding: '2px 10px' }}>View OR</button>
-                        <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" style={{ padding: '2px 10px' }}>Print</button>
+                        <button onClick={() => alert(`OR Number: ${c.orNumber}`)} className="btn btn-outline btn-sm" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>View OR</button>
+                        <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>Print</button>
                       </>
                     )}
                     
-                    {/* On Hold → [Resume] [Cancel] */}
-                    {String(c.status).toLowerCase() === 'on hold' && (
+                    {String(c.status || '').toLowerCase() === 'on hold' && (
                       <>
-                        <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-primary btn-sm" style={{ padding: '2px 10px' }}>Resume</button>
-                        <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor: '#ef4444', color: '#ef4444', padding: '2px 10px' }}>Cancel</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-primary btn-sm" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>Resume</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor: '#ef4444', color: '#ef4444', padding: '4px 12px', fontSize: '0.75rem' }}>Cancel</button>
                       </>
                     )}
 
-                    {/* Cancelled → [Reapply] (disabled) */}
-                    {String(c.status).toLowerCase() === 'cancelled' && (
-                      <button disabled className="btn btn-outline btn-sm" style={{ borderColor: '#94a3b8', color: '#94a3b8', padding: '2px 10px', cursor: 'not-allowed' }}>Reapply</button>
+                    {String(c.status || '').toLowerCase() === 'cancelled' && (
+                      <button disabled className="btn btn-outline btn-sm" style={{ borderColor: '#94a3b8', color: '#94a3b8', padding: '4px 12px', fontSize: '0.75rem', cursor: 'not-allowed' }}>Reapply</button>
                     )}
 
-                    {/* Pending fallback (e.g. from creation) */}
-                    {String(c.status).toLowerCase() === 'pending' && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6', padding: '2px 10px' }}>Process</button>
+                    {String(c.status || '').toLowerCase() === 'pending' && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6', padding: '4px 12px', fontSize: '0.75rem' }}>Process</button>
                     )}
                     
-                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#94a3b8', color:'#ef4444', padding: '2px 4px', border: 'none' }} title="Delete Record">
+                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#94a3b8', color:'#ef4444', padding: '4px 6px', border: 'none', marginLeft: 'auto' }} title="Delete Record">
                       🗑️
                     </button>
                   </div>

@@ -97,7 +97,6 @@ export default function App() {
 
             {/* Issuances */}
             <Route path="/certifications" element={<ProtectedLayout roles={['Admin','Secretary']}><Certifications /></ProtectedLayout>} />
-            <Route path="/issuance-logs"  element={<ProtectedLayout roles={['Admin','Secretary']}><Certifications /></ProtectedLayout>} />
 
             {/* KP Cases */}
             <Route path="/cases"    element={<ProtectedLayout roles={['Admin','Secretary']}><Cases /></ProtectedLayout>} />
