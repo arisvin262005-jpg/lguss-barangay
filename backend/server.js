@@ -95,6 +95,21 @@ app.listen(PORT, () => {
   console.log(`\n🏛️  Barangay Management System Backend`);
   console.log(`✅  Server running on http://localhost:${PORT}`);
   console.log(`📡  API Health: http://localhost:${PORT}/api/health\n`);
+
+  // ── Keep-alive ping: prevent Render free tier from sleeping ──
+  // Pings itself every 14 minutes so the server never cold-starts
+  if (process.env.NODE_ENV !== 'development') {
+    const https = require('https');
+    const SELF_URL = process.env.RENDER_EXTERNAL_URL || `https://lguss-barangay-m5jk.onrender.com`;
+    setInterval(() => {
+      https.get(`${SELF_URL}/api/health`, (res) => {
+        console.log(`[Keep-Alive] Self-ping OK — status: ${res.statusCode}`);
+      }).on('error', (e) => {
+        console.warn('[Keep-Alive] Self-ping failed (non-fatal):', e.message);
+      });
+    }, 14 * 60 * 1000); // every 14 minutes
+    console.log(`🔔  Keep-alive pings enabled → ${SELF_URL}/api/health`);
+  }
 });
 
 module.exports = app;
