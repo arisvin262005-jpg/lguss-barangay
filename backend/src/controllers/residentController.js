@@ -7,12 +7,17 @@ const getAll = (req, res) => {
     let data = Array.isArray(db.residents) ? [...db.residents] : [];
     const { role, barangay } = req.user || {};
 
+    // Filter by role
     if (role !== ROLES.ADMIN) {
       data = data.filter((r) => r && r.barangay === barangay);
     }
+
+    // Filter by barangay query
     if (req.query.barangay) {
       data = data.filter((r) => r && r.barangay === req.query.barangay);
     }
+
+    // Filter by search query
     if (req.query.search) {
       const q = String(req.query.search).toLowerCase();
       data = data.filter((r) => {
@@ -23,10 +28,44 @@ const getAll = (req, res) => {
       });
     }
 
+    // ── tag filter (senior, pwd, voter, fourPs, soloPar, ip) ──
+    if (req.query.tag) {
+      const tag = String(req.query.tag).toLowerCase().trim();
+      data = data.filter((r) => {
+        if (!r || !r.tags) return false;
+        switch (tag) {
+          case 'senior':   return r.tags.senior === true;
+          case 'pwd':      return r.tags.pwd === true;
+          case 'voter':    return r.tags.voter === true;
+          case 'fourps':   return r.tags.fourPs === true;
+          case 'solopar':  return r.tags.soloPar === true;
+          case 'ip':       return r.tags.ip === true;
+          // Also support age-based senior fallback
+          default:
+            if (tag === 'senior') {
+              return r.tags.senior === true || (() => {
+                const dob = r.birthDate || r.dateOfBirth;
+                if (!dob) return false;
+                return (new Date().getFullYear() - new Date(dob).getFullYear()) >= 60;
+              })();
+            }
+            return true;
+        }
+      });
+    }
+
+    // Silent blockchain log — never crash the main response
     try {
-      addBlock({ action: 'RESIDENTS_VIEWED', recordType: 'residents', recordId: 'list', actor: req.user?.email || 'unknown', actorRole: role || 'unknown', details: { count: data.length } });
+      addBlock({
+        action: 'RESIDENTS_VIEWED',
+        recordType: 'residents',
+        recordId: 'list',
+        actor: req.user?.email || 'unknown',
+        actorRole: role || 'unknown',
+        details: { count: data.length },
+      });
     } catch (bcErr) {
-      console.error('[Blockchain Error]', bcErr);
+      console.error('[Blockchain Error - non-fatal]', bcErr.message);
     }
 
     res.json({ data, total: data.length });
@@ -40,11 +79,11 @@ const getById = (req, res) => {
   try {
     const resident = db.findById('residents', req.params.id);
     if (!resident) return res.status(404).json({ error: 'Resident not found' });
-    
+
     try {
       addBlock({ action: 'RESIDENT_VIEWED', recordType: 'resident', recordId: resident.id, actor: req.user?.email || 'unknown', actorRole: req.user?.role || 'unknown', details: {} });
     } catch (bcErr) {}
-    
+
     res.json(resident);
   } catch (err) {
     console.error('[getById Resident Error]', err);
@@ -99,12 +138,12 @@ const getStats = (req, res) => {
     const { role, barangay } = req.user || {};
     let data = Array.isArray(db.residents) ? db.residents : [];
     if (role !== ROLES.ADMIN) data = data.filter((r) => r && r.barangay === barangay);
-    
-    const byBarangay = data.reduce((acc, r) => { 
+
+    const byBarangay = data.reduce((acc, r) => {
       if (r && r.barangay) {
-        acc[r.barangay] = (acc[r.barangay] || 0) + 1; 
+        acc[r.barangay] = (acc[r.barangay] || 0) + 1;
       }
-      return acc; 
+      return acc;
     }, {});
 
     res.json({ total: data.length, byBarangay });

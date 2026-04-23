@@ -266,31 +266,40 @@ async function restoreFromFirebase() {
 
   console.log('[Firebase] Restoring data from Firestore...');
   const collections = ['residents', 'households', 'users', 'cases', 'certifications', 'legislation', 'incidents', 'assets', 'drrmPlans', 'gadPrograms'];
-  
+
   for (const col of collections) {
     try {
       const snapshot = await firestore.collection(col).get();
       if (!snapshot.empty) {
         const docs = snapshot.docs.map(d => d.data());
-        // Replace in-memory data with Firestore data
         if (Array.isArray(db[col])) {
-          db[col].length = 0; // clear default seed
-          docs.forEach(d => db[col].push(d));
+          // Merge strategy: update existing records, add new ones
+          // NEVER wipe db[col].length = 0 — that causes 500s during the restore window
+          docs.forEach(doc => {
+            if (!doc || !doc.id) return;
+            const idx = db[col].findIndex(r => r && r.id === doc.id);
+            if (idx >= 0) {
+              db[col][idx] = doc;
+            } else {
+              db[col].push(doc);
+            }
+          });
         }
-        console.log(`[Firebase] Restored ${docs.length} records from '${col}'`);
+        console.log(`[Firebase] Merged ${docs.length} records into '${col}'`);
       } else {
-        // No Firestore data yet → seed defaults into Firestore
+        // No Firestore data yet — seed defaults into Firestore
         console.log(`[Firebase] No Firestore data for '${col}', seeding defaults...`);
         if (Array.isArray(db[col])) {
           db[col].forEach(record => syncToFirebase(col, record));
         }
       }
     } catch (err) {
-      console.error(`[Firebase] Failed to restore '${col}':`, err.message);
+      // Never crash the server on restore failure
+      console.error(`[Firebase] Failed to restore '${col}' (non-fatal):`, err.message);
     }
   }
 
-  console.log('[Firebase] ✅ Restore complete. Server is ready.');
+  console.log('[Firebase] Restore complete. Server is ready.');
 }
 
 // Run restore on server startup (with slight delay to allow all modules to load)
