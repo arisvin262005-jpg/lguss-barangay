@@ -255,6 +255,9 @@ const db = {
     deleteFromFirebase(collection, id); // LIVE FIREBASE SYNC
     return true;
   },
+
+  isFirebaseConnected: () => !!firestore,
+  getFirebaseError: () => (firestore ? null : 'Initialization failed or no credentials provided.'),
 };
 
 // ── STARTUP: Restore data from Firestore (prevents data loss on Render restart) ──

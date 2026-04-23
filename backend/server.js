@@ -77,7 +77,14 @@ app.use('/api/ai', require('./src/routes/ai'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', system: 'Barangay Management System', timestamp: new Date().toISOString() });
+  const db = require('./src/models/db');
+  res.json({ 
+    status: 'OK', 
+    system: 'Barangay Management System', 
+    timestamp: new Date().toISOString(),
+    firebaseConnected: db.isFirebaseConnected(),
+    firebaseError: db.getFirebaseError()
+  });
 });
 
 // 404 handler
