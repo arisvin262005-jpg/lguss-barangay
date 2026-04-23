@@ -86,11 +86,15 @@ const updateStatus = (req, res) => {
     const cert = db.findById('certifications', req.params.id);
     if (!cert) return res.status(404).json({ error: 'Certification not found' });
     
-    const updates = { status: req.body.status };
-    if (req.body.orNumber) updates.orNumber = req.body.orNumber;
+    const { status } = req.body;
+    const updates = { status };
     
-    // Set issuedAt when released
-    if (req.body.status === CERT_STATUS.RELEASED && !cert.issuedAt) {
+    // Auto-generate OR Number and IssuedAt when Released
+    if (status === CERT_STATUS.RELEASED && !cert.orNumber) {
+      const year = new Date().getFullYear();
+      const releasedCerts = Array.isArray(db.certifications) ? db.certifications.filter(c => c.orNumber) : [];
+      const nextNum = (releasedCerts.length + 1).toString().padStart(4, '0');
+      updates.orNumber = `OR-${year}-${nextNum}`;
       updates.issuedAt = new Date().toISOString();
     }
 
@@ -103,7 +107,7 @@ const updateStatus = (req, res) => {
         recordId: cert.id, 
         actor: req.user?.email || 'unknown', 
         actorRole: req.user?.role || 'unknown', 
-        details: { newStatus: req.body.status, orNumber: req.body.orNumber } 
+        details: { newStatus: status, orNumber: updates.orNumber } 
       });
     } catch (bcErr) {}
     

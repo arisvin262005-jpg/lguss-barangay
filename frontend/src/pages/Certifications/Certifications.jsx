@@ -32,8 +32,6 @@ export default function Certifications() {
   const [saving, setSaving] = useState(false);
   const [dssResult, setDssResult] = useState(null);
   const [dssLoading, setDssLoading] = useState(false);
-  const [releaseModal, setReleaseModal] = useState(null);
-  const [orNumber, setOrNumber] = useState('');
   const canEdit = hasRole('Admin','Secretary');
 
   const getResidentName = (id) => {
@@ -44,14 +42,10 @@ export default function Certifications() {
     return `${res.lastName}, ${res.firstName}`;
   };
 
-  const handleStatusUpdate = async (id, status, orNum = null) => {
+  const handleStatusUpdate = async (id, status) => {
     try {
-      const { data } = await api.patch(`/certifications/${id}/status`, { status, orNumber: orNum });
+      const { data } = await api.patch(`/certifications/${id}/status`, { status });
       setCerts(prev => prev.map(c => c.id === id ? data : c));
-      if (status === 'Released') {
-        setReleaseModal(null);
-        setOrNumber('');
-      }
     } catch (err) {
       alert('Failed to update status');
     }
@@ -240,26 +234,43 @@ export default function Certifications() {
                 <td><span className={`badge ${STATUS_META[c.status]?.cls||'badge-gray'}`} style={{ fontSize:'0.68rem' }}>{STATUS_META[c.status]?.icon} {c.status}</span></td>
                 <td style={{ fontSize:'0.8rem' }}>{c.orNumber||'—'}</td>
                 <td style={{ fontSize:'0.78rem',color:'#64748b' }}>{c.issuedAt ? new Date(c.issuedAt).toLocaleDateString('en-PH') : '—'}</td>
-                <td style={{ whiteSpace:'nowrap', minWidth: 160 }}>
+                <td style={{ whiteSpace:'nowrap', minWidth: 200 }}>
                   <div style={{ display:'flex', gap: '0.4rem', alignItems: 'center' }}>
-                    {/* Normalized status check */}
-                    {String(c.status).toLowerCase() === 'pending' && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6', padding: '2px 8px' }}>Process</button>
-                    )}
-                    
+                    {/* Processing → [Release] [Hold] */}
                     {String(c.status).toLowerCase() === 'processing' && (
-                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm" style={{ padding: '2px 8px' }}>Release</button>
+                      <>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Released')} className="btn btn-primary btn-sm" style={{ padding: '2px 10px' }}>Release</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'On Hold')} className="btn btn-outline btn-sm" style={{ borderColor: '#f59e0b', color: '#f59e0b', padding: '2px 10px' }}>Hold</button>
+                      </>
                     )}
                     
+                    {/* Released → [View OR] [Print] */}
                     {String(c.status).toLowerCase() === 'released' && (
-                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" style={{ padding: '2px 8px' }}>🖨️ Print</button>
+                      <>
+                        <button onClick={() => alert(`OR Number: ${c.orNumber}`)} className="btn btn-outline btn-sm" style={{ padding: '2px 10px' }}>View OR</button>
+                        <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" style={{ padding: '2px 10px' }}>Print</button>
+                      </>
                     )}
                     
-                    {['pending', 'processing', 'on hold'].includes(String(c.status).toLowerCase()) && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444', padding: '2px 8px' }}>Cancel</button>
+                    {/* On Hold → [Resume] [Cancel] */}
+                    {String(c.status).toLowerCase() === 'on hold' && (
+                      <>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-primary btn-sm" style={{ padding: '2px 10px' }}>Resume</button>
+                        <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor: '#ef4444', color: '#ef4444', padding: '2px 10px' }}>Cancel</button>
+                      </>
+                    )}
+
+                    {/* Cancelled → [Reapply] (disabled) */}
+                    {String(c.status).toLowerCase() === 'cancelled' && (
+                      <button disabled className="btn btn-outline btn-sm" style={{ borderColor: '#94a3b8', color: '#94a3b8', padding: '2px 10px', cursor: 'not-allowed' }}>Reapply</button>
+                    )}
+
+                    {/* Pending fallback (e.g. from creation) */}
+                    {String(c.status).toLowerCase() === 'pending' && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6', padding: '2px 10px' }}>Process</button>
                     )}
                     
-                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#94a3b8', color:'#ef4444', padding: '2px 8px' }} title="Delete Record">
+                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#94a3b8', color:'#ef4444', padding: '2px 4px', border: 'none' }} title="Delete Record">
                       🗑️
                     </button>
                   </div>
@@ -317,45 +328,6 @@ export default function Certifications() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Release Certification Modal (OR Number) */}
-      {releaseModal && (
-        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setReleaseModal(null)}>
-          <div className="modal" style={{ maxWidth:400 }}>
-            <div className="modal-header">
-              <div className="modal-title">Release Certification</div>
-              <button onClick={()=>setReleaseModal(null)} className="btn-icon"><X size={16}/></button>
-            </div>
-            <div className="modal-body">
-              <p style={{ marginBottom:'1rem', fontSize:'0.9rem' }}>
-                Please enter the <strong>Official Receipt (OR) Number</strong> for this issuance.
-              </p>
-              <div className="form-group">
-                <label className="form-label">OR Number *</label>
-                <input 
-                  className="form-input" 
-                  required 
-                  value={orNumber} 
-                  onChange={e=>setOrNumber(e.target.value)} 
-                  placeholder="e.g. OR-123456" 
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={()=>setReleaseModal(null)}>Cancel</button>
-              <button 
-                type="button" 
-                className="btn btn-primary" 
-                disabled={!orNumber.trim()}
-                onClick={() => handleStatusUpdate(releaseModal.id, 'Released', orNumber)}
-              >
-                Confirm Release
-              </button>
-            </div>
           </div>
         </div>
       )}
