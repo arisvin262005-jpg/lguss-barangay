@@ -85,14 +85,56 @@ const updateStatus = (req, res) => {
   try {
     const cert = db.findById('certifications', req.params.id);
     if (!cert) return res.status(404).json({ error: 'Certification not found' });
-    const updated = db.update('certifications', req.params.id, { status: req.body.status, orNumber: req.body.orNumber });
+    
+    const updates = { status: req.body.status };
+    if (req.body.orNumber) updates.orNumber = req.body.orNumber;
+    
+    // Set issuedAt when released
+    if (req.body.status === CERT_STATUS.RELEASED && !cert.issuedAt) {
+      updates.issuedAt = new Date().toISOString();
+    }
+
+    const updated = db.update('certifications', req.params.id, updates);
+    
     try {
-      addBlock({ action: 'CERTIFICATION_STATUS_UPDATED', recordType: 'certification', recordId: cert.id, actor: req.user?.email || 'unknown', actorRole: req.user?.role || 'unknown', details: { newStatus: req.body.status } });
+      addBlock({ 
+        action: 'CERTIFICATION_STATUS_UPDATED', 
+        recordType: 'certification', 
+        recordId: cert.id, 
+        actor: req.user?.email || 'unknown', 
+        actorRole: req.user?.role || 'unknown', 
+        details: { newStatus: req.body.status, orNumber: req.body.orNumber } 
+      });
     } catch (bcErr) {}
+    
     res.json(updated);
   } catch (err) {
     console.error('[updateStatus Cert Error]', err);
     res.status(500).json({ error: 'Failed to update certification status', details: err.message });
+  }
+};
+
+const remove = (req, res) => {
+  try {
+    const cert = db.findById('certifications', req.params.id);
+    if (!cert) return res.status(404).json({ error: 'Certification not found' });
+    
+    db.delete('certifications', req.params.id);
+    
+    try {
+      addBlock({ 
+        action: 'CERTIFICATION_DELETED', 
+        recordType: 'certification', 
+        recordId: req.params.id, 
+        actor: req.user?.email || 'unknown', 
+        actorRole: req.user?.role || 'unknown' 
+      });
+    } catch (bcErr) {}
+    
+    res.json({ message: 'Certification deleted successfully' });
+  } catch (err) {
+    console.error('[remove Cert Error]', err);
+    res.status(500).json({ error: 'Failed to delete certification', details: err.message });
   }
 };
 
@@ -109,4 +151,4 @@ const getDSSLogs = (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, checkDSS, create, updateStatus, getDSSLogs };
+module.exports = { getAll, getById, checkDSS, create, updateStatus, remove, getDSSLogs };

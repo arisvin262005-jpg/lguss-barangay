@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, getById, checkDSS, create, updateStatus, getDSSLogs } = require('../controllers/certificationController');
+const { getAll, getById, checkDSS, create, updateStatus, remove, getDSSLogs } = require('../controllers/certificationController');
 const { authenticate, authorize } = require('../middleware/auth');
 const { ROLES } = require('../config/constants');
 
@@ -11,5 +11,6 @@ router.get('/:id', getById);
 router.post('/dss-check', authorize(ROLES.ADMIN, ROLES.SECRETARY), checkDSS);
 router.post('/', authorize(ROLES.ADMIN, ROLES.SECRETARY), create);
 router.patch('/:id/status', authorize(ROLES.ADMIN, ROLES.SECRETARY), updateStatus);
+router.delete('/:id', authorize(ROLES.ADMIN, ROLES.SECRETARY), remove);
 
 module.exports = router;

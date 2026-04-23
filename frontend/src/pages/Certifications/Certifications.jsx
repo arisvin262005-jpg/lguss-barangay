@@ -32,8 +32,37 @@ export default function Certifications() {
   const [saving, setSaving] = useState(false);
   const [dssResult, setDssResult] = useState(null);
   const [dssLoading, setDssLoading] = useState(false);
-  const [selectedCert, setSelectedCert]= useState(null);
+  const [releaseModal, setReleaseModal] = useState(null);
+  const [orNumber, setOrNumber] = useState('');
   const canEdit = hasRole('Admin','Secretary');
+
+  const getResidentName = (id) => {
+    const res = residents.find(r => r.id === id);
+    return res ? `${res.lastName}, ${res.firstName}` : id;
+  };
+
+  const handleStatusUpdate = async (id, status, orNum = null) => {
+    try {
+      const { data } = await api.patch(`/certifications/${id}/status`, { status, orNumber: orNum });
+      setCerts(prev => prev.map(c => c.id === id ? data : c));
+      if (status === 'Released') {
+        setReleaseModal(null);
+        setOrNumber('');
+      }
+    } catch (err) {
+      alert('Failed to update status');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this certification?')) return;
+    try {
+      await api.delete(`/certifications/${id}`);
+      setCerts(prev => prev.filter(c => c.id !== id));
+    } catch (err) {
+      alert('Failed to delete certification');
+    }
+  };
 
   useEffect(() => {
     api.get('/certifications').then(({ data }) => setCerts(data.data || [])).catch(() => {}).finally(() => setLoading(false));
@@ -178,17 +207,31 @@ export default function Certifications() {
             {loading ? <tr><td colSpan={8} style={{ padding:'2rem',textAlign:'center' }}>Loading...</td></tr>
             : filtered.map(c=>(
               <tr key={c.id}>
-                <td style={{ fontWeight:600 }}>{c.residentName || c.residentId}</td>
+                <td style={{ fontWeight:600 }}>{getResidentName(c.residentId)}</td>
                 <td style={{ fontSize:'0.82rem' }}>{c.certType}</td>
                 <td style={{ fontSize:'0.8rem',color:'#64748b',maxWidth:120 }}>{c.purpose}</td>
                 <td>{c.dssDecision ? <span className={`badge ${DSS_META[c.dssDecision]?.cls||'badge-gray'}`} style={{ fontSize:'0.65rem' }}>{DSS_META[c.dssDecision]?.label||c.dssDecision}</span> : '—'}</td>
                 <td><span className={`badge ${STATUS_META[c.status]?.cls||'badge-gray'}`} style={{ fontSize:'0.68rem' }}>{STATUS_META[c.status]?.icon} {c.status}</span></td>
                 <td style={{ fontSize:'0.8rem' }}>{c.orNumber||'—'}</td>
                 <td style={{ fontSize:'0.78rem',color:'#64748b' }}>{c.issuedAt ? new Date(c.issuedAt).toLocaleDateString('en-PH') : '—'}</td>
-                <td>
-                  {c.status==='Released' &&
-                    <button onClick={()=>printCert(c)} className="btn btn-secondary btn-sm"><Printer size={13}/>Print</button>
-                  }
+                <td style={{ whiteSpace:'nowrap' }}>
+                  <div style={{ display:'flex', gap:6 }}>
+                    {c.status === 'Pending' && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" title="Process">Process</button>
+                    )}
+                    {c.status === 'Processing' && (
+                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm" title="Release">Release</button>
+                    )}
+                    {c.status === 'Released' && (
+                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" title="Print"><Printer size={13}/></button>
+                    )}
+                    {c.status !== 'Released' && c.status !== 'Cancelled' && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ color:'#ef4444' }} title="Cancel">Cancel</button>
+                    )}
+                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ color:'#ef4444' }} title="Delete">
+                      <X size={13}/>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -243,6 +286,45 @@ export default function Certifications() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Release Certification Modal (OR Number) */}
+      {releaseModal && (
+        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setReleaseModal(null)}>
+          <div className="modal" style={{ maxWidth:400 }}>
+            <div className="modal-header">
+              <div className="modal-title">Release Certification</div>
+              <button onClick={()=>setReleaseModal(null)} className="btn-icon"><X size={16}/></button>
+            </div>
+            <div className="modal-body">
+              <p style={{ marginBottom:'1rem', fontSize:'0.9rem' }}>
+                Please enter the <strong>Official Receipt (OR) Number</strong> for this issuance.
+              </p>
+              <div className="form-group">
+                <label className="form-label">OR Number *</label>
+                <input 
+                  className="form-input" 
+                  required 
+                  value={orNumber} 
+                  onChange={e=>setOrNumber(e.target.value)} 
+                  placeholder="e.g. OR-123456" 
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={()=>setReleaseModal(null)}>Cancel</button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                disabled={!orNumber.trim()}
+                onClick={() => handleStatusUpdate(releaseModal.id, 'Released', orNumber)}
+              >
+                Confirm Release
+              </button>
+            </div>
           </div>
         </div>
       )}
