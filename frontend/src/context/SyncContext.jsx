@@ -23,29 +23,33 @@ export const SyncProvider = ({ children }) => {
     };
   }, []);
 
-  // Simulate periodic sync stats update
+  // Update stats dynamically when offline actions occur or sync happens
   useEffect(() => {
-    syncIntervalRef.current = setInterval(() => {
-      setSyncStats((prev) => {
-        const newSynced = prev.synced + Math.floor(Math.random() * 2);
-        const total = newSynced + prev.failed + prev.pending;
-        const rate = total > 0 ? Math.min(99.9, ((newSynced / total) * 100)).toFixed(1) : 100;
-        return { ...prev, synced: newSynced, total, successRate: parseFloat(rate) };
+    const updateStatsFromStorage = () => {
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      const syncedCount = parseInt(localStorage.getItem('total_synced_count') || '0');
+      const failedCount = parseInt(localStorage.getItem('total_failed_count') || '0');
+      
+      setSyncStats({
+        pending: queue.length,
+        synced: syncedCount,
+        failed: failedCount,
+        total: queue.length + syncedCount + failedCount,
+        successRate: (queue.length + syncedCount + failedCount) > 0 
+          ? parseFloat(((syncedCount / (syncedCount + failedCount || 1)) * 100).toFixed(1))
+          : 100
       });
-    }, 5000);
-    return () => clearInterval(syncIntervalRef.current);
+    };
+
+    updateStatsFromStorage();
+    window.addEventListener('offline-action-added', updateStatsFromStorage);
+    window.addEventListener('sync-complete', updateStatsFromStorage);
+    return () => {
+      window.removeEventListener('offline-action-added', updateStatsFromStorage);
+      window.removeEventListener('sync-complete', updateStatsFromStorage);
+    };
   }, []);
 
-  // Update stats dynamically when offline actions occur
-  useEffect(() => {
-    const handleAction = () => {
-      const q = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-      setSyncStats(prev => ({ ...prev, pending: q.length, total: prev.synced + prev.failed + q.length }));
-    };
-    handleAction(); // initial check
-    window.addEventListener('offline-action-added', handleAction);
-    return () => window.removeEventListener('offline-action-added', handleAction);
-  }, []);
 
   const triggerSync = async () => {
     if (!navigator.onLine) return;
@@ -75,20 +79,17 @@ export const SyncProvider = ({ children }) => {
     }
 
     localStorage.setItem('offlineQueue', JSON.stringify(remainingQueue));
+    
+    // Persist totals for dashboard
+    const oldSynced = parseInt(localStorage.getItem('total_synced_count') || '0');
+    const oldFailed = parseInt(localStorage.getItem('total_failed_count') || '0');
+    localStorage.setItem('total_synced_count', oldSynced + syncedThisRun);
+    localStorage.setItem('total_failed_count', oldFailed + failedThisRun);
+
     if (syncedThisRun > 0) {
       localStorage.removeItem('offline_registered_users');
     }
-    
-    setSyncStats((prev) => {
-      const total = prev.synced + syncedThisRun + prev.failed + failedThisRun + remainingQueue.length;
-      return {
-        pending: remainingQueue.length,
-        synced: prev.synced + syncedThisRun,
-        failed: prev.failed + failedThisRun,
-        total: total,
-        successRate: total > 0 ? parseFloat(((prev.synced + syncedThisRun) / total * 100).toFixed(1)) : 100,
-      };
-    });
+
     
     setSyncStatus('complete');
     

@@ -6,9 +6,9 @@ export default function SyncEngine() {
 
   const steps = [
     { icon: HardDrive, label: 'User Action', sub: 'Create / Update / Delete', color: '#1a4f8a' },
-    { icon: Database, label: 'PouchDB (Local Queue)', sub: 'Local Offline Storage', color: '#f59e0b' },
+    { icon: Database, label: 'LocalStorage (Queue)', sub: 'Local Sandbox Storage', color: '#f59e0b' },
     { icon: RefreshCw, label: 'Sync Pipeline', sub: 'Online Reconnect', color: '#3b82f6' },
-    { icon: Cloud, label: 'CouchDB (Remote)', sub: 'DILG Cloud Database', color: '#10b981' },
+    { icon: Cloud, label: 'Firestore (Remote)', sub: 'DILG Cloud Database', color: '#10b981' },
   ];
 
   return (
@@ -17,7 +17,7 @@ export default function SyncEngine() {
       <div className="page-header" style={{ marginBottom: '1.5rem' }}>
         <div>
           <div className="page-title">Offline-First Sync Engine</div>
-          <div className="page-subtitle">Real-time synchronization status — PouchDB → CouchDB architecture</div>
+          <div className="page-subtitle">Real-time synchronization status — LocalStorage → Firebase Firestore architecture</div>
         </div>
       </div>
 
@@ -27,7 +27,7 @@ export default function SyncEngine() {
           {isOnline ? <Wifi size={24} color="#10b981" /> : <WifiOff size={24} color="#ef4444" />}
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.1rem', color: isOnline ? '#059669' : '#b91c1c' }}>{isOnline ? 'Online — Sync Engine Active' : 'Offline — Local Mode'}</div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>{isOnline ? 'Data is currently linked and pushing to CouchDB server.' : 'No internet. Working in Offline Sandbox. Will sync on reconnect.'}</div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>{isOnline ? 'Data is currently linked and pushing to Firebase server.' : 'No internet. Working in Offline Sandbox. Will sync on reconnect.'}</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.625rem' }}>

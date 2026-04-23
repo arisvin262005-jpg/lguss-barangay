@@ -27,7 +27,7 @@ const getStrength = (pwd) => {
 
 /* ─── Subsystems data ─── */
 const SUBSYSTEMS = [
-  { icon: Server,       title: 'Offline-First Engine',      desc: 'Saves transactions natively using IndexedDB and seamlessly syncs to CouchDB upon internet restoration.',    color: '#3b82f6', bg: '#eff6ff' },
+  { icon: Server,       title: 'Offline-First Engine',      desc: 'Saves transactions natively using LocalStorage and seamlessly syncs to Firebase Firestore upon internet restoration.',    color: '#3b82f6', bg: '#eff6ff' },
   { icon: Target,       title: 'Decision Support System',   desc: 'Rule-based mechanism that analyzes past offenses and KP case records to restrict or flag certifications automatically, ensuring compliance with barangay rules.', color: '#8b5cf6', bg: '#f5f3ff' },
   { icon: BrainCircuit, title: 'AI Predictive Analytics',  desc: 'Identifies crime patterns within the municipality using forecasting to optimize patrol scheduling.',         color: '#06b6d4', bg: '#ecfeff' },
   { icon: Scale,        title: 'Katarungang Pambarangay',  desc: 'Secure digital mediation management for filing cases, scheduling hearings, and generating summons.',          color: '#10b981', bg: '#ecfdf5' },
@@ -525,7 +525,7 @@ export default function Landing() {
           }}>
             {[
               { icon: Shield,     label: 'DILG Compliant' },
-              { icon: Database,   label: 'PouchDB + CouchDB' },
+              { icon: Database,   label: 'LocalStorage + Firebase' },
               { icon: Link2,      label: 'SHA-256 Blockchain' },
               { icon: BrainCircuit, label: 'NVIDIA Llama AI' },
             ].map((b, i) => (
