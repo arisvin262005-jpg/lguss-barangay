@@ -163,7 +163,9 @@ export default function Layout({ children }) {
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         {/* Header */}
         <div className="sidebar-header">
-          <div className="sidebar-logo">🏛️</div>
+          <div className="sidebar-logo">
+            <img src="/logo-crps.png" alt="CRPS" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
               <div className="sidebar-title">CRPS System</div>

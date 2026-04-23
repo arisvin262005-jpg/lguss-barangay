@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: null,
       manifest: {
-        name: 'LGUSS | Mamburao Barangay MIS',
-        short_name: 'LGUSS',
+        name: 'CRPS | Mamburao Barangay MIS',
+        short_name: 'CRPS',
         description: 'Local Government Unit Support System - Offline First Barangay Management',
         theme_color: '#0a3161',
         background_color: '#f8fafc',
