@@ -3,58 +3,65 @@ const { addBlock } = require('../services/blockchain');
 const { ROLES } = require('../config/constants');
 
 const getAll = (req, res) => {
+  const { search, barangay: barangayQuery, tag } = req.query;
+  const { role, barangay: userBarangay } = req.user || {};
+
+  console.log(`[GET /api/residents] Incoming request - User: ${req.user?.email}, Role: ${role}, Search: "${search || ''}", Barangay Query: "${barangayQuery || ''}"`);
+
   try {
+    // 1. Initialize data from db (with fallback)
     let data = Array.isArray(db.residents) ? [...db.residents] : [];
-    const { role, barangay } = req.user || {};
-
-    // Filter by role
+    
+    // 2. Filter by role (Secretary only sees their own barangay)
     if (role !== ROLES.ADMIN) {
-      data = data.filter((r) => r && r.barangay === barangay);
+      if (!userBarangay) {
+        console.warn(`[getAll Residents] Non-admin user ${req.user?.email} has no assigned barangay!`);
+        return res.status(403).json({ error: 'Access denied. No barangay assigned to your account.' });
+      }
+      data = data.filter((r) => r && r.barangay === userBarangay);
     }
 
-    // Filter by barangay query
-    if (req.query.barangay) {
-      data = data.filter((r) => r && r.barangay === req.query.barangay);
+    // 3. Filter by barangay query parameter (if provided and not empty)
+    // We check for both presence and non-empty string to prevent crashes or incorrect filtering
+    if (barangayQuery && String(barangayQuery).trim() !== "") {
+      data = data.filter((r) => r && r.barangay === String(barangayQuery).trim());
     }
 
-    // Filter by search query
-    if (req.query.search) {
-      const q = String(req.query.search).toLowerCase();
+    // 4. Filter by search query parameter
+    if (search && String(search).trim() !== "") {
+      const q = String(search).toLowerCase().trim();
       data = data.filter((r) => {
         if (!r) return false;
-        const nameMatch = `${r.firstName || ''} ${r.lastName || ''}`.toLowerCase().includes(q);
-        const emailMatch = typeof r.email === 'string' && r.email.toLowerCase().includes(q);
-        return nameMatch || emailMatch;
+        const firstName = (r.firstName || '').toLowerCase();
+        const lastName = (r.lastName || '').toLowerCase();
+        const middleName = (r.middleName || '').toLowerCase();
+        const email = (r.email || '').toLowerCase();
+        
+        return firstName.includes(q) || 
+               lastName.includes(q) || 
+               middleName.includes(q) ||
+               email.includes(q);
       });
     }
 
-    // ── tag filter (senior, pwd, voter, fourPs, soloPar, ip) ──
-    if (req.query.tag) {
-      const tag = String(req.query.tag).toLowerCase().trim();
+    // 5. Tag filtering (senior, pwd, voter, fourPs, soloPar, ip)
+    if (tag && String(tag).trim() !== "") {
+      const t = String(tag).toLowerCase().trim();
       data = data.filter((r) => {
         if (!r || !r.tags) return false;
-        switch (tag) {
+        switch (t) {
           case 'senior':   return r.tags.senior === true;
           case 'pwd':      return r.tags.pwd === true;
           case 'voter':    return r.tags.voter === true;
           case 'fourps':   return r.tags.fourPs === true;
           case 'solopar':  return r.tags.soloPar === true;
           case 'ip':       return r.tags.ip === true;
-          // Also support age-based senior fallback
-          default:
-            if (tag === 'senior') {
-              return r.tags.senior === true || (() => {
-                const dob = r.birthDate || r.dateOfBirth;
-                if (!dob) return false;
-                return (new Date().getFullYear() - new Date(dob).getFullYear()) >= 60;
-              })();
-            }
-            return true;
+          default:         return true;
         }
       });
     }
 
-    // Silent blockchain log — never crash the main response
+    // 6. Log activity to blockchain (non-blocking/non-fatal)
     try {
       addBlock({
         action: 'RESIDENTS_VIEWED',
@@ -62,18 +69,26 @@ const getAll = (req, res) => {
         recordId: 'list',
         actor: req.user?.email || 'unknown',
         actorRole: role || 'unknown',
-        details: { count: data.length },
+        details: { count: data.length, filters: { search, barangayQuery, tag } },
       });
     } catch (bcErr) {
       console.error('[Blockchain Error - non-fatal]', bcErr.message);
     }
 
+    console.log(`[GET /api/residents] Success - Returned ${data.length} residents.`);
     res.json({ data, total: data.length });
+
   } catch (err) {
-    console.error('[getAll Residents Error]', err);
-    res.status(500).json({ error: 'Failed to fetch residents', details: err.message });
+    console.error('[CRITICAL] getAll Residents Error:', err);
+    res.status(500).json({ 
+      error: 'Internal server error', 
+      details: err.message,
+      path: '/api/residents',
+      timestamp: new Date().toISOString()
+    });
   }
 };
+
 
 const getById = (req, res) => {
   try {
