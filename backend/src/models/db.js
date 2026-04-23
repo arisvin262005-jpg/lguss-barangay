@@ -228,13 +228,14 @@ async function deleteFromFirebase(collection, id) {
 const db = {
   users, households, residents, cases, certifications,
   legislation, incidents, assets, drrmPlans, gadPrograms,
-  dssLogs, syncQueue,
+  dssLogs, syncQueue, blockchain: [],
 
   findById:    (collection, id)     => db[collection].find((r) => r.id === id),
   findByEmail: (email)              => users.find((u) => u.email === email),
   
   insert: (collection, record) => {
     const newRecord = { ...record, id: record.id || uuidv4(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    if (!Array.isArray(db[collection])) db[collection] = [];
     db[collection].push(newRecord);
     syncToFirebase(collection, newRecord); // LIVE FIREBASE SYNC
     return newRecord;
@@ -258,6 +259,7 @@ const db = {
 
   isFirebaseConnected: () => !!firestore,
   getFirebaseError: () => (firestore ? null : 'Initialization failed or no credentials provided.'),
+  syncToFirebase, // Export for external use
 };
 
 // ── STARTUP: Restore data from Firestore (prevents data loss on Render restart) ──
@@ -268,7 +270,7 @@ async function restoreFromFirebase() {
   }
 
   console.log('[Firebase] Restoring data from Firestore...');
-  const collections = ['residents', 'households', 'users', 'cases', 'certifications', 'legislation', 'incidents', 'assets', 'drrmPlans', 'gadPrograms'];
+  const collections = ['residents', 'households', 'users', 'cases', 'certifications', 'legislation', 'incidents', 'assets', 'drrmPlans', 'gadPrograms', 'blockchain'];
 
   for (const col of collections) {
     try {
