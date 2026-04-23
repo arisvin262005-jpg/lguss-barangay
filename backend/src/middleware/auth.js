@@ -34,9 +34,11 @@ const authorize = (...allowedRoles) => (req, res, next) => {
  * Restrict secretary to own barangay only
  */
 const ownBarangayOnly = (req, res, next) => {
-  const { role, barangay } = req.user;
+  const { role, barangay } = req.user || {};
   if (role === ROLES.ADMIN) return next();
-  const targetBarangay = req.query.barangay || req.body.barangay;
+  
+  const targetBarangay = req.query?.barangay || req.body?.barangay;
+  
   if (targetBarangay && targetBarangay !== barangay) {
     return res.status(403).json({ error: 'Access restricted to your own barangay' });
   }
