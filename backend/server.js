@@ -83,7 +83,8 @@ app.get('/api/health', (req, res) => {
     system: 'Barangay Management System', 
     timestamp: new Date().toISOString(),
     firebaseConnected: db.isFirebaseConnected(),
-    firebaseError: db.getFirebaseError()
+    firebaseError: db.getFirebaseError(),
+    residentCount: Array.isArray(db.residents) ? db.residents.length : 0
   });
 });
 
