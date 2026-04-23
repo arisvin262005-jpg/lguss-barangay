@@ -28,13 +28,13 @@ const getStrength = (pwd) => {
 /* ─── Subsystems data ─── */
 const SUBSYSTEMS = [
   { icon: Server,       title: 'Offline-First Engine',      desc: 'Saves transactions natively using IndexedDB and seamlessly syncs to CouchDB upon internet restoration.',    color: '#3b82f6', bg: '#eff6ff' },
-  { icon: Target,       title: 'Decision Support',          desc: 'Analyzes past offenses and KP case records to restrict or flag certifications automatically.',               color: '#8b5cf6', bg: '#f5f3ff' },
+  { icon: Target,       title: 'Decision Support System',   desc: 'Rule-based mechanism that analyzes past offenses and KP case records to restrict or flag certifications automatically, ensuring compliance with barangay rules.', color: '#8b5cf6', bg: '#f5f3ff' },
   { icon: BrainCircuit, title: 'AI Predictive Analytics',  desc: 'Identifies crime patterns within the municipality using forecasting to optimize patrol scheduling.',         color: '#06b6d4', bg: '#ecfeff' },
   { icon: Scale,        title: 'Katarungang Pambarangay',  desc: 'Secure digital mediation management for filing cases, scheduling hearings, and generating summons.',          color: '#10b981', bg: '#ecfdf5' },
   { icon: Users,        title: 'Resident Profiling',        desc: 'Organizes and tracks comprehensive resident and household demographic data conforming to DILG standards.',    color: '#f59e0b', bg: '#fffbeb' },
   { icon: FileText,     title: 'Issuance Management',       desc: 'Handles the automated generation of clearances, permits, and certificates with digital logging.',            color: '#ef4444', bg: '#fef2f2' },
   { icon: Map,          title: 'Live GIS Tracking',         desc: 'Real-time mapping of Tanod patrol coordinates and incident reports across the municipality.',                 color: '#14b8a6', bg: '#f0fdfa' },
-  { icon: Link2,        title: 'Blockchain Audit',          desc: 'Immutable SHA-256 local transaction hashing guarantees data integrity against unauthorized tampering.',       color: '#6366f1', bg: '#eef2ff' },
+  { icon: Link2,        title: 'Blockchain Audit',          desc: 'Secure and transparent record-keeping using SHA-256 blockchain technology. Immutable storage ensures the integrity of all barangay records, certificates, and transactions.', color: '#6366f1', bg: '#eef2ff' },
   { icon: ShieldAlert,  title: 'DRRM & GAD Plan',           desc: 'Supports proactive budgeting and disaster readiness planning mapped explicitly to community demographics.',   color: '#f97316', bg: '#fff7ed' },
 ];
 

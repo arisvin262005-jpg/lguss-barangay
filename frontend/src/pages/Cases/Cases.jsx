@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Scale, Plus, Eye, Edit2, X, Save, Calendar, CheckCircle2, Clock, AlertTriangle, FileText, Printer } from 'lucide-react';
+import { Scale, Plus, Eye, EyeOff, Edit2, X, Save, Calendar, CheckCircle2, Clock, AlertTriangle, FileText, Printer } from 'lucide-react';
 
 const CASE_TYPES = ['Land Dispute','Family Dispute','Debt','Physical Injury','Noise Complaint','Property Damage','Others'];
 const STATUS_FLOW = ['Filed','Mediation Scheduled','Under Mediation','Settled','Escalated to Court','Dismissed'];
@@ -92,9 +92,15 @@ export default function Cases() {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({ caseNumber:'', complainantId:'', respondentId:'', caseType:'Land Dispute', description:'', filedDate: new Date().toISOString().split('T')[0] });
   const [hearingForm, setHearingForm] = useState({ hearingDate:'', hearingTime:'09:00', hearingVenue:'', notes:'' });
-  const [selected, setSelected] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [privacyMode, setPrivacyMode] = useState(true);
   const canEdit = hasRole('Admin', 'Secretary');
+
+  const maskName = (name) => {
+    if (!privacyMode) return name;
+    if (!name || name === '—') return name;
+    const parts = name.split(' ');
+    return parts.map(p => p[0] + '*'.repeat(Math.max(0, p.length - 1))).join(' ');
+  };
 
   useEffect(() => {
     Promise.all([
@@ -161,11 +167,21 @@ export default function Cases() {
           <div className="page-title">Katarungang Pambarangay</div>
           <div className="page-subtitle">Case filing, mediation scheduling, and case progress tracking</div>
         </div>
-        {canEdit && (
-          <button className="btn btn-primary" onClick={openNew} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <Plus size={16} /> File New Case
+        <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
+          <button 
+            className={`btn ${privacyMode ? 'btn-primary' : 'btn-outline'}`} 
+            onClick={() => setPrivacyMode(!privacyMode)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', padding: '0.4rem 0.8rem' }}
+          >
+            {privacyMode ? <EyeOff size={14} /> : <Eye size={14} />} 
+            {privacyMode ? 'Privacy: ON' : 'Privacy: OFF'}
           </button>
-        )}
+          {canEdit && (
+            <button className="btn btn-primary" onClick={openNew} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Plus size={16} /> File New Case
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Stats Row */}
@@ -248,8 +264,8 @@ export default function Cases() {
                     {c._isOfflineDraft && <span className="offline-draft-badge">📦 Offline Draft</span>}
                   </td>
                   <td style={{ fontSize: '0.82rem', color: '#475569' }}>{c.caseType}</td>
-                  <td style={{ fontSize: '0.82rem', fontWeight: 600 }}>{residentName(c.complainantId)}</td>
-                  <td style={{ fontSize: '0.82rem' }}>{residentName(c.respondentId)}</td>
+                  <td style={{ fontSize: '0.82rem', fontWeight: 600 }}>{maskName(residentName(c.complainantId))}</td>
+                  <td style={{ fontSize: '0.82rem' }}>{maskName(residentName(c.respondentId))}</td>
                   <td>
                     <span style={{
                       display: 'inline-block',
@@ -320,8 +336,8 @@ export default function Cases() {
                 {[
                   ['Case Number', selected.caseNumber],
                   ['Date Filed', selected.filedDate || '—'],
-                  ['Complainant', residentName(selected.complainantId)],
-                  ['Respondent', residentName(selected.respondentId)],
+                  ['Complainant', maskName(residentName(selected.complainantId))],
+                  ['Respondent', maskName(residentName(selected.respondentId))],
                   ['Hearing Date', selected.hearingDate || '—'],
                   ['Hearing Time', selected.hearingTime || '—'],
                   ['Venue', selected.hearingVenue || '—'],
@@ -336,7 +352,9 @@ export default function Cases() {
               {selected.description && (
                 <div style={{ marginTop: '1rem' }}>
                   <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Case Description</div>
-                  <div style={{ fontSize: '0.85rem', lineHeight: 1.65, background: '#f8fafc', padding: '0.85rem', borderRadius: 8, border: '1px solid #dde3ed', color: '#334155' }}>{selected.description}</div>
+                  <div style={{ fontSize: '0.85rem', lineHeight: 1.65, background: '#f8fafc', padding: '0.85rem', borderRadius: 8, border: '1px solid #dde3ed', color: '#334155' }}>
+                    {privacyMode ? '******** Content hidden in Privacy Mode ********' : selected.description}
+                  </div>
                 </div>
               )}
 

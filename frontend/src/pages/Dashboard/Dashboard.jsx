@@ -29,11 +29,22 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [integrity, setIntegrity] = useState(null);
+  const [offlineStats, setOfflineStats] = useState({ cached: 0, synced: 0 });
+
   const fetchStats = () => {
-    api.get('/reports/dashboard-stats')
-      .then(({ data }) => setStats(data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    setLoading(true);
+    Promise.all([
+      api.get('/reports/dashboard-stats'),
+      api.get('/audit/verify'),
+      api.get('/sync/stats')
+    ]).then(([s, v, os]) => {
+      setStats(s.data);
+      setIntegrity(v.data);
+      setOfflineStats(os.data);
+    })
+    .catch(() => {})
+    .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -135,13 +146,15 @@ export default function Dashboard() {
       )}
 
       {/* Stat cards */}
-      <div className="grid-responsive" style={{ marginBottom: '1.5rem' }}>
+      <div className="grid-responsive" style={{ marginBottom: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
         <StatCard icon={Users}      label="Total Residents"        value={stats?.residents   ?? 0}    sub="Registered profiles"        color="#1a4f8a" loading={loading} />
         <StatCard icon={Home}       label="Total Households"       value={stats?.households  ?? 0}    sub="Registered households"      color="#7c3aed" loading={loading} />
-        <StatCard icon={FileText}   label="Pending Certifications" value={stats?.pendingCerts?? 0}    sub="Awaiting processing"        color="#d97706" loading={loading} />
-        <StatCard icon={Scale}      label="Active KP Cases"        value={stats?.activeCases ?? 0}    sub="Filed or Under Mediation"   color="#dc2626" loading={loading} />
-        <StatCard icon={RefreshCw}  label="Sync Success Rate"      value={`${syncStats.successRate}%`}sub={`${syncStats.pending} pending`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
-        <StatCard icon={TrendingUp} label="Certs Issued (Month)"   value={stats?.certThisMonth?? 0}   sub="This calendar month"        color="#0284c7" loading={loading} />
+        <StatCard icon={FileText}   label="Pending Certs"          value={stats?.pendingCerts?? 0}    sub="Awaiting processing"        color="#d97706" loading={loading} />
+        <StatCard icon={Scale}      label="Active KP Cases"        value={stats?.activeCases ?? 0}    sub="Under Mediation"            color="#dc2626" loading={loading} />
+        <StatCard icon={Shield}     label="System Integrity"       value={integrity?.valid ? 'Verified' : 'Checking...'} sub={`${integrity?.blocks ?? 0} Hashed Blocks`} color={integrity?.valid ? '#10b981' : '#64748b'} loading={loading} />
+        <StatCard icon={RefreshCw}  label="Sync Success"           value={`${syncStats.successRate}%`}sub={`${syncStats.pending} Pending Sync`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
+        <StatCard icon={MonitorCheck} label="Offline Capacity"     value={`${offlineStats?.cached ?? 0}`} sub="Locally Secured"           color="#0891b2" loading={loading} />
+        <StatCard icon={TrendingUp} label="Certs (Month)"          value={stats?.certThisMonth?? 0}   sub="Issued this month"          color="#0284c7" loading={loading} />
       </div>
 
       {/* Charts row */}

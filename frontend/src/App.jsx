@@ -113,7 +113,7 @@ export default function App() {
             {/* Smart tools */}
             <Route path="/tracking" element={<ProtectedLayout roles={['Admin','Secretary']}><Tracking /></ProtectedLayout>} />
             <Route path="/dss"      element={<ProtectedLayout roles={['Admin','Secretary']}><DSS /></ProtectedLayout>} />
-            <Route path="/audit"    element={<ProtectedLayout roles={['Admin']}><BlockchainAudit /></ProtectedLayout>} />
+            <Route path="/audit"    element={<ProtectedLayout roles={['Admin', 'Secretary']}><BlockchainAudit /></ProtectedLayout>} />
             <Route path="/sync"     element={<ProtectedLayout><SyncEngine /></ProtectedLayout>} />
             <Route path="/reports"  element={<ProtectedLayout roles={['Admin','Secretary']}><Reports /></ProtectedLayout>} />
             <Route path="/ai-analytics" element={<ProtectedLayout roles={['Admin','Secretary']}><AIAnalytics /></ProtectedLayout>} />

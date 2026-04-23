@@ -79,9 +79,9 @@ const NAV_GROUPS = [
     roles: ['Admin','Secretary'],
     items: [
       { icon: Map,   label: 'Tanod GPS Tracking', path: '/tracking', roles: ['Admin','Secretary'] },
-      { icon: Bot,   label: 'Rule-Based DSS',     path: '/dss',      roles: ['Admin','Secretary'] },
+      { icon: Bot,   label: 'Rule-Based Decision Support System', path: '/dss', roles: ['Admin','Secretary'] },
       { icon: BrainCircuit, label: 'AI Predictive Analytics', path: '/ai-analytics', roles: ['Admin','Secretary'] },
-      { icon: Link2, label: 'Blockchain Audit',   path: '/audit',    roles: ['Admin'] },
+      { icon: Link2, label: 'Blockchain Audit',   path: '/audit',    roles: ['Admin', 'Secretary'] },
     ]
   },
   {
