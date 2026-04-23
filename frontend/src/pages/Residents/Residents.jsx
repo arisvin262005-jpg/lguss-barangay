@@ -278,7 +278,6 @@ export default function Residents() {
                   ))}
                 </div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 1fr' : '1fr', marginBottom: '0.75rem' }}>
-                  {/* ... (birthDate, gender, civilStatus, bloodType inputs remain same) ... */}
                   <div>
                     <label className="form-label">Birth Date *</label>
                     <input className="form-input" type="date" required value={form.birthDate} onChange={e=>setForm({...form,birthDate:e.target.value})} />
@@ -303,7 +302,13 @@ export default function Residents() {
                     </select>
                   </div>
                 </div>
-                {/* ... */}
+                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
+                  <div><label className="form-label">Religion</label><input className="form-input" value={form.religion||''} onChange={e=>setForm({...form,religion:e.target.value})} /></div>
+                  <div><label className="form-label">Citizenship</label><input className="form-input" value={form.citizenship} onChange={e=>setForm({...form,citizenship:e.target.value})} /></div>
+                  <div><label className="form-label">Birthplace</label><input className="form-input" value={form.birthplace||''} onChange={e=>setForm({...form,birthplace:e.target.value})} /></div>
+                </div>
+
+                {/* Section: Address */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Address & Contact</div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr 1fr' : '1fr', marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e=>setForm({...form,address:e.target.value})} placeholder="House No., Street" /></div>
@@ -324,12 +329,11 @@ export default function Residents() {
                   </div>
                   <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
                 </div>
-                  <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
-                </div>
                 <div className="grid-2" style={{ marginBottom:'0.75rem' }}>
                   <div><label className="form-label">Email</label><input className="form-input" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></div>
                   <div><label className="form-label">Relationship to Head</label><input className="form-input" value={form.relationToHead} onChange={e=>setForm({...form,relationToHead:e.target.value})} /></div>
                 </div>
+
 
                 {/* Section: Socioeconomic */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Socioeconomic Information</div>
