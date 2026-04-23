@@ -102,7 +102,7 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: 'Internal server error', details: err.message, stack: process.env.NODE_ENV !== 'production' ? err.stack : undefined });
 });
 
 app.listen(PORT, () => {
