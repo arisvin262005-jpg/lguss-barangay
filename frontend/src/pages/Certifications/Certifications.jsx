@@ -37,9 +37,10 @@ export default function Certifications() {
   const canEdit = hasRole('Admin','Secretary');
 
   const getResidentName = (id) => {
-    if (!id) return 'Unknown';
-    const res = residents.find(r => r.id === id || r._id === id);
-    if (!res) return id;
+    if (!id) return 'Unknown Resident';
+    // Match by id or _id, case-insensitive if possible (though IDs are usually case-sensitive)
+    const res = residents.find(r => (r.id === id || r._id === id));
+    if (!res) return `Resident (${id.substring(0,8)}...)`;
     return `${res.lastName}, ${res.firstName}`;
   };
 
@@ -239,22 +240,27 @@ export default function Certifications() {
                 <td><span className={`badge ${STATUS_META[c.status]?.cls||'badge-gray'}`} style={{ fontSize:'0.68rem' }}>{STATUS_META[c.status]?.icon} {c.status}</span></td>
                 <td style={{ fontSize:'0.8rem' }}>{c.orNumber||'—'}</td>
                 <td style={{ fontSize:'0.78rem',color:'#64748b' }}>{c.issuedAt ? new Date(c.issuedAt).toLocaleDateString('en-PH') : '—'}</td>
-                <td style={{ whiteSpace:'nowrap', minWidth: 150 }}>
-                  <div style={{ display:'flex', gap: '0.5rem' }}>
-                    {c.status === 'Pending' && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6' }}>Process</button>
+                <td style={{ whiteSpace:'nowrap', minWidth: 160 }}>
+                  <div style={{ display:'flex', gap: '0.4rem', alignItems: 'center' }}>
+                    {/* Normalized status check */}
+                    {String(c.status).toLowerCase() === 'pending' && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6', padding: '2px 8px' }}>Process</button>
                     )}
-                    {c.status === 'Processing' && (
-                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm">Release</button>
+                    
+                    {String(c.status).toLowerCase() === 'processing' && (
+                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm" style={{ padding: '2px 8px' }}>Release</button>
                     )}
-                    {c.status === 'Released' && (
-                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm"><Printer size={13}/> Print</button>
+                    
+                    {String(c.status).toLowerCase() === 'released' && (
+                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" style={{ padding: '2px 8px' }}>🖨️ Print</button>
                     )}
-                    {['Pending', 'Processing', 'On Hold'].includes(c.status) && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444' }}>Cancel</button>
+                    
+                    {['pending', 'processing', 'on hold'].includes(String(c.status).toLowerCase()) && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444', padding: '2px 8px' }}>Cancel</button>
                     )}
-                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444' }} title="Delete">
-                      <X size={13}/>
+                    
+                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#94a3b8', color:'#ef4444', padding: '2px 8px' }} title="Delete Record">
+                      🗑️
                     </button>
                   </div>
                 </td>
