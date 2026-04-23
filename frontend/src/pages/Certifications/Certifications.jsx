@@ -37,8 +37,10 @@ export default function Certifications() {
   const canEdit = hasRole('Admin','Secretary');
 
   const getResidentName = (id) => {
-    const res = residents.find(r => r.id === id);
-    return res ? `${res.lastName}, ${res.firstName}` : id;
+    if (!id) return 'Unknown';
+    const res = residents.find(r => r.id === id || r._id === id);
+    if (!res) return id;
+    return `${res.lastName}, ${res.firstName}`;
   };
 
   const handleStatusUpdate = async (id, status, orNum = null) => {
@@ -64,14 +66,30 @@ export default function Certifications() {
     }
   };
 
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [certsRes, residentsRes] = await Promise.all([
+        api.get('/certifications'),
+        api.get('/residents')
+      ]);
+      setCerts(certsRes.data.data || []);
+      setResidents(residentsRes.data.data || []);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    api.get('/certifications').then(({ data }) => setCerts(data.data || [])).catch(() => {}).finally(() => setLoading(false));
-    api.get('/residents').then(({ data }) => setResidents(data.data || []));
+    fetchData();
   }, []);
 
-  const filtered = certs.filter(c =>
-    `${c.residentName||''} ${c.certType} ${c.status}`.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = certs.filter(c => {
+    const resName = getResidentName(c.residentId);
+    return `${resName} ${c.certType} ${c.status}`.toLowerCase().includes(search.toLowerCase());
+  });
 
   const runDss = async () => {
     if (!form.residentId) return;
@@ -86,9 +104,13 @@ export default function Certifications() {
     e.preventDefault(); setSaving(true);
     try {
       const { data } = await api.post('/certifications', form);
-      setCerts(prev => [data.data || data, ...prev]);
+      // Backend returns { certification: cert, dssEvaluation: evaluation }
+      const newCert = data.certification || data.data || data;
+      setCerts(prev => [newCert, ...prev]);
       setModal(null); setDssResult(null);
-    } catch {} finally { setSaving(false); }
+    } catch (err) {
+      alert('Failed to issue certificate');
+    } finally { setSaving(false); }
   };
 
   // ===== PRINT CERTIFICATE PDF =====
@@ -183,7 +205,10 @@ export default function Certifications() {
     <div style={{ maxWidth:1150 }}>
       <div className="page-header">
         <div><div className="page-title">Certifications & Issuances</div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
-        {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
+        <div>
+          <button className="btn btn-secondary" onClick={fetchData} style={{ marginRight: '0.5rem' }}><Clock size={16}/> Refresh</button>
+          {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
+        </div>
       </div>
 
       {/* Stats row */}
@@ -214,21 +239,21 @@ export default function Certifications() {
                 <td><span className={`badge ${STATUS_META[c.status]?.cls||'badge-gray'}`} style={{ fontSize:'0.68rem' }}>{STATUS_META[c.status]?.icon} {c.status}</span></td>
                 <td style={{ fontSize:'0.8rem' }}>{c.orNumber||'—'}</td>
                 <td style={{ fontSize:'0.78rem',color:'#64748b' }}>{c.issuedAt ? new Date(c.issuedAt).toLocaleDateString('en-PH') : '—'}</td>
-                <td style={{ whiteSpace:'nowrap' }}>
-                  <div style={{ display:'flex', gap:6 }}>
+                <td style={{ whiteSpace:'nowrap', minWidth: 150 }}>
+                  <div style={{ display:'flex', gap: '0.5rem' }}>
                     {c.status === 'Pending' && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" title="Process">Process</button>
+                      <button onClick={() => handleStatusUpdate(c.id, 'Processing')} className="btn btn-outline btn-sm" style={{ borderColor: '#3b82f6', color: '#3b82f6' }}>Process</button>
                     )}
                     {c.status === 'Processing' && (
-                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm" title="Release">Release</button>
+                      <button onClick={() => setReleaseModal(c)} className="btn btn-primary btn-sm">Release</button>
                     )}
                     {c.status === 'Released' && (
-                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm" title="Print"><Printer size={13}/></button>
+                      <button onClick={() => printCert(c)} className="btn btn-secondary btn-sm"><Printer size={13}/> Print</button>
                     )}
-                    {c.status !== 'Released' && c.status !== 'Cancelled' && (
-                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ color:'#ef4444' }} title="Cancel">Cancel</button>
+                    {['Pending', 'Processing', 'On Hold'].includes(c.status) && (
+                      <button onClick={() => handleStatusUpdate(c.id, 'Cancelled')} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444' }}>Cancel</button>
                     )}
-                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ color:'#ef4444' }} title="Delete">
+                    <button onClick={() => handleDelete(c.id)} className="btn btn-outline btn-sm" style={{ borderColor:'#ef4444', color:'#ef4444' }} title="Delete">
                       <X size={13}/>
                     </button>
                   </div>
