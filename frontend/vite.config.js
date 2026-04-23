@@ -37,20 +37,29 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // Cache all static assets
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2,woff,ttf,eot}'],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
+        // ── SPA Navigation Fallback ──
+        // This is the KEY fix: for any page route (/residents, /dashboard, etc.)
+        // that is NOT a file, the service worker returns /index.html from cache.
+        // Without this, SW throws "no-response" for SPA routes when offline.
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [
+          /^\/api\//,        // never intercept API calls
+          /^\/favicon/,
+          /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+        ],
         runtimeCaching: [
+          // Google Fonts — long cache
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] }
             }
           },
@@ -59,25 +68,31 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] }
             }
           },
+          // External images (DILG logos, etc.) — cache with fallback
           {
-            urlPattern: /^https:\/\/.*/i,
+            urlPattern: /^https:\/\/(?!lguss-barangay-m5jk\.onrender\.com).+\.(png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'external-images-cache',
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          // API calls — NetworkFirst, short cache, NEVER block on failure
+          {
+            urlPattern: /^https:\/\/lguss-barangay-m5jk\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24
-              },
+              networkTimeoutSeconds: 10,
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 },
               cacheableResponse: { statuses: [0, 200] }
             }
-          }
+          },
         ]
       },
       devOptions: {
