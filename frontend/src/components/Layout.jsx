@@ -6,7 +6,7 @@ import { usePWA } from '../context/PWAContext';
 import {
   LayoutDashboard, Users, Home, UserCheck, Accessibility, Vote,
   FileText, Scale, BookOpen, AlertTriangle, Building2, Shield,
-  Heart, Map, Bot, Link2, BarChart3, Settings,
+  Heart, Bot, BarChart3, Settings,
   ChevronRight, LogOut, Wifi, WifiOff, RefreshCw,
   Menu, X, Bell, User, ClipboardList, Calendar,
   BrainCircuit, Download
@@ -77,10 +77,8 @@ const NAV_GROUPS = [
     label: 'Smart Tools',
     roles: ['Admin','Secretary'],
     items: [
-      { icon: Map,   label: 'Tanod GPS Tracking', path: '/tracking', roles: ['Admin','Secretary'] },
-      { icon: Bot,   label: 'Rule-Based Decision Support System', path: '/dss', roles: ['Admin','Secretary'] },
-      { icon: BrainCircuit, label: 'AI Predictive Analytics', path: '/ai-analytics', roles: ['Admin','Secretary'] },
-      { icon: Link2, label: 'Blockchain Audit',   path: '/audit',    roles: ['Admin', 'Secretary'] },
+      { icon: Bot,          label: 'Rule-Based Decision Support System', path: '/dss',          roles: ['Admin','Secretary'] },
+      { icon: BrainCircuit, label: 'AI Predictive Analytics',            path: '/ai-analytics', roles: ['Admin','Secretary'] },
     ]
   },
   {

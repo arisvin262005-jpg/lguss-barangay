@@ -76,8 +76,7 @@ app.use('/api/legislation', require('./src/routes/legislation'));
 app.use('/api/incidents', require('./src/routes/incidents'));
 app.use('/api/assets', require('./src/routes/assets'));
 app.use('/api/drrm', require('./src/routes/drrm'));
-app.use('/api/audit', require('./src/routes/audit'));
-app.use('/api/tracking', require('./src/routes/tracking'));
+// blockchain audit and tanod tracking routes removed per panel recommendation
 app.use('/api/reports', require('./src/routes/reports'));
 app.use('/api/ai', require('./src/routes/ai'));
 
