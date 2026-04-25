@@ -77,7 +77,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/(?!lguss-barangay-m5jk\.onrender\.com).+\.(png|jpg|jpeg|svg|gif|webp)$/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'external-images-cache',
+              cacheName: 'external-images-cache-v2',
               expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
               cacheableResponse: { statuses: [0, 200] }
             }
@@ -87,7 +87,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/lguss-barangay-m5jk\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'api-cache-v2',
               networkTimeoutSeconds: 10,
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 },
               cacheableResponse: { statuses: [0, 200] }
