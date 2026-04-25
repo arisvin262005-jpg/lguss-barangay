@@ -45,10 +45,7 @@ export default function Login() {
 
   const fmtCountdown = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 
-  const demos = [
-    { role: 'Admin',     email: 'admin@barangay.gov.ph' },
-    { role: 'Secretary', email: 'secretary@barangay.gov.ph' },
-  ];
+
 
   return (
     <div style={{ height: '100vh', width: '100vw', display: 'flex', background: '#f0f4f8', overflow: 'hidden' }}>
@@ -119,21 +116,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div style={{ display: 'flex', alignItems: 'center', margin: '1.25rem 0', opacity: 0.8 }}>
-            <div style={{ flex: 1, height: 1, background: '#cbd5e1' }} />
-            <span style={{ padding: '0 0.75rem', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#475569' }}>Demo Access</span>
-            <div style={{ flex: 1, height: 1, background: '#cbd5e1' }} />
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-            {demos.map(d => (
-              <button key={d.role} onClick={() => setForm({ email: d.email, password: 'admin123', remember: false })}
-                className="hover-float"
-                style={{ padding: '0.6rem 0.2rem', borderRadius: 8, background: '#ffffff', border: '1px solid #cbd5e1', cursor: 'pointer', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: '#0f172a', fontWeight: 800 }}>{d.role}</div>
-              </button>
-            ))}
-          </div>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
             No account? <Link to="/register" style={{ color: '#1a4f8a', fontWeight: 800, textDecoration: 'none', marginLeft: '0.2rem' }}>Register Now</Link>

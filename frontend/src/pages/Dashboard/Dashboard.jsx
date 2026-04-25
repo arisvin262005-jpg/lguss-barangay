@@ -36,11 +36,9 @@ export default function Dashboard() {
     setLoading(true);
     Promise.allSettled([
       api.get('/reports/dashboard-stats'),
-      api.get('/audit/verify'),
       api.get('/reports/sync')
-    ]).then(([s, v, os]) => {
+    ]).then(([s, os]) => {
       if (s.status === 'fulfilled') setStats(s.value.data);
-      if (v.status === 'fulfilled') setIntegrity(v.value.data);
       if (os.status === 'fulfilled') setOfflineStats(os.value.data);
     })
     .catch(() => {})
@@ -151,7 +149,7 @@ export default function Dashboard() {
         <StatCard icon={Home}       label="Total Households"       value={stats?.households  ?? 0}    sub="Registered households"      color="#7c3aed" loading={loading} />
         <StatCard icon={FileText}   label="Pending Certs"          value={stats?.pendingCerts?? 0}    sub="Awaiting processing"        color="#d97706" loading={loading} />
         <StatCard icon={Scale}      label="Active KP Cases"        value={stats?.activeCases ?? 0}    sub="Under Mediation"            color="#dc2626" loading={loading} />
-        <StatCard icon={Shield}     label="System Integrity"       value={integrity?.valid ? 'Verified' : 'Checking...'} sub={`${integrity?.blocks ?? 0} Hashed Blocks`} color={integrity?.valid ? '#10b981' : '#64748b'} loading={loading} />
+
         <StatCard icon={RefreshCw}  label="Sync Success"           value={`${syncStats.successRate}%`}sub={`${syncStats.pending} Pending Sync`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
         <StatCard icon={MonitorCheck} label="Offline Capacity"     value={`${offlineStats?.cached ?? 0}`} sub="Locally Secured"           color="#0891b2" loading={loading} />
         <StatCard icon={TrendingUp} label="Certs (Month)"          value={stats?.certThisMonth?? 0}   sub="Issued this month"          color="#0284c7" loading={loading} />
