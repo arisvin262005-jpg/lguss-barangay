@@ -189,6 +189,9 @@ api.interceptors.response.use(
       return Promise.resolve(createOfflineLoginResponse(err.config));
     }
 
+    const is401 = err.response?.status === 401;
+    const is429 = err.response?.status === 429;
+
     // ── 401 Unauthorized: token expired or secret changed ──
     if (is401 && !isAuthRoute) {
       localStorage.removeItem('lguss_user_session');
