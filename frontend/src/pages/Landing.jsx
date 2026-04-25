@@ -956,24 +956,7 @@ function LoginForm({ onSwitch }) {
         </button>
       </form>
 
-      <div style={{ marginTop:'1.5rem', borderTop:'1px solid #f1f5f9', paddingTop:'1.25rem' }}>
-        <div style={{ fontSize:'0.75rem', fontWeight:800, color:ACCENT, textTransform:'uppercase', letterSpacing:'0.1em', textAlign:'center', marginBottom:'0.75rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem' }}>
-          <ShieldAlert size={14} /> Defense Demo Access (Offline-Ready)
-        </div>
-        <div style={{ display:'flex', gap:'0.75rem' }}>
-          <button type="button" onClick={() => setForm({ email:'admin@barangay.gov.ph', password:'admin123', remember:false })} style={{ flex:1, padding:'0.7rem', borderRadius:10, background:'#eff6ff', border:'2px solid #bfdbfe', cursor:'pointer', fontSize:'0.82rem', fontWeight:800, color:GOV_BLUE, transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem' }} onMouseEnter={e => e.currentTarget.style.borderColor=ACCENT} onMouseLeave={e => e.currentTarget.style.borderColor='#bfdbfe'}>
-            <span style={{ fontSize:'0.7rem', opacity:0.7 }}>DEMO</span>
-            Admin
-          </button>
-          <button type="button" onClick={() => setForm({ email:'secretary@barangay.gov.ph', password:'admin123', remember:false })} style={{ flex:1, padding:'0.7rem', borderRadius:10, background:'#f0fdf4', border:'2px solid #bbf7d0', cursor:'pointer', fontSize:'0.82rem', fontWeight:800, color:'#166534', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem' }} onMouseEnter={e => e.currentTarget.style.borderColor='#22c55e'} onMouseLeave={e => e.currentTarget.style.borderColor='#bbf7d0'}>
-            <span style={{ fontSize:'0.7rem', opacity:0.7 }}>DEMO</span>
-            Secretary
-          </button>
-        </div>
-        <div style={{ fontSize:'0.65rem', color:'#94a3b8', textAlign:'center', marginTop:'0.6rem', fontStyle:'italic' }}>
-          Use these buttons if internet is slow or unavailable during defense.
-        </div>
-      </div>
+
       <div style={{ textAlign:'center', marginTop:'1rem', fontSize:'0.85rem', color:'#94a3b8' }}>
         Unregistered LGU branch?{' '}<button type="button" onClick={onSwitch} style={{ border:'none', background:'none', color:GOV_BLUE, fontWeight:700, cursor:'pointer' }}>Register</button>
       </div>
