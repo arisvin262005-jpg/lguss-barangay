@@ -328,6 +328,71 @@ export default function Landing() {
         /* ── Footer ── */
         .lp-footer-link { color:#94a3b8; text-decoration:none; font-size:0.9rem; line-height:2.2; transition:color 0.2s; }
         .lp-footer-link:hover { color:#e2e8f0; }
+
+        /* ── Team card ── */
+        .team-card {
+          background: #fff;
+          border-radius: 20px;
+          padding: 2rem 1.5rem;
+          text-align: center;
+          border: 1px solid #e8edf5;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+          transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+          position: relative;
+          overflow: hidden;
+        }
+        .team-card::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 4px;
+          background: linear-gradient(90deg, ${GOV_BLUE}, ${ACCENT}, ${GOLD});
+        }
+        .team-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(10,49,97,0.15); }
+        .team-avatar {
+          width: 88px; height: 88px; border-radius: 50%;
+          background: linear-gradient(135deg, ${GOV_BLUE}, ${ACCENT});
+          display: flex; align-items: center; justify-content: center;
+          font-size: 2rem; font-weight: 900; color: #fff;
+          margin: 0 auto 1.25rem;
+          border: 4px solid #e8edf5;
+          box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+          transition: transform 0.3s;
+        }
+        .team-card:hover .team-avatar { transform: scale(1.08) rotate(-3deg); }
+
+        /* ── Timeline ── */
+        .timeline-item {
+          display: flex; gap: 1.5rem; align-items: flex-start;
+          padding-bottom: 2rem; position: relative;
+        }
+        .timeline-item:not(:last-child)::after {
+          content: ''; position: absolute; left: 22px; top: 48px;
+          width: 2px; height: calc(100% - 12px);
+          background: linear-gradient(to bottom, ${ACCENT}44, transparent);
+        }
+        .timeline-dot {
+          width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+          background: linear-gradient(135deg, ${GOV_BLUE}, ${ACCENT});
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+          font-weight: 900; color: #fff; font-size: 0.85rem;
+        }
+
+        /* ── Glow stat ── */
+        @keyframes glowPulse { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.3)} 50%{box-shadow:0 0 0 12px rgba(37,99,235,0)} }
+        .stat-glow { animation: glowPulse 2.5s ease-in-out infinite; }
+
+        /* ── Typing cursor ── */
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .cursor { animation: blink 1s step-end infinite; }
+
+        /* ── Tech badge ── */
+        .tech-badge {
+          display: inline-flex; align-items: center; gap: 0.4rem;
+          padding: 0.45rem 0.9rem; border-radius: 100px;
+          font-size: 0.78rem; font-weight: 700; border: 1px solid;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tech-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
       `}</style>
 
       {/* ── Auth Modal ── */}
@@ -454,18 +519,31 @@ export default function Landing() {
 
 
           {/* Heading */}
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:'0.6rem',
+            background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.18)',
+            borderRadius:100, padding:'0.45rem 1.2rem', marginBottom:'1.75rem',
+            backdropFilter:'blur(12px)',
+            opacity: heroVisible ? 1 : 0, transition:'all 0.7s ease 0.1s',
+          }}>
+            <span style={{ width:8, height:8, borderRadius:'50%', background:'#34d399', display:'inline-block', boxShadow:'0 0 8px #34d399' }} />
+            <span style={{ fontSize:'0.78rem', fontWeight:700, color:'rgba(255,255,255,0.85)', letterSpacing:'0.06em', textTransform:'uppercase' }}>
+              DILG-Compliant · Offline-First · AI-Powered
+            </span>
+          </div>
           <h1 style={{
-            fontSize:'3.6rem', fontWeight:900, lineHeight:1.1, marginBottom:'1.5rem',
+            fontSize:'3.8rem', fontWeight:900, lineHeight:1.1, marginBottom:'1.5rem',
             letterSpacing:'-0.02em',
             opacity: heroVisible ? 1 : 0,
             transform: heroVisible ? 'translateY(0)' : 'translateY(28px)',
             transition:'all 0.8s ease 0.25s',
           }}>
-            <span style={{ display:'block', color:'#e2e8f0' }}>Centralized Residents</span>
+            <span style={{ display:'block', color:'#f1f5f9', textShadow:'0 2px 20px rgba(0,0,0,0.3)' }}>Centralized Residents</span>
             <span style={{
               display:'block',
-              background:'linear-gradient(90deg,#60a5fa,#93c5fd,#a5b4fc)',
+              background:'linear-gradient(90deg,#60a5fa,#93c5fd,#c4b5fd)',
               WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+              filter:'drop-shadow(0 0 30px rgba(96,165,250,0.4))',
             }}>Profiling System</span>
           </h1>
 
@@ -727,6 +805,53 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ══════════════════════ TEAM ══════════════════════ */}
+      <section style={{ padding:'6rem 0', background:'linear-gradient(135deg,#f8fafc,#eff6ff)' }}>
+        <div className="lp-container">
+          <AnimatedCard>
+            <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
+              <span className="section-tag">The Developers</span>
+              <h2 className="section-heading" style={{ textAlign:'center', margin:'0 auto 1rem' }}>Meet the Team</h2>
+              <p className="section-subtext" style={{ textAlign:'center', margin:'0 auto' }}>
+                Bachelor of Science in Information Technology students from Mamburao — building the future of local governance.
+              </p>
+            </div>
+          </AnimatedCard>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'1.5rem' }}>
+            {[
+              { name:'Arvin Dela Rosa Marasigan', role:'Lead Developer & System Architect', emoji:'💻', badge:'Full Stack', color:'#2563eb' },
+              { name:'Hannah Alfaro', role:'Frontend Developer & UI/UX Designer', emoji:'🎨', badge:'Frontend', color:'#8b5cf6' },
+              { name:'Lanibel Cabrera', role:'Frontend Developer & QA Analyst', emoji:'🔍', badge:'Frontend / QA', color:'#10b981' },
+            ].map((m, i) => (
+              <AnimatedCard key={i} delay={i * 100}>
+                <div className="team-card">
+                  <div className="team-avatar">{m.emoji}</div>
+                  <div style={{ fontWeight:900, fontSize:'1rem', color:'#0f172a', marginBottom:'0.35rem' }}>{m.name}</div>
+                  <div style={{ fontSize:'0.82rem', color:'#64748b', lineHeight:1.5, marginBottom:'1rem' }}>{m.role}</div>
+                  <span style={{ background:`${m.color}14`, border:`1px solid ${m.color}33`, color:m.color, padding:'0.3rem 0.8rem', borderRadius:100, fontSize:'0.73rem', fontWeight:700 }}>{m.badge}</span>
+                </div>
+              </AnimatedCard>
+            ))}
+          </div>
+
+          {/* Capstone info strip */}
+          <AnimatedCard delay={300}>
+            <div style={{ marginTop:'3rem', background:`linear-gradient(135deg,${GOV_BLUE},#1a5296)`, borderRadius:20, padding:'2.5rem', display:'flex', alignItems:'center', gap:'2rem', flexWrap:'wrap' }}>
+              <div style={{ flex:1, minWidth:260 }}>
+                <div style={{ color:'rgba(255,255,255,0.7)', fontSize:'0.78rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'0.5rem' }}>Capstone Project</div>
+                <div style={{ color:'#fff', fontWeight:900, fontSize:'1.3rem', lineHeight:1.3, marginBottom:'0.5rem' }}>BSIT — Thesis Defense 2025</div>
+                <div style={{ color:'rgba(255,255,255,0.7)', fontSize:'0.88rem', lineHeight:1.6 }}>Polytechnic University / Mamburao, Occidental Mindoro</div>
+              </div>
+              <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
+                {['DILG ISTMS','Offline-First','Firebase Sync','AI Analytics','Blockchain Audit'].map(t => (
+                  <span key={t} style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#e2e8f0', padding:'0.35rem 0.85rem', borderRadius:100, fontSize:'0.75rem', fontWeight:700 }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </AnimatedCard>
+        </div>
+      </section>
+
       {/* ══════════════════════ FAQs ══════════════════════ */}
       <section id="faq" style={{ padding:'6rem 0', background:'#ffffff' }}>
         <div className="lp-container" style={{ maxWidth:780 }}>
@@ -803,21 +928,27 @@ export default function Landing() {
 function StatsStrip() {
   const [ref, inView] = useInView(0.2);
   return (
-    <section ref={ref} style={{ padding:'4rem 0', background:'#ffffff' }}>
+    <section ref={ref} style={{ padding:'5rem 0', background:'linear-gradient(135deg,#0a3161,#1a5296)' }}>
       <div className="lp-container">
+        <div style={{ textAlign:'center', marginBottom:'3rem' }}>
+          <div style={{ fontSize:'0.75rem', fontWeight:800, letterSpacing:'0.15em', textTransform:'uppercase', color:'rgba(255,255,255,0.5)', marginBottom:'0.5rem' }}>By The Numbers</div>
+          <div style={{ fontSize:'1.75rem', fontWeight:900, color:'#fff' }}>CRPS at a Glance</div>
+        </div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.5rem' }}>
           {STATS.map((s, i) => {
             const Icon = s.icon;
             const count = useCountUp(s.value, 1600, inView);
             return (
-              <div key={i} className="stat-card">
-                <div style={{ width:52, height:52, borderRadius:14, background:`${s.color}14`, border:`1px solid ${s.color}22`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1rem' }}>
-                  <Icon size={24} color={s.color} />
+              <div key={i} style={{ textAlign:'center', padding:'2rem 1rem', borderRadius:20, background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.12)', backdropFilter:'blur(10px)', transition:'transform 0.3s, background 0.3s' }}
+                onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.14)'; e.currentTarget.style.transform='translateY(-6px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background='rgba(255,255,255,0.07)'; e.currentTarget.style.transform='translateY(0)'; }}>
+                <div style={{ width:56, height:56, borderRadius:16, background:`${s.color}25`, border:`1px solid ${s.color}50`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.25rem' }} className="stat-glow">
+                  <Icon size={26} color={s.color} />
                 </div>
-                <div style={{ fontSize:'2.8rem', fontWeight:900, color:GOV_BLUE, lineHeight:1, fontVariantNumeric:'tabular-nums' }}>
+                <div style={{ fontSize:'3rem', fontWeight:900, color:'#fff', lineHeight:1, fontVariantNumeric:'tabular-nums', textShadow:'0 0 20px rgba(255,255,255,0.2)' }}>
                   {count}{s.suffix}
                 </div>
-                <div style={{ fontSize:'0.88rem', color:'#64748b', fontWeight:600, marginTop:'0.5rem' }}>{s.label}</div>
+                <div style={{ fontSize:'0.88rem', color:'rgba(255,255,255,0.6)', fontWeight:600, marginTop:'0.6rem' }}>{s.label}</div>
               </div>
             );
           })}
