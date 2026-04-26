@@ -760,7 +760,7 @@ export default function Landing() {
         <div className="lp-container" style={{ display:'grid', gridTemplateColumns:'minmax(260px,2.2fr) 1fr 1fr', gap:'3rem', paddingBottom:'3rem' }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:'0.9rem', marginBottom:'1.5rem' }}>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Department_of_the_Interior_and_Local_Government_%28DILG%29_Logo.svg/512px-Department_of_the_Interior_and_Local_Government_%28DILG%29_Logo.svg.png" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)' }} alt="DILG Logo" />
+              <img src="https://thumbnail.imgbin.com/1/16/5/imgbin-department-of-interior-and-local-government-region-4b-department-of-the-interior-and-local-government-national-capital-region-masid-MadP4tvs5iwL0n2QNP3pWK5MN_t.jpg" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)' }} alt="DILG Logo" />
               <img src="https://tse4.mm.bing.net/th/id/OIP.a8wSKZPLNVtv2S4T7340WQHaHk?rs=1&pid=ImgDetMain&o=7&rm=3" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)' }} alt="Mamburao LGU Seal" />
               <div>
                 <div style={{ fontWeight:900, fontSize:'1rem', color:'#e2e8f0' }}>Republic of the Philippines</div>
