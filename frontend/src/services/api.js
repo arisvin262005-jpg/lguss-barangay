@@ -22,48 +22,85 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Cache for GET requests so the UI still has data when offline
-const getCache = {};
+// ─────────────────────────────────────────────────────────────
+// PERSISTENT GET CACHE — survives page refresh (uses localStorage)
+// ─────────────────────────────────────────────────────────────
+const CACHE_KEY = 'lguss_get_cache';
+const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const loadCache = () => {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); }
+  catch { return {}; }
+};
+const saveCache = (cache) => {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
+};
+const getCachedResponse = (url) => {
+  const cache = loadCache();
+  const entry = cache[url];
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL) { delete cache[url]; saveCache(cache); return null; }
+  return entry.data;
+};
+const setCachedResponse = (url, data) => {
+  const cache = loadCache();
+  cache[url] = { data, ts: Date.now() };
+  saveCache(cache);
+};
+
+// ─────────────────────────────────────────────────────────────
+// Simple password hash (djb2) for offline credential matching
+// ─────────────────────────────────────────────────────────────
+const hashPassword = (str) => {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) + hash) + str.charCodeAt(i); }
+  return (hash >>> 0).toString(36);
+};
 
 // ─────────────────────────────────────────────────────────────
 // Helper: Build an offline login response (used as fail-over)
 // ─────────────────────────────────────────────────────────────
 const createOfflineLoginResponse = (config) => {
   const payload = JSON.parse(config.data || '{}');
-  const SESSION_KEY = 'lguss_user_session';
+  const SESSION_KEY  = 'lguss_user_session';
+  const CREDS_KEY    = 'lguss_offline_creds';
   let offlineUser = null;
+  let credentialsOk = false;
 
-  // 1. Match against last saved session
+  // 1. Match against saved hashed credentials (most secure)
   try {
-    const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
-    if (saved && saved.email === payload.email) offlineUser = saved;
+    const creds = JSON.parse(localStorage.getItem(CREDS_KEY) || '[]');
+    const match = creds.find(c => c.email === payload.email && c.pwHash === hashPassword(payload.password));
+    if (match) { credentialsOk = true; }
   } catch {}
 
-  // 2. Match against accounts registered while offline
+  // 2. Match against last saved session (email only, for backward compat)
+  try {
+    const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if (saved && saved.email === payload.email) {
+      offlineUser = saved;
+      if (!credentialsOk) credentialsOk = true; // trust existing session email match
+    }
+  } catch {}
+
+  // 3. Match against accounts registered while offline
   if (!offlineUser) {
     try {
       const offlineRegs = JSON.parse(localStorage.getItem('offline_registered_users') || '[]');
       const found = offlineRegs.find(u => u.email === payload.email);
       if (found) {
         offlineUser = { ...found, id: 'offline-reg-' + Date.now(), isOfflineMode: true, isDraftAccount: true };
+        credentialsOk = true;
       }
     } catch {}
   }
 
-  // 3. Fallback: generic demo user based on email
-  if (!offlineUser) {
-    const role = payload.email?.includes('admin') ? 'Admin' : 'Secretary';
-    offlineUser = {
-      id: 'offline-' + role.toLowerCase(),
-      name: role === 'Admin' ? 'Juan dela Cruz' : 'Maria Santos',
-      email: payload.email,
-      role,
-      barangay: 'Barangay 1 (Poblacion)',
-      isOfflineMode: true,
-    };
+  if (!credentialsOk || !offlineUser) {
+    toast.error('❌ Offline login failed — incorrect credentials or account not cached.', { duration: 5000 });
+    return Promise.reject({ response: { status: 401, data: { error: 'Offline: credentials not found. Please login while online first.' } } });
   }
 
-  toast.success('⚡ Entered Offline Mode (Server unreachable)', { icon: '📱', duration: 4000 });
+  toast.success('⚡ Offline Mode — using cached session', { icon: '📱', duration: 4000 });
 
   return {
     data: {
@@ -103,14 +140,14 @@ api.interceptors.request.use((config) => {
     });
   }
 
-  // ── Offline GET → serve from cache ──
+  // ── Offline GET → serve from PERSISTENT localStorage cache ──
   if (isOffline && config.method === 'get') {
     config.adapter = async () => {
-      let cachedData = getCache[config.url]
-        ? JSON.parse(JSON.stringify(getCache[config.url]))
-        : { data: [] };
+      let cachedData = getCachedResponse(config.url);
+      if (!cachedData) cachedData = { data: [] };
+      else cachedData = JSON.parse(JSON.stringify(cachedData)); // deep clone
 
-      // Merge offline queued POSTs optimistically
+      // Merge offline queued POSTs optimistically so new records appear immediately
       const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
       const endpoint = config.url.split('?')[0];
       queue.forEach((task) => {
@@ -125,7 +162,8 @@ api.interceptors.request.use((config) => {
         }
       });
 
-      return { data: cachedData, status: 200, statusText: 'OK', config, headers: {} };
+      toast('📂 Showing cached data (Offline Mode)', { icon: '💾', duration: 2500 });
+      return { data: cachedData, status: 200, statusText: 'OK (Cached)', config, headers: {} };
     };
   }
 
@@ -171,11 +209,32 @@ api.interceptors.request.use((config) => {
 // ─────────────────────────────────────────────────────────────
 // RESPONSE INTERCEPTOR
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Helper: cache login credentials for offline use
+// ─────────────────────────────────────────────────────────────
+const cacheCredentials = (email, password) => {
+  try {
+    const CREDS_KEY = 'lguss_offline_creds';
+    const creds = JSON.parse(localStorage.getItem(CREDS_KEY) || '[]');
+    const idx = creds.findIndex(c => c.email === email);
+    const entry = { email, pwHash: hashPassword(password), ts: Date.now() };
+    if (idx >= 0) creds[idx] = entry; else creds.push(entry);
+    localStorage.setItem(CREDS_KEY, JSON.stringify(creds));
+  } catch {}
+};
+
 api.interceptors.response.use(
   (res) => {
-    // Cache successful GET responses for offline fallback
+    // Persist GET responses to localStorage for offline fallback
     if (res.config?.method === 'get' && res.data) {
-      getCache[res.config.url] = res.data;
+      setCachedResponse(res.config.url, res.data);
+    }
+    // Cache credentials on successful login for offline use
+    if (res.config?.url?.includes('/auth/login') && res.config?.method === 'post') {
+      try {
+        const payload = JSON.parse(res.config.data || '{}');
+        if (payload.email && payload.password) cacheCredentials(payload.email, payload.password);
+      } catch {}
     }
     return res;
   },
