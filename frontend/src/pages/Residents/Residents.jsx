@@ -94,24 +94,35 @@ export default function Residents() {
 
     // Ensure barangay is set if user is secretary (extra safety)
     const finalBarangay = !hasRole('Admin') ? (user?.barangay || form.barangay) : form.barangay;
+    const payload = { ...form, barangay: finalBarangay, tags };
 
     try {
       if (!selected) {
-        const { data } = await api.post('/residents', { ...form, barangay: finalBarangay, tags });
-        setResidents(prev => [data, ...prev]);
+        const res = await api.post('/residents', payload);
+        // Handle both online (res.data = resident object) and offline (res.data = { data: payload, success: true })
+        const saved = res.data?.id ? res.data
+          : res.data?.data?.id ? res.data.data
+          : { ...payload, id: 'offline-' + Date.now(), _isOfflineDraft: true };
+        setResidents(prev => [saved, ...prev]);
       } else {
-        const { data } = await api.put(`/residents/${selected.id}`, { ...form, barangay: finalBarangay, tags });
-        setResidents(prev => prev.map(r => r.id === data.id ? data : r));
+        const res = await api.put(`/residents/${selected.id}`, payload);
+        const saved = res.data?.id ? res.data
+          : res.data?.data?.id ? res.data.data
+          : { ...payload, id: selected.id, _isOfflineDraft: true };
+        setResidents(prev => prev.map(r => r.id === saved.id ? saved : r));
       }
       setModal(null);
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Failed to save');
+      setError(err.response?.data?.error || err.response?.data?.errors?.[0]?.msg || 'Failed to save. Please try again.');
     } finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Archive this resident record?')) return;
-    await api.delete(`/residents/${id}`);
+    try {
+      await api.delete(`/residents/${id}`);
+    } catch {}
+    // Remove from local list regardless (offline queue handles server sync)
     setResidents(prev => prev.filter(r => r.id !== id));
   };
 
