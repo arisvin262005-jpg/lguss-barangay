@@ -452,21 +452,6 @@ export default function Landing() {
 
         <div className="lp-container" style={{ position:'relative', zIndex:2, textAlign:'center', maxWidth:860, margin:'0 auto' }}>
 
-          {/* Badge */}
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:'0.5rem',
-            background:'rgba(37,99,235,0.25)', border:'1px solid rgba(96,165,250,0.35)',
-            borderRadius:100, padding:'0.4rem 1.1rem', marginBottom:'2rem',
-            backdropFilter:'blur(8px)',
-            opacity: heroVisible ? 1 : 0,
-            transform: heroVisible ? 'translateY(0)' : 'translateY(-16px)',
-            transition:'all 0.7s ease 0.1s',
-          }}>
-            <Sparkles size={13} color="#93c5fd" />
-            <span style={{ fontSize:'0.78rem', fontWeight:700, color:'#93c5fd', letterSpacing:'0.06em', textTransform:'uppercase' }}>
-              Powered by NVIDIA Llama 3.3 · Offline-First · Blockchain-Secured
-            </span>
-          </div>
 
           {/* Heading */}
           <h1 style={{
