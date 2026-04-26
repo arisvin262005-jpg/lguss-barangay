@@ -7,7 +7,7 @@ const residentValidation = [
   body('middleName').optional().trim().escape(),
   body('birthDate').isISO8601().withMessage('Valid birth date required'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
-  body('civilStatus').isIn(['Single', 'Married', 'Widowed', 'Separated']),
+  body('civilStatus').isIn(['Single', 'Married', 'Widowed', 'Separated', 'Annulled']),
   body('address').trim().notEmpty().escape(),
   body('barangay').trim().notEmpty().escape(),
   body('contactNumber').optional().trim().isMobilePhone(),

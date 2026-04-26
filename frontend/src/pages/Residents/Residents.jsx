@@ -8,31 +8,31 @@ import 'jspdf-autotable';
 import { QRCodeSVG } from 'qrcode.react';
 import { Users, Plus, Search, Edit2, Eye, Trash2, X, Save, Download, QrCode, Filter } from 'lucide-react';
 
-const EDUCATION = ['No Formal Education','Elementary Graduate','High School Graduate','Vocational/Tech-Voc','College Level','College Graduate','Post Graduate'];
-const CIVIL_STATUS = ['Single','Married','Widowed','Separated','Annulled'];
-const BLOOD_TYPES = ['A+','A-','B+','B-','AB+','AB-','O+','O-','Unknown'];
+const EDUCATION = ['No Formal Education', 'Elementary Graduate', 'High School Graduate', 'Vocational/Tech-Voc', 'College Level', 'College Graduate', 'Post Graduate'];
+const CIVIL_STATUS = ['Single', 'Married', 'Widowed', 'Separated', 'Annulled'];
+const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'];
 const TAGS_LIST = [
-  { key: 'voter',    label: '🗳️ Voter' },
-  { key: 'senior',   label: '👴 Senior Citizen' },
-  { key: 'pwd',      label: '♿ PWD' },
-  { key: 'fourPs',   label: '🏠 4Ps Beneficiary' },
-  { key: 'soloPar',  label: '👩‍👦 Solo Parent' },
-  { key: 'ip',       label: '🌿 Indigenous People' },
+  { key: 'voter', label: '🗳️ Voter' },
+  { key: 'senior', label: '👴 Senior Citizen' },
+  { key: 'pwd', label: '♿ PWD' },
+  { key: 'fourPs', label: '🏠 4Ps Beneficiary' },
+  { key: 'soloPar', label: '👩‍👦 Solo Parent' },
+  { key: 'ip', label: '🌿 Indigenous People' },
 ];
 
 const emptyForm = {
-  firstName:'', lastName:'', middleName:'', suffix:'', birthDate:'',
-  gender:'Male', civilStatus:'Single', citizenship:'Filipino', religion:'', birthplace:'',
-  address:'', barangay:'', contactNumber:'', email:'',
-  education:'', occupation:'', monthlyIncome:'', bloodType:'',
-  householdId:'', relationToHead:'Head',
-  tags:{ voter:false, senior:false, pwd:false, fourPs:false, soloPar:false, ip:false },
+  firstName: '', lastName: '', middleName: '', suffix: '', birthDate: '',
+  gender: 'Male', civilStatus: 'Single', citizenship: 'Filipino', religion: '', birthplace: '',
+  address: '', barangay: '', contactNumber: '', email: '',
+  education: '', occupation: '', monthlyIncome: '', bloodType: '',
+  householdId: '', relationToHead: 'Head',
+  tags: { voter: false, senior: false, pwd: false, fourPs: false, soloPar: false, ip: false },
 };
 
 const calcAge = (bd) => { if (!bd) return '—'; const d = new Date(bd); return `${new Date().getFullYear() - d.getFullYear()}`; };
 
 export default function Residents() {
-  const { hasRole } = useAuth();
+  const { hasRole, user } = useAuth();
   const [residents, setResidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -52,7 +52,7 @@ export default function Residents() {
   const fetchResidents = () => {
     api.get('/residents', { params: { search, barangay: filterBarangay } })
       .then(({ data }) => setResidents(data.data || []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   };
 
@@ -65,7 +65,7 @@ export default function Residents() {
     const handleSyncComplete = () => {
       api.get('/residents', { params: { search, barangay: filterBarangay } })
         .then(({ data }) => { if (data.data?.length) setResidents(data.data); })
-        .catch(() => {});
+        .catch(() => { });
     };
     window.addEventListener('sync-complete', handleSyncComplete);
     return () => window.removeEventListener('sync-complete', handleSyncComplete);
@@ -74,14 +74,14 @@ export default function Residents() {
 
   const filtered = residents.filter(r => !filterTag || r.tags?.[filterTag]);
 
-  const openAdd  = () => { 
-    setForm({ 
-      ...emptyForm, 
-      barangay: !hasRole('Admin') ? (useAuth().user?.barangay || '') : '' 
-    }); 
-    setSelected(null); 
-    setModal('form'); 
-    setError(''); 
+  const openAdd = () => {
+    setForm({
+      ...emptyForm,
+      barangay: !hasRole('Admin') ? (user?.barangay || '') : ''
+    });
+    setSelected(null);
+    setModal('form');
+    setError('');
   };
   const openEdit = (r) => { setForm(r); setSelected(r); setModal('form'); setError(''); };
   const openView = (r) => { setSelected(r); setModal('view'); };
@@ -91,9 +91,9 @@ export default function Residents() {
     // Auto-tag senior if age >= 60
     const age = parseInt(calcAge(form.birthDate));
     const tags = { ...form.tags, senior: age >= 60 };
-    
+
     // Ensure barangay is set if user is secretary (extra safety)
-    const finalBarangay = !hasRole('Admin') ? (useAuth().user?.barangay || form.barangay) : form.barangay;
+    const finalBarangay = !hasRole('Admin') ? (user?.barangay || form.barangay) : form.barangay;
 
     try {
       if (!selected) {
@@ -136,23 +136,23 @@ export default function Residents() {
   // ===== EXPORT PDF =====
   const exportPDF = () => {
     const doc = new jsPDF('l', 'mm', 'a4');
-    doc.setFontSize(14); doc.setFont('helvetica','bold');
+    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
     doc.text('MUNICIPALITY OF MAMBURAO', 148, 16, { align: 'center' });
-    doc.setFontSize(11); doc.setFont('helvetica','normal');
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
     doc.text('Occidental Mindoro — Resident Masterlist', 148, 23, { align: 'center' });
     doc.setFontSize(9);
     doc.text(`Generated: ${new Date().toLocaleDateString('en-PH', { dateStyle: 'long' })}  |  Total Records: ${filtered.length}`, 148, 29, { align: 'center' });
     doc.autoTable({
       startY: 35,
-      head: [['#','Last Name','First Name','Age','Sex','Civil Status','Barangay','Voter','Senior','PWD']],
+      head: [['#', 'Last Name', 'First Name', 'Age', 'Sex', 'Civil Status', 'Barangay', 'Voter', 'Senior', 'PWD']],
       body: filtered.map((r, i) => [
-        i+1, r.lastName, `${r.firstName} ${r.middleName?.[0]||''}`.trim(),
+        i + 1, r.lastName, `${r.firstName} ${r.middleName?.[0] || ''}`.trim(),
         calcAge(r.birthDate), r.gender?.[0], r.civilStatus, r.barangay,
-        r.tags?.voter?'✓':'', r.tags?.senior?'✓':'', r.tags?.pwd?'✓':'',
+        r.tags?.voter ? '✓' : '', r.tags?.senior ? '✓' : '', r.tags?.pwd ? '✓' : '',
       ]),
-      headStyles: { fillColor: [26,79,138], textColor: '#fff', fontSize: 8, fontStyle: 'bold' },
+      headStyles: { fillColor: [26, 79, 138], textColor: '#fff', fontSize: 8, fontStyle: 'bold' },
       bodyStyles: { fontSize: 7.5 },
-      alternateRowStyles: { fillColor: [248,250,252] },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
     });
     doc.save(`Resident_Masterlist_${new Date().toISOString().split('T')[0]}.pdf`);
   };
@@ -203,7 +203,7 @@ export default function Residents() {
             <tr><th>Name</th><th>Age / Sex</th><th>Civil Status</th><th className="hide-mobile">Barangay</th><th className="hide-mobile">Contact</th><th>Tags</th><th>Actions</th></tr>
           </thead>
           <tbody>
-            {loading ? Array.from({length: 5}).map((_, i) => (
+            {loading ? Array.from({ length: 5 }).map((_, i) => (
               <tr key={i}><td colSpan={7}><div className="skeleton" style={{ height: 18, borderRadius: 4 }} /></td></tr>
             )) : filtered.length === 0 ? (
               <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8' }}>No residents found</td></tr>
@@ -215,7 +215,7 @@ export default function Residents() {
                       {r.firstName?.[0]}{r.lastName?.[0]}
                     </div>
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{r.lastName}, {r.firstName} {r.middleName?.[0] ? r.middleName[0]+'.' : ''}{r.suffix ? ` ${r.suffix}` : ''}</div>
+                      <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{r.lastName}, {r.firstName} {r.middleName?.[0] ? r.middleName[0] + '.' : ''}{r.suffix ? ` ${r.suffix}` : ''}</div>
                       <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{r.occupation || 'No occupation'}</div>
                     </div>
                   </div>
@@ -228,8 +228,8 @@ export default function Residents() {
                 <td>
                   <div style={{ display: 'flex', gap: '0.3rem' }}>
                     <button onClick={() => openView(r)} className="btn-icon" title="View"><Eye size={14} color="#1a4f8a" /></button>
-                    <button onClick={() => setShowQR(r)}  className="btn-icon" title="QR Code"><QrCode size={14} color="#7c3aed" /></button>
-                    {canEdit   && <button onClick={() => openEdit(r)}    className="btn-icon" title="Edit"><Edit2 size={14} color="#d97706" /></button>}
+                    <button onClick={() => setShowQR(r)} className="btn-icon" title="QR Code"><QrCode size={14} color="#7c3aed" /></button>
+                    {canEdit && <button onClick={() => openEdit(r)} className="btn-icon" title="Edit"><Edit2 size={14} color="#d97706" /></button>}
                     {canDelete && <button onClick={() => handleDelete(r.id)} className="btn-icon" title="Archive"><Trash2 size={14} color="#dc2626" /></button>}
                   </div>
                 </td>
@@ -270,91 +270,91 @@ export default function Residents() {
                 {/* Section: Personal Info */}
                 <div className="section-stripe" style={{ marginBottom: '1rem' }}>Personal Information</div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 0.5fr' : '1fr', marginBottom: '0.75rem' }}>
-                  {[['firstName','First Name *'],['lastName','Last Name *'],['middleName','Middle Name'],['suffix','Suffix']].map(([k,l]) => (
+                  {[['firstName', 'First Name *'], ['lastName', 'Last Name *'], ['middleName', 'Middle Name'], ['suffix', 'Suffix']].map(([k, l]) => (
                     <div key={k}>
                       <label className="form-label">{l}</label>
-                      <input className="form-input" value={form[k]||''} onChange={e=>setForm({...form,[k]:e.target.value})} required={k.includes('Name') && k!=='middleName'} />
+                      <input className="form-input" value={form[k] || ''} onChange={e => setForm({ ...form, [k]: e.target.value })} required={k.toLowerCase().includes('name') && k !== 'middleName'} />
                     </div>
                   ))}
                 </div>
                 <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr 1fr 1fr' : '1fr', marginBottom: '0.75rem' }}>
                   <div>
                     <label className="form-label">Birth Date *</label>
-                    <input className="form-input" type="date" required value={form.birthDate} onChange={e=>setForm({...form,birthDate:e.target.value})} />
+                    <input className="form-input" type="date" required value={form.birthDate} onChange={e => setForm({ ...form, birthDate: e.target.value })} />
                   </div>
                   <div>
                     <label className="form-label">Sex</label>
-                    <select className="form-select" value={form.gender} onChange={e=>setForm({...form,gender:e.target.value})}>
+                    <select className="form-select" value={form.gender} onChange={e => setForm({ ...form, gender: e.target.value })}>
                       <option>Male</option><option>Female</option><option>Other</option>
                     </select>
                   </div>
                   <div>
                     <label className="form-label">Civil Status</label>
-                    <select className="form-select" value={form.civilStatus} onChange={e=>setForm({...form,civilStatus:e.target.value})}>
-                      {CIVIL_STATUS.map(s=><option key={s}>{s}</option>)}
+                    <select className="form-select" value={form.civilStatus} onChange={e => setForm({ ...form, civilStatus: e.target.value })}>
+                      {CIVIL_STATUS.map(s => <option key={s}>{s}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="form-label">Blood Type</label>
-                    <select className="form-select" value={form.bloodType} onChange={e=>setForm({...form,bloodType:e.target.value})}>
+                    <select className="form-select" value={form.bloodType} onChange={e => setForm({ ...form, bloodType: e.target.value })}>
                       <option value="">Select</option>
-                      {BLOOD_TYPES.map(t=><option key={t}>{t}</option>)}
+                      {BLOOD_TYPES.map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
-                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
-                  <div><label className="form-label">Religion</label><input className="form-input" value={form.religion||''} onChange={e=>setForm({...form,religion:e.target.value})} /></div>
-                  <div><label className="form-label">Citizenship</label><input className="form-input" value={form.citizenship} onChange={e=>setForm({...form,citizenship:e.target.value})} /></div>
-                  <div><label className="form-label">Birthplace</label><input className="form-input" value={form.birthplace||''} onChange={e=>setForm({...form,birthplace:e.target.value})} /></div>
+                <div className="grid-3" style={{ marginBottom: '0.75rem' }}>
+                  <div><label className="form-label">Religion</label><input className="form-input" value={form.religion || ''} onChange={e => setForm({ ...form, religion: e.target.value })} /></div>
+                  <div><label className="form-label">Citizenship</label><input className="form-input" value={form.citizenship} onChange={e => setForm({ ...form, citizenship: e.target.value })} /></div>
+                  <div><label className="form-label">Birthplace</label><input className="form-input" value={form.birthplace || ''} onChange={e => setForm({ ...form, birthplace: e.target.value })} /></div>
                 </div>
 
                 {/* Section: Address */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Address & Contact</div>
-                <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr 1fr' : '1fr', marginBottom:'0.75rem' }}>
-                  <div><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e=>setForm({...form,address:e.target.value})} placeholder="House No., Street" /></div>
+                <div className="grid-responsive" style={{ gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr 1fr' : '1fr', marginBottom: '0.75rem' }}>
+                  <div><label className="form-label">Address</label><input className="form-input" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder="House No., Street" /></div>
                   <div>
                     <label className="form-label">Barangay *</label>
-                    <select 
-                      className="form-select" 
-                      required 
-                      disabled={!hasRole('Admin')} 
-                      value={form.barangay} 
-                      onChange={e=>setForm({...form,barangay:e.target.value})}
+                    <select
+                      className="form-select"
+                      required
+                      disabled={!hasRole('Admin')}
+                      value={form.barangay}
+                      onChange={e => setForm({ ...form, barangay: e.target.value })}
                       style={{ background: !hasRole('Admin') ? '#f1f5f9' : '#fff' }}
                     >
                       <option value="">Select</option>
-                      {BARANGAY_NAMES.map(b=><option key={b} value={b}>{b}</option>)}
+                      {BARANGAY_NAMES.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
                     {!hasRole('Admin') && <div style={{ fontSize: '0.65rem', color: '#64748b', marginTop: 4 }}>Locked to your assigned barangay</div>}
                   </div>
-                  <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber||''} onChange={e=>setForm({...form,contactNumber:e.target.value})} /></div>
+                  <div><label className="form-label">Contact No.</label><input className="form-input" value={form.contactNumber || ''} onChange={e => setForm({ ...form, contactNumber: e.target.value })} /></div>
                 </div>
-                <div className="grid-2" style={{ marginBottom:'0.75rem' }}>
-                  <div><label className="form-label">Email</label><input className="form-input" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></div>
-                  <div><label className="form-label">Relationship to Head</label><input className="form-input" value={form.relationToHead} onChange={e=>setForm({...form,relationToHead:e.target.value})} /></div>
+                <div className="grid-2" style={{ marginBottom: '0.75rem' }}>
+                  <div><label className="form-label">Email</label><input className="form-input" type="email" value={form.email || ''} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+                  <div><label className="form-label">Relationship to Head</label><input className="form-input" value={form.relationToHead} onChange={e => setForm({ ...form, relationToHead: e.target.value })} /></div>
                 </div>
 
 
                 {/* Section: Socioeconomic */}
                 <div className="section-stripe" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Socioeconomic Information</div>
-                <div className="grid-3" style={{ marginBottom:'0.75rem' }}>
+                <div className="grid-3" style={{ marginBottom: '0.75rem' }}>
                   <div>
                     <label className="form-label">Educational Attainment</label>
-                    <select className="form-select" value={form.education||''} onChange={e=>setForm({...form,education:e.target.value})}>
+                    <select className="form-select" value={form.education || ''} onChange={e => setForm({ ...form, education: e.target.value })}>
                       <option value="">Select</option>
-                      {EDUCATION.map(e=><option key={e}>{e}</option>)}
+                      {EDUCATION.map(e => <option key={e}>{e}</option>)}
                     </select>
                   </div>
-                  <div><label className="form-label">Occupation</label><input className="form-input" value={form.occupation||''} onChange={e=>setForm({...form,occupation:e.target.value})} /></div>
-                  <div><label className="form-label">Monthly Income (₱)</label><input className="form-input" type="number" value={form.monthlyIncome||''} onChange={e=>setForm({...form,monthlyIncome:e.target.value})} /></div>
+                  <div><label className="form-label">Occupation</label><input className="form-input" value={form.occupation || ''} onChange={e => setForm({ ...form, occupation: e.target.value })} /></div>
+                  <div><label className="form-label">Monthly Income (₱)</label><input className="form-input" type="number" value={form.monthlyIncome || ''} onChange={e => setForm({ ...form, monthlyIncome: e.target.value })} /></div>
                 </div>
 
                 {/* Tags */}
                 <div className="section-stripe" style={{ marginBottom: '0.875rem', marginTop: '0.5rem' }}>Classification Tags</div>
-                <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', marginBottom:'0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                   {TAGS_LIST.map(t => (
-                    <label key={t.key} style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.82rem', color:'#334155', cursor:'pointer', padding:'0.35rem 0.75rem', background: form.tags?.[t.key] ? '#e8f0fb' : '#f8fafc', border: `1px solid ${form.tags?.[t.key] ? '#1a4f8a' : '#dde3ed'}`, borderRadius:7 }}>
-                      <input type="checkbox" checked={!!form.tags?.[t.key]} onChange={e=>setForm({...form,tags:{...form.tags,[t.key]:e.target.checked}})} style={{ accentColor:'#1a4f8a' }} />
+                    <label key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.82rem', color: '#334155', cursor: 'pointer', padding: '0.35rem 0.75rem', background: form.tags?.[t.key] ? '#e8f0fb' : '#f8fafc', border: `1px solid ${form.tags?.[t.key] ? '#1a4f8a' : '#dde3ed'}`, borderRadius: 7 }}>
+                      <input type="checkbox" checked={!!form.tags?.[t.key]} onChange={e => setForm({ ...form, tags: { ...form.tags, [t.key]: e.target.checked } })} style={{ accentColor: '#1a4f8a' }} />
                       {t.label}
                     </label>
                   ))}
@@ -380,25 +380,25 @@ export default function Residents() {
               <button onClick={() => setModal(null)} className="btn-icon"><X size={16} /></button>
             </div>
             <div className="modal-body">
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.875rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
                 {[
-                  ['Full Name', `${selected.firstName} ${selected.middleName||''} ${selected.lastName} ${selected.suffix||''}`],
+                  ['Full Name', `${selected.firstName} ${selected.middleName || ''} ${selected.lastName} ${selected.suffix || ''}`],
                   ['Birthdate / Age', `${selected.birthDate} (${calcAge(selected.birthDate)} yrs old)`],
                   ['Sex', selected.gender], ['Civil Status', selected.civilStatus],
-                  ['Religion', selected.religion||'—'], ['Birthplace', selected.birthplace||'—'],
+                  ['Religion', selected.religion || '—'], ['Birthplace', selected.birthplace || '—'],
                   ['Barangay', selected.barangay], ['Address', selected.address],
-                  ['Contact', selected.contactNumber||'—'], ['Email', selected.email||'—'],
-                  ['Occupation', selected.occupation||'—'], ['Education', selected.education||'—'],
+                  ['Contact', selected.contactNumber || '—'], ['Email', selected.email || '—'],
+                  ['Occupation', selected.occupation || '—'], ['Education', selected.education || '—'],
                   ['Monthly Income', selected.monthlyIncome ? `₱${Number(selected.monthlyIncome).toLocaleString()}` : '—'],
-                  ['Blood Type', selected.bloodType||'—'],
-                ].map(([l,v]) => (
-                  <div key={l}><div style={{ fontSize:'0.68rem', fontWeight:700, color:'#94a3b8', textTransform:'uppercase', marginBottom:2 }}>{l}</div><div style={{ fontSize:'0.85rem', color:'#1e2a3a', fontWeight:500 }}>{v}</div></div>
+                  ['Blood Type', selected.bloodType || '—'],
+                ].map(([l, v]) => (
+                  <div key={l}><div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>{l}</div><div style={{ fontSize: '0.85rem', color: '#1e2a3a', fontWeight: 500 }}>{v}</div></div>
                 ))}
               </div>
               {selected.tags && Object.values(selected.tags).some(Boolean) && (
-                <div style={{ marginTop:'1rem' }}>
-                  <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#94a3b8', textTransform:'uppercase', marginBottom:'0.5rem' }}>Tags</div>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>{tagBadge(selected.tags)}</div>
+                <div style={{ marginTop: '1rem' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Tags</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>{tagBadge(selected.tags)}</div>
                 </div>
               )}
             </div>

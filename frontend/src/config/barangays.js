@@ -1,10 +1,10 @@
 // All 15 Barangays of Mamburao, Occidental Mindoro
 // With official Barangay Captain and Secretary information
 export const BARANGAYS = [
-  { id: 'brgy-01', name: 'Barangay 1',  captain: 'Asuncion C. Villar',    secretary: 'Monica Robles',          purok: ['Purok 1','Purok 2','Purok 3','Purok 4'] },
-  { id: 'brgy-02', name: 'Barangay 2',  captain: 'Joel H. Dulce',          secretary: 'Shiela Villalobos',      purok: ['Purok 1','Purok 2','Purok 3'] },
-  { id: 'brgy-03', name: 'Barangay 3',  captain: 'Glenda C. Tacdol',       secretary: 'Mara Cammille Poblete',  purok: ['Purok 1','Purok 2','Purok 3'] },
-  { id: 'brgy-04', name: 'Barangay 4',  captain: 'Marion Castillo-Halagao',secretary: 'Rhea Venturero',         purok: ['Purok 1','Purok 2','Purok 3','Purok 4'] },
+  { id: 'brgy-01', name: 'Barangay 1 (Poblacion)',  captain: 'Asuncion C. Villar',    secretary: 'Monica Robles',          purok: ['Purok 1','Purok 2','Purok 3','Purok 4'] },
+  { id: 'brgy-02', name: 'Barangay 2 (Poblacion)',  captain: 'Joel H. Dulce',          secretary: 'Shiela Villalobos',      purok: ['Purok 1','Purok 2','Purok 3'] },
+  { id: 'brgy-03', name: 'Barangay 3 (Poblacion)',  captain: 'Glenda C. Tacdol',       secretary: 'Mara Cammille Poblete',  purok: ['Purok 1','Purok 2','Purok 3'] },
+  { id: 'brgy-04', name: 'Barangay 4 (Poblacion)',  captain: 'Marion Castillo-Halagao',secretary: 'Rhea Venturero',         purok: ['Purok 1','Purok 2','Purok 3','Purok 4'] },
   { id: 'brgy-05', name: 'Barangay 5',  captain: 'Ruperto Babiera',        secretary: 'Rhea Rebato',            purok: ['Purok 1','Purok 2','Purok 3'] },
   { id: 'brgy-06', name: 'Barangay 6',  captain: 'Susan Madrona Bondad',   secretary: 'Florian Galopa Alastre', purok: ['Purok 1','Purok 2','Purok 3'] },
   { id: 'brgy-07', name: 'Barangay 7',  captain: 'Jon-Jon Mendoza',        secretary: 'Janice Arnedo',          purok: ['Purok 1','Purok 2','Purok 3'] },
