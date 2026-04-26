@@ -760,8 +760,8 @@ export default function Landing() {
         <div className="lp-container" style={{ display:'grid', gridTemplateColumns:'minmax(260px,2.2fr) 1fr 1fr', gap:'3rem', paddingBottom:'3rem' }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:'0.9rem', marginBottom:'1.5rem' }}>
-              <img src="https://toppng.com/uploads/preview/dilg-logo-11550728661mdmkpc6xag.png" style={{ width:52, height:52, objectFit:'contain' }} alt="DILG Logo" />
-              <img src="https://tse4.mm.bing.net/th/id/OIP.a8wSKZPLNVtv2S4T7340WQHaHk?rs=1&pid=ImgDetMain&o=7&rm=3" style={{ width:52, height:52, objectFit:'contain', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.15)' }} alt="Mamburao LGU Seal" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Department_of_the_Interior_and_Local_Government_%28DILG%29_Logo.svg/512px-Department_of_the_Interior_and_Local_Government_%28DILG%29_Logo.svg.png" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)' }} alt="DILG Logo" />
+              <img src="https://tse4.mm.bing.net/th/id/OIP.a8wSKZPLNVtv2S4T7340WQHaHk?rs=1&pid=ImgDetMain&o=7&rm=3" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)' }} alt="Mamburao LGU Seal" />
               <div>
                 <div style={{ fontWeight:900, fontSize:'1rem', color:'#e2e8f0' }}>Republic of the Philippines</div>
                 <div style={{ fontSize:'0.78rem', color:'#64748b', marginTop:2 }}>LGU Mamburao, Occidental Mindoro</div>
