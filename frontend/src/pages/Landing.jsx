@@ -827,10 +827,10 @@ export default function Landing() {
               { name:'Lanibel Cabrera', role:'Frontend Developer & QA Analyst', emoji:'🔍', badge:'Frontend / QA', color:'#10b981' },
             ].map((m, i) => (
               <AnimatedCard key={i} delay={i * 100}>
-                <div className="team-card">
+                <div className="team-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                   <div className="team-avatar">{m.emoji}</div>
-                  <div style={{ fontWeight:900, fontSize:'1rem', color:'#0f172a', marginBottom:'0.35rem' }}>{m.name}</div>
-                  <div style={{ fontSize:'0.82rem', color:'#64748b', lineHeight:1.5, marginBottom:'1rem' }}>{m.role}</div>
+                  <div style={{ fontWeight:900, fontSize:'1rem', color:'#0f172a', marginBottom:'0.35rem', textAlign:'center' }}>{m.name}</div>
+                  <div style={{ fontSize:'0.82rem', color:'#64748b', lineHeight:1.5, marginBottom:'1rem', textAlign:'center' }}>{m.role}</div>
                   <span style={{ background:`${m.color}14`, border:`1px solid ${m.color}33`, color:m.color, padding:'0.3rem 0.8rem', borderRadius:100, fontSize:'0.73rem', fontWeight:700 }}>{m.badge}</span>
                 </div>
               </AnimatedCard>
