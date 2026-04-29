@@ -846,7 +846,7 @@ export default function Landing() {
                 <div style={{ color:'rgba(255,255,255,0.7)', fontSize:'0.88rem', lineHeight:1.6 }}>Polytechnic University / Mamburao, Occidental Mindoro</div>
               </div>
               <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
-                {['DILG ISTMS','Offline-First','Firebase Sync','AI Analytics','Blockchain Audit'].map(t => (
+                {['DILG ISTMS','Offline-First','Firebase Sync','AI Analytics'].map(t => (
                   <span key={t} style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#e2e8f0', padding:'0.35rem 0.85rem', borderRadius:100, fontSize:'0.75rem', fontWeight:700 }}>{t}</span>
                 ))}
               </div>
@@ -969,7 +969,7 @@ const FAQS = [
   },
   {
     q: 'How reliable is the data security of this LGUSS?',
-    a: 'We implemented Role-Based Access Control (RBAC) ensuring secretaries only access their own barangay\'s records. Furthermore, every transaction generates a cryptographic SHA-256 hash. If any record is tampered directly in the database, hash validation fails instantly, alerting the Admin of potential fraud.'
+    a: 'We implemented Role-Based Access Control (RBAC) ensuring secretaries only access their own barangay\'s records. The centralized database ensures data integrity across the municipality while keeping each barangay\'s operations strictly isolated.'
   },
   {
     q: 'Does this system use real AI?',
