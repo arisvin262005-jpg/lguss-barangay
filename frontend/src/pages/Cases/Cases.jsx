@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Scale, Plus, Eye, EyeOff, Edit2, X, Save, Calendar, CheckCircle2, Clock, AlertTriangle, FileText, Printer } from 'lucide-react';
 
@@ -122,14 +122,21 @@ export default function Cases() {
     e.preventDefault(); setSaving(true);
     try {
       if (!selected) {
-        const { data } = await api.post('/cases', form);
-        setCases(prev => [data.data || data, ...prev]);
+        const payload = { ...form, ...hearingForm };
+        const res = await api.post('/cases', payload);
+        const saved = resolveOfflineResponse(res, { ...payload, status: 'Filed', filedDate: payload.filedDate || new Date().toISOString().split('T')[0] });
+        setCases(prev => [saved, ...prev]);
       } else {
-        const { data } = await api.put(`/cases/${selected.id}`, { ...form, ...hearingForm });
-        setCases(prev => prev.map(c => c.id === selected.id ? { ...c, ...form, ...hearingForm } : c));
+        const res = await api.put(`/cases/${selected.id}`, { ...form, ...hearingForm });
+        const saved = resolveOfflineResponse(res, { ...form, ...hearingForm }, selected.id);
+        setCases(prev => prev.map(c => c.id === selected.id ? { ...c, ...saved } : c));
       }
       setModal(null);
-    } catch {} finally { setSaving(false); }
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Failed to save case. Please try again.';
+      alert(msg);
+    } finally { setSaving(false); }
   };
 
   const updateStatus = async (id, status) => {
