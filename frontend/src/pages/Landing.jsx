@@ -108,7 +108,7 @@ export default function Landing() {
   const closeNav = () => setMobileNavOpen(false);
 
   return (
-    <div style={{ fontFamily: "'Inter', 'Roboto', sans-serif", color: '#1e293b', background: '#f8fafc', overflowX: 'hidden' }}>
+    <div style={{ fontFamily: "'Inter', 'Roboto', sans-serif", color: '#1e293b', background: '#f8fafc', overflowX: 'clip' }}>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
