@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Building2, Plus, X, Save, Edit2 } from 'lucide-react';
 
@@ -24,11 +24,13 @@ export default function Assets() {
     e.preventDefault(); setSaving(true);
     try {
       if (!selected) {
-        const { data } = await api.post('/assets', form);
-        setAssets(prev => [data.data, ...prev]);
+        const res = await api.post('/assets', form);
+        const saved = resolveOfflineResponse(res, form);
+        setAssets(prev => [saved, ...prev]);
       } else {
-        const { data } = await api.put(`/assets/${selected.id}`, form);
-        setAssets(prev => prev.map(a => a.id === data.data.id ? data.data : a));
+        const res = await api.put(`/assets/${selected.id}`, form);
+        const saved = resolveOfflineResponse(res, form, selected.id);
+        setAssets(prev => prev.map(a => a.id === saved.id ? saved : a));
       }
       setModal(null);
     } catch {} finally { setSaving(false); }

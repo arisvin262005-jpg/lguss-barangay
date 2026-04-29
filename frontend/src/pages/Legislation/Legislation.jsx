@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { BookOpen, Plus, X, Save, Edit2, Trash2 } from 'lucide-react';
 
@@ -27,11 +27,13 @@ export default function Legislation() {
     e.preventDefault(); setSaving(true);
     try {
       if (!selected) {
-        const { data } = await api.post('/legislation', form);
-        setItems(prev => [data.data, ...prev]);
+        const res = await api.post('/legislation', form);
+        const saved = resolveOfflineResponse(res, form);
+        setItems(prev => [saved, ...prev]);
       } else {
-        const { data } = await api.put(`/legislation/${selected.id}`, form);
-        setItems(prev => prev.map(i => i.id === data.data.id ? data.data : i));
+        const res = await api.put(`/legislation/${selected.id}`, form);
+        const saved = resolveOfflineResponse(res, form, selected.id);
+        setItems(prev => prev.map(i => i.id === saved.id ? saved : i));
       }
       setModal(null);
     } catch {} finally { setSaving(false); }
@@ -39,7 +41,7 @@ export default function Legislation() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this legislation record?')) return;
-    await api.delete(`/legislation/${id}`);
+    try { await api.delete(`/legislation/${id}`); } catch {}
     setItems(prev => prev.filter(i => i.id !== id));
   };
 

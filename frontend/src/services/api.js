@@ -275,4 +275,31 @@ api.interceptors.response.use(
   }
 );
 
+
 export default api;
+
+/**
+ * resolveOfflineResponse — Use this in every handleSave across all pages.
+ * Safely extracts the saved record from BOTH online and offline API responses.
+ *
+ * Online  response shape: res.data = { id, ... }   OR   res.data = { data: { id, ... } }
+ * Offline response shape: res.data = { data: payload, success: true }
+ *
+ * @param {object} res      - The axios response object
+ * @param {object} fallback - The form payload (used as fallback for offline drafts)
+ * @param {string} idOverride - Optional: existing record ID for PUT operations
+ * @returns {object} The resolved record object ready to push into state
+ */
+export const resolveOfflineResponse = (res, fallback = {}, idOverride = null) => {
+  const d = res?.data;
+  // Online: direct object with id
+  if (d?.id) return d;
+  // Online: nested under data key
+  if (d?.data?.id) return d.data;
+  // Offline queue: success:true means it was queued — build draft record
+  return {
+    ...fallback,
+    id: idOverride || ('offline-' + Date.now()),
+    _isOfflineDraft: true,
+  };
+};

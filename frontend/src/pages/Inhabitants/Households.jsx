@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { BARANGAY_NAMES } from '../../config/barangays';
 import { useAuth } from '../../context/AuthContext';
 import { Home, Plus, Eye, Edit2, X, Save, Users, Trash2 } from 'lucide-react';
@@ -41,11 +41,13 @@ export default function Households() {
     e.preventDefault(); setSaving(true);
     try {
       if (!selected) {
-        const { data } = await api.post('/households', form);
-        setHouseholds(prev => [data.data, ...prev]);
+        const res = await api.post('/households', form);
+        const saved = resolveOfflineResponse(res, form);
+        setHouseholds(prev => [saved, ...prev]);
       } else {
-        const { data } = await api.put(`/households/${selected.id}`, form);
-        setHouseholds(prev => prev.map(h => h.id === data.data.id ? data.data : h));
+        const res = await api.put(`/households/${selected.id}`, form);
+        const saved = resolveOfflineResponse(res, form, selected.id);
+        setHouseholds(prev => prev.map(h => h.id === saved.id ? saved : h));
       }
       setModal(null);
     } catch {} finally { setSaving(false); }
@@ -53,7 +55,7 @@ export default function Households() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this household record?')) return;
-    await api.delete(`/households/${id}`);
+    try { await api.delete(`/households/${id}`); } catch {}
     setHouseholds(prev => prev.filter(h => h.id !== id));
   };
 

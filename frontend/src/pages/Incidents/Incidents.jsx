@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { AlertTriangle, Plus, X, Save, Eye } from 'lucide-react';
 
@@ -29,8 +29,9 @@ export default function Incidents() {
   const handleSave = async (e) => {
     e.preventDefault(); setSaving(true);
     try {
-      const { data } = await api.post('/incidents', form);
-      setIncidents(prev => [data.data, ...prev]);
+      const res = await api.post('/incidents', form);
+      const saved = resolveOfflineResponse(res, { ...form, filedAt: new Date().toISOString(), status: 'Open' });
+      setIncidents(prev => [saved, ...prev]);
       setModal(null);
     } catch {} finally { setSaving(false); }
   };
