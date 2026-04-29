@@ -150,11 +150,16 @@ export default function Landing() {
           position: fixed; top: 72px; left: 0; right: 0; 
           background: #fff; border-bottom: 1px solid #e2e8f0;
           padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
-          z-index: 190; transform: translateY(-110%);
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 190; transform: translateY(-150%);
+          visibility: hidden; opacity: 0;
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s, visibility 0.4s;
           box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
-        .mobile-nav-drawer.open { transform: translateY(0); }
+        .mobile-nav-drawer.open { 
+          transform: translateY(0); 
+          visibility: visible; 
+          opacity: 1; 
+        }
         .mobile-nav-item { text-decoration: none; color: ${GOV_BLUE}; font-weight: 700; font-size: 1.1rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
         
         @media (max-width: 960px) {
