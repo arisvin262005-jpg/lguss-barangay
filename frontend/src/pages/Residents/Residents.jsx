@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { BARANGAY_NAMES, getBarangayInfo } from '../../config/barangays';
 import * as XLSX from 'xlsx';
@@ -99,16 +99,11 @@ export default function Residents() {
     try {
       if (!selected) {
         const res = await api.post('/residents', payload);
-        // Handle both online (res.data = resident object) and offline (res.data = { data: payload, success: true })
-        const saved = res.data?.id ? res.data
-          : res.data?.data?.id ? res.data.data
-          : { ...payload, id: 'offline-' + Date.now(), _isOfflineDraft: true };
+        const saved = resolveOfflineResponse(res, payload);
         setResidents(prev => [saved, ...prev]);
       } else {
         const res = await api.put(`/residents/${selected.id}`, payload);
-        const saved = res.data?.id ? res.data
-          : res.data?.data?.id ? res.data.data
-          : { ...payload, id: selected.id, _isOfflineDraft: true };
+        const saved = resolveOfflineResponse(res, payload, selected.id);
         setResidents(prev => prev.map(r => r.id === saved.id ? saved : r));
       }
       setModal(null);

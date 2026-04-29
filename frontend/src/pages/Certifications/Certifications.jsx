@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { getBarangayInfo } from '../../config/barangays';
 import jsPDF from 'jspdf';
@@ -98,9 +98,8 @@ export default function Certifications() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setSaving(true);
     try {
-      const { data } = await api.post('/certifications', form);
-      // Backend returns { certification: cert, dssEvaluation: evaluation }
-      const newCert = data.certification || data.data || data;
+      const res = await api.post('/certifications', form);
+      const newCert = resolveOfflineResponse(res, { ...form, status: 'Pending', issuedAt: new Date().toISOString() });
       setCerts(prev => [newCert, ...prev]);
       setModal(null); setDssResult(null);
     } catch (err) {

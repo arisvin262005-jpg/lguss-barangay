@@ -147,9 +147,10 @@ api.interceptors.request.use((config) => {
       if (!cachedData) cachedData = { data: [] };
       else cachedData = JSON.parse(JSON.stringify(cachedData)); // deep clone
 
-      // Merge offline queued POSTs optimistically so new records appear immediately
+      // Merge offline queued POSTs/PUTs optimistically so new records appear immediately
       const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
       const endpoint = config.url.split('?')[0];
+      
       queue.forEach((task) => {
         if (task.method === 'post' && task.url === endpoint) {
           const newDoc = {
@@ -157,8 +158,14 @@ api.interceptors.request.use((config) => {
             id: 'offline-' + Math.random().toString(36).substr(2, 9),
             _isOfflineDraft: true,
           };
-          if (Array.isArray(cachedData)) cachedData.push(newDoc);
-          else if (cachedData.data && Array.isArray(cachedData.data)) cachedData.data.push(newDoc);
+          if (Array.isArray(cachedData)) cachedData.unshift(newDoc);
+          else if (cachedData?.data && Array.isArray(cachedData.data)) cachedData.data.unshift(newDoc);
+        } else if (task.method === 'put' && task.url.startsWith(`${endpoint}/`)) {
+          const targetId = task.url.split('/').pop();
+          const updates = JSON.parse(task.data || '{}');
+          const list = Array.isArray(cachedData) ? cachedData : (cachedData?.data || []);
+          const idx = list.findIndex(item => item.id === targetId);
+          if (idx >= 0) list[idx] = { ...list[idx], ...updates, _isOfflineDraft: true };
         }
       });
 
@@ -170,6 +177,13 @@ api.interceptors.request.use((config) => {
   // ── Offline WRITE → queue for later sync ──
   if (isOffline && !isLoginEndpoint && config.method !== 'get') {
     config.adapter = async () => {
+      // Mock DSS Check for Certifications when Offline
+      if (config.url.includes('/dss-check')) {
+        return { 
+          data: { decision: 'Approve', reason: 'Offline Mode: Temporary approval. Final DSS verification will run when synced.', flags: ['OFFLINE_MODE'] }, 
+          status: 200, statusText: 'OK (Offline DSS)', config, headers: {} 
+        };
+      }
       const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
       const payload = JSON.parse(config.data || '{}');
 
@@ -296,6 +310,8 @@ export const resolveOfflineResponse = (res, fallback = {}, idOverride = null) =>
   if (d?.id) return d;
   // Online: nested under data key
   if (d?.data?.id) return d.data;
+  // Online: nested under certification key
+  if (d?.certification?.id) return d.certification;
   // Offline queue: success:true means it was queued — build draft record
   return {
     ...fallback,
