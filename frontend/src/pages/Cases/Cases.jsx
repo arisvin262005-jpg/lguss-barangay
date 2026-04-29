@@ -90,6 +90,8 @@ export default function Cases() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [modal, setModal] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ caseNumber:'', complainantId:'', respondentId:'', caseType:'Land Dispute', description:'', filedDate: new Date().toISOString().split('T')[0] });
   const [hearingForm, setHearingForm] = useState({ hearingDate:'', hearingTime:'09:00', hearingVenue:'', notes:'' });
   const [privacyMode, setPrivacyMode] = useState(true);
