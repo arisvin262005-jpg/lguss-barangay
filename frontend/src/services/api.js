@@ -158,15 +158,21 @@ api.interceptors.request.use((config) => {
 
   // ── Offline Login ──
   if (isLoginEndpoint && isOffline) {
-    return Promise.resolve(createOfflineLoginResponse(config));
+    config.adapter = async () => {
+      return await createOfflineLoginResponse(config);
+    };
+    return config;
   }
 
   // ── Offline Logout ──
   if (isLogoutEndpoint && isOffline) {
-    return Promise.resolve({
-      data: { message: 'Logged out (Offline Mode)' },
-      status: 200, statusText: 'OK', config, headers: {},
-    });
+    config.adapter = async () => {
+      return {
+        data: { message: 'Logged out (Offline Mode)' },
+        status: 200, statusText: 'OK', config, headers: {},
+      };
+    };
+    return config;
   }
 
   // ── Offline GET → serve from PERSISTENT localStorage cache ──
