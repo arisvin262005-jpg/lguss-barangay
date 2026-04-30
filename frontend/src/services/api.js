@@ -67,12 +67,40 @@ const createOfflineLoginResponse = (config) => {
   let offlineUser = null;
   let credentialsOk = false;
 
-  // 1. Match against saved hashed credentials (most secure)
-  try {
-    const creds = JSON.parse(localStorage.getItem(CREDS_KEY) || '[]');
-    const match = creds.find(c => c.email === payload.email && c.pwHash === hashPassword(payload.password));
-    if (match) { credentialsOk = true; }
-  } catch {}
+  // 0. Hardcoded System Default Accounts (Zero-internet PWA installs)
+  const defaultAccounts = [
+    { email: 'admin@mamburao.gov.ph', role: 'Admin', barangay: 'LGU Mamburao', name: 'CRPS Administrator' },
+    { email: 'brgy1@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 1 (Poblacion)', name: 'Monica Robles' },
+    { email: 'brgy2@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 2 (Poblacion)', name: 'Shiela Villalobos' },
+    { email: 'brgy3@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 3 (Poblacion)', name: 'Mara Cammille Poblete' },
+    { email: 'brgy4@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 4 (Poblacion)', name: 'Rhea Venturero' },
+    { email: 'brgy5@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 5', name: 'Rhea Rebato' },
+    { email: 'brgy6@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 6', name: 'Florian Galopa Alastre' },
+    { email: 'brgy7@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 7', name: 'Janice Arnedo' },
+    { email: 'brgy8@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 8', name: 'Diane Reyes Mesina' },
+    { email: 'payompon@mamburao.gov.ph', role: 'Secretary', barangay: 'Payompon', name: 'Jenny Navaro' },
+    { email: 'tangkalan@mamburao.gov.ph', role: 'Secretary', barangay: 'Tangkalan', name: 'Sherily P. Gappi' },
+    { email: 'fatima@mamburao.gov.ph', role: 'Secretary', barangay: 'Fatima', name: 'Anthon Valle' },
+    { email: 'sanluis@mamburao.gov.ph', role: 'Secretary', barangay: 'San Luis', name: 'Shirley Magana' },
+    { email: 'balansay@mamburao.gov.ph', role: 'Secretary', barangay: 'Balansay', name: 'Clarisse V. Parahinog' },
+    { email: 'tayamaan@mamburao.gov.ph', role: 'Secretary', barangay: 'Tayamaan', name: 'Thalia Dela Luna' },
+    { email: 'talabaan@mamburao.gov.ph', role: 'Secretary', barangay: 'Talabaan', name: 'Maureen Callejo' }
+  ];
+
+  const hardcodedMatch = defaultAccounts.find(a => a.email === payload.email);
+  if (hardcodedMatch && payload.password === 'admin123') {
+    offlineUser = { ...hardcodedMatch, id: 'offline-default-' + Date.now(), isOfflineMode: true };
+    credentialsOk = true;
+  }
+
+  // 1. Match against saved hashed credentials (most secure, for changed passwords)
+  if (!credentialsOk) {
+    try {
+      const creds = JSON.parse(localStorage.getItem(CREDS_KEY) || '[]');
+      const match = creds.find(c => c.email === payload.email && c.pwHash === hashPassword(payload.password));
+      if (match) { credentialsOk = true; }
+    } catch {}
+  }
 
   // 2. Match against last saved session (email only, for backward compat)
   try {
@@ -124,8 +152,9 @@ api.interceptors.request.use((config) => {
   const isLoginEndpoint   = config.url?.includes('/auth/login') && config.method === 'post';
   const isLogoutEndpoint  = config.url?.includes('/auth/logout');
 
-  // ── Use navigator.onLine ONLY — never block online users ──
-  const isOffline = !navigator.onLine;
+  // ── Use navigator.onLine BUT allow localhost to bypass offline interceptors ──
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isOffline = !navigator.onLine && !isLocalhost;
 
   // ── Offline Login ──
   if (isLoginEndpoint && isOffline) {
