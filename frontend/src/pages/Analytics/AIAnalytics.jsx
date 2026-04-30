@@ -3,7 +3,7 @@ import api from '../../services/api';
 import {
   TrendingUp, Users, MapPin, Heart, Shield,
   ChevronDown, ChevronUp, AlertTriangle, CheckCircle2,
-  BarChart2, Calendar, Activity, Home, RefreshCw
+  BarChart2, Calendar, Activity, Home, RefreshCw, Globe
 } from 'lucide-react';
 
 const BLUE   = '#1a4f8a';
@@ -253,20 +253,65 @@ function CalamityPanel({ data }) {
   );
 }
 
+/* ── 6. Barangay Case Roster ── */
+function RosterPanel({ data }) {
+  if (!data) return null;
+  const { summary, byBarangay } = data;
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        <StatCard label="Total Involved" value={summary.totalInvolved} color={BLUE} />
+        <StatCard label="High Risk" value={summary.highRisk} color={RED} sub="Score >= 6" />
+        <StatCard label="Cross-Barangay" value={summary.crossBarangay} color={PURPLE} sub="Moved/Multiple" />
+        <StatCard label="Total Barangays" value={summary.totalBarangays} color={TEAL} />
+      </div>
+      <div style={{ marginBottom: '1rem' }}>
+        <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>Barangay Case Intelligence</div>
+        {byBarangay.map((b, i) => (
+          <div key={i} style={{ marginBottom: '1rem', border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ background: '#f8fafc', padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.85rem', color: '#1e293b', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
+              <span>{b.barangay}</span>
+              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>{b.residents.length} Residents · {b.totalCases} Cases</span>
+            </div>
+            <div style={{ padding: '0.5rem' }}>
+              {b.residents.slice(0, 5).map((r, ri) => (
+                <div key={ri} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0.5rem', borderBottom: ri < Math.min(b.residents.length, 5) - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>{r.name}</div>
+                    <div style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: 2 }}>{r.totalCases} Cases ({r.asRespondent}x Resp, {r.asComplainant}x Comp)</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <Badge label={r.riskLevel} color={RISK_COLOR[r.riskLevel]} />
+                    {r.isCrossBarangay && <div style={{ fontSize: '0.6rem', color: PURPLE, fontWeight: 700, marginTop: 3 }}>📍 Cross-Brgy</div>}
+                  </div>
+                </div>
+              ))}
+              {b.residents.length > 5 && <div style={{ textAlign: 'center', padding: '0.5rem', fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, background: '#f8fafc', borderRadius: 6, marginTop: 4 }}>+ {b.residents.length - 5} more residents</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#075985' }}>
+        ⚖️ {data.methodology}
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════════ */
 export default function AIAnalytics() {
   const [forecasts, setForecasts] = useState({
-    serviceDemand: null, demographic: null, hotspot: null, health: null, calamity: null,
+    serviceDemand: null, demographic: null, hotspot: null, health: null, calamity: null, roster: null,
   });
   const [loadingMap, setLoadingMap] = useState({
-    serviceDemand: true, demographic: true, hotspot: true, health: true, calamity: true,
+    serviceDemand: true, demographic: true, hotspot: true, health: true, calamity: true, roster: true,
   });
   const [lastRefresh, setLastRefresh] = useState(null);
 
   const loadAll = () => {
-    setLoadingMap({ serviceDemand: true, demographic: true, hotspot: true, health: true, calamity: true });
+    setLoadingMap({ serviceDemand: true, demographic: true, hotspot: true, health: true, calamity: true, roster: true });
     setLastRefresh(null);
 
     const fetch1 = api.get('/reports/forecast/service-demand').then(r => setForecasts(f => ({ ...f, serviceDemand: r.data }))).catch(() => {}).finally(() => setLoadingMap(m => ({ ...m, serviceDemand: false })));
@@ -274,8 +319,9 @@ export default function AIAnalytics() {
     const fetch3 = api.get('/reports/forecast/incident-hotspots').then(r => setForecasts(f => ({ ...f, hotspot: r.data }))).catch(() => {}).finally(() => setLoadingMap(m => ({ ...m, hotspot: false })));
     const fetch4 = api.get('/reports/forecast/health-risk').then(r => setForecasts(f => ({ ...f, health: r.data }))).catch(() => {}).finally(() => setLoadingMap(m => ({ ...m, health: false })));
     const fetch5 = api.get('/reports/forecast/calamity-vulnerability').then(r => setForecasts(f => ({ ...f, calamity: r.data }))).catch(() => {}).finally(() => setLoadingMap(m => ({ ...m, calamity: false })));
+    const fetch6 = api.get('/reports/barangay-case-roster').then(r => setForecasts(f => ({ ...f, roster: r.data }))).catch(() => {}).finally(() => setLoadingMap(m => ({ ...m, roster: false })));
 
-    Promise.all([fetch1, fetch2, fetch3, fetch4, fetch5]).then(() => setLastRefresh(new Date().toLocaleTimeString('en-PH')));
+    Promise.all([fetch1, fetch2, fetch3, fetch4, fetch5, fetch6]).then(() => setLastRefresh(new Date().toLocaleTimeString('en-PH')));
   };
 
   useEffect(() => { loadAll(); }, []);
@@ -313,6 +359,7 @@ export default function AIAnalytics() {
           { label: '🗺️ Incident Hotspots', color: ORANGE },
           { label: '❤️ Health Risk', color: PURPLE },
           { label: '🛡️ Calamity Vulnerability', color: TEAL },
+          { label: '🌐 System-Wide Case Roster', color: BLUE },
         ].map((b, i) => (
           <span key={i} style={{ padding: '0.3rem 0.8rem', borderRadius: 100, background: b.color + '12', border: `1px solid ${b.color}33`, fontSize: '0.75rem', fontWeight: 700, color: b.color }}>
             {b.label}
@@ -343,6 +390,11 @@ export default function AIAnalytics() {
       {/* 5. Calamity Vulnerability */}
       <SectionCard icon={Shield} color={TEAL} title="Calamity Vulnerability Profiling" subtitle="Ranks households by DRRM vulnerability for priority evacuation planning" loading={loadingMap.calamity}>
         <CalamityPanel data={forecasts.calamity} />
+      </SectionCard>
+
+      {/* 6. System-Wide Case Roster */}
+      <SectionCard icon={Globe} color={BLUE} title="System-Wide Barangay Case Roster" subtitle="Identifies cross-barangay repeat offenders and computes resident risk scores" loading={loadingMap.roster}>
+        <RosterPanel data={forecasts.roster} />
       </SectionCard>
     </div>
   );

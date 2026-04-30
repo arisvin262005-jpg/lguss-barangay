@@ -214,6 +214,78 @@ const getDuplicateCaseReport = (req, res) => {
   }
 };
 
+/**
+ * GET /api/reports/barangay-case-roster
+ * System-wide roster: ALL residents involved in cases, grouped by barangay.
+ * Computes Risk Score per resident — Weighted Rule-Based Scoring (no AI):
+ *   Respondent role  = +3 pts  |  Complainant role = +1 pt
+ *   Case < 1 yr old  = +2 pts  |  Escalated        = +3 pts  |  Settled = -1 pt
+ *   HIGH >= 6  |  MODERATE 3-5  |  CLEAR < 3
+ */
+const getBarangayCaseRoster = (req, res) => {
+  try {
+    const { role: userRole, barangay: userBarangay } = req.user || {};
+    const allResidents = Array.isArray(db.residents) ? db.residents : [];
+    const allCases     = Array.isArray(db.cases)     ? db.cases     : [];
+    const cases = userRole === ROLES.ADMIN ? allCases : allCases.filter(c => c && c.barangay === userBarangay);
+    const oneYearAgo = new Date(); oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    // Build residentId → score/cases map
+    const resMap = {};
+    const addParty = (resId, role, c) => {
+      if (!resId) return;
+      if (!resMap[resId]) resMap[resId] = { score: 0, roles: [], cases: [] };
+      const isRecent = c.filedDate && new Date(c.filedDate) >= oneYearAgo;
+      resMap[resId].score += role === 'Respondent' ? 3 : 1;
+      if (isRecent) resMap[resId].score += 2;
+      if (c.status === 'Escalated to Court') resMap[resId].score += 3;
+      if (c.status === 'Settled') resMap[resId].score -= 1;
+      resMap[resId].roles.push(role);
+      resMap[resId].cases.push({ id: c.id, caseNumber: c.caseNumber, caseType: c.caseType, status: c.status, filedDate: c.filedDate, barangay: c.barangay, role });
+    };
+    cases.forEach(c => { if (!c) return; addParty(c.complainantId, 'Complainant', c); addParty(c.respondentId, 'Respondent', c); });
+
+    // Enrich with resident info
+    const roster = Object.entries(resMap).map(([resId, data]) => {
+      const r = allResidents.find(x => x && x.id === resId);
+      if (!r) return null;
+      const score = Math.max(0, data.score);
+      const riskLevel = score >= 6 ? 'HIGH' : score >= 3 ? 'MODERATE' : 'CLEAR';
+      const caseBarangays = [...new Set(data.cases.map(c => c.barangay).filter(Boolean))];
+      return {
+        residentId: resId, name: `${r.firstName} ${r.lastName}`,
+        barangay: r.barangay, caseBarangays, isCrossBarangay: caseBarangays.some(b => b !== r.barangay),
+        totalCases: data.cases.length, asRespondent: data.roles.filter(x => x === 'Respondent').length,
+        asComplainant: data.roles.filter(x => x === 'Complainant').length,
+        activeCases: data.cases.filter(c => !['Settled','Dismissed'].includes(c.status)).length,
+        riskScore: score, riskLevel, cases: data.cases, tags: r.tags || {},
+      };
+    }).filter(Boolean).sort((a, b) => b.riskScore - a.riskScore);
+
+    // Group by barangay
+    const byBarangay = {};
+    roster.forEach(r => {
+      const b = r.barangay || 'Unknown';
+      if (!byBarangay[b]) byBarangay[b] = { barangay: b, residents: [], highRisk: 0, moderate: 0, clear: 0, totalCases: 0 };
+      byBarangay[b].residents.push(r);
+      byBarangay[b].totalCases += r.totalCases;
+      if (r.riskLevel === 'HIGH') byBarangay[b].highRisk++;
+      else if (r.riskLevel === 'MODERATE') byBarangay[b].moderate++;
+      else byBarangay[b].clear++;
+    });
+
+    res.json({
+      roster, byBarangay: Object.values(byBarangay).sort((a,b) => b.highRisk - a.highRisk || b.totalCases - a.totalCases),
+      summary: { totalInvolved: roster.length, highRisk: roster.filter(r=>r.riskLevel==='HIGH').length, moderate: roster.filter(r=>r.riskLevel==='MODERATE').length, clear: roster.filter(r=>r.riskLevel==='CLEAR').length, crossBarangay: roster.filter(r=>r.isCrossBarangay).length, totalBarangays: Object.keys(byBarangay).length },
+      methodology: 'Weighted Rule-Based Scoring — Respondent(+3) Complainant(+1) Recent<1yr(+2) Escalated(+3) Settled(-1). HIGH≥6 MODERATE≥3 CLEAR<3',
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getBarangayCaseRoster Error]', err);
+    res.status(500).json({ error: 'Failed to generate barangay case roster', details: err.message });
+  }
+};
+
 /* ═══════════════════════════════════════════════════════════════════
    PREDICTIVE ANALYTICS — 5 Statistical Forecasting Features
    All computed from existing system data — no AI/API required.
@@ -520,6 +592,7 @@ const getCalamityVulnerabilityForecast = (req, res) => {
 module.exports = {
   getDashboardStats, getMonthlyCertReport, getCaseSummary,
   getResidentMasterlist, getSyncReport, getTimeSavedReport, getDuplicateCaseReport,
+  getBarangayCaseRoster,
   // Predictive Forecasting
   getServiceDemandForecast, getDemographicTrendsForecast, getIncidentHotspotForecast,
   getHealthRiskForecast, getCalamityVulnerabilityForecast,

@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   getDashboardStats, getMonthlyCertReport, getCaseSummary,
   getResidentMasterlist, getSyncReport, getTimeSavedReport, getDuplicateCaseReport,
-  // Predictive Forecasting
+  getBarangayCaseRoster,
   getServiceDemandForecast, getDemographicTrendsForecast, getIncidentHotspotForecast,
   getHealthRiskForecast, getCalamityVulnerabilityForecast,
 } = require('../controllers/reportsController');
@@ -18,7 +18,10 @@ router.get('/sync', getSyncReport);
 router.get('/time-saved', getTimeSavedReport);
 router.get('/duplicates', getDuplicateCaseReport);
 
-// ── Predictive Forecasting Routes ──
+// System-wide Barangay Case Roster with Risk Scoring
+router.get('/barangay-case-roster', getBarangayCaseRoster);
+
+// Predictive Forecasting Routes
 router.get('/forecast/service-demand',         getServiceDemandForecast);
 router.get('/forecast/demographic-trends',     getDemographicTrendsForecast);
 router.get('/forecast/incident-hotspots',      getIncidentHotspotForecast);
