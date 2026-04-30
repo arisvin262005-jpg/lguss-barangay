@@ -24,5 +24,7 @@ router.post('/login', loginLimiter, login);
 router.post('/logout', logout);
 router.post('/forgot-password', forgotPassword);
 router.get('/me', softAuthenticate, getMe);
+const { updateProfile } = require('../controllers/authController');
+router.put('/update-profile', authenticate, updateProfile);
 
 module.exports = router;

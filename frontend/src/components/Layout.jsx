@@ -107,6 +107,40 @@ export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState({});
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', password: '' });
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  const handleOpenProfile = () => {
+    if (!user) return;
+    const parts = (user.name || '').split(' ');
+    const firstName = parts[0] || '';
+    const lastName = parts.slice(1).join(' ') || '';
+    setProfileForm({ firstName, lastName, password: '' });
+    setShowProfile(true);
+  };
+
+  const handleLogout = async (e) => { 
+    if (e) e.stopPropagation(); 
+    await logout(); 
+    navigate('/login'); 
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setProfileSaving(true);
+    try {
+      const { default: api } = await import('../services/api');
+      await api.put('/auth/update-profile', profileForm);
+      alert('Profile updated successfully! Please log in again to apply changes.');
+      await logout();
+      navigate('/login');
+    } catch (err) {
+      alert('Failed to update profile');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -132,8 +166,6 @@ export default function Layout({ children }) {
   }, [location.pathname]);
 
   const toggleGroup = (label) => setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
-
-  const handleLogout = async () => { await logout(); navigate('/login'); };
 
   const visibleGroups = NAV_GROUPS.filter((g) => {
     if (!g.roles) return true;
@@ -233,7 +265,7 @@ export default function Layout({ children }) {
               <span className="nav-item-label">Install App</span>
             </button>
           )}
-          <div className="sidebar-user">
+          <div className="sidebar-user" onClick={handleOpenProfile} style={{ cursor: 'pointer' }} title="Click to edit profile">
             <div className="sidebar-avatar">
               {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
             </div>
@@ -277,9 +309,9 @@ export default function Layout({ children }) {
             )}
           </div>
 
-          {/* User avatar shortcut — profile menu placeholder */}
-          <div className="hide-mobile" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-            title={`${user?.name} (${user?.role})`}>
+          {/* User avatar shortcut */}
+          <div onClick={handleOpenProfile} className="hide-mobile" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+            title={`Edit Profile: ${user?.name} (${user?.role})`}>
             {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
           </div>
         </header>
@@ -289,6 +321,45 @@ export default function Layout({ children }) {
           {children}
         </main>
       </div>
+
+      {/* ========== PROFILE EDIT MODAL ========== */}
+      {showProfile && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowProfile(false); }}>
+          <div className="modal" style={{ maxWidth: 400 }}>
+            <div className="modal-header">
+              <div className="modal-title">Edit Profile</div>
+              <button onClick={() => setShowProfile(false)} className="btn-icon"><X size={16} /></button>
+            </div>
+            <form onSubmit={handleUpdateProfile}>
+              <div className="modal-body">
+                <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 800, margin: '0 auto 0.5rem' }}>
+                    {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
+                  </div>
+                  <div style={{ fontWeight: 700, color: '#1e293b' }}>{user?.email}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{user?.role} • {user?.barangay}</div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">First Name</label>
+                  <input className="form-input" value={profileForm.firstName} onChange={e => setProfileForm({ ...profileForm, firstName: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Last Name</label>
+                  <input className="form-input" value={profileForm.lastName} onChange={e => setProfileForm({ ...profileForm, lastName: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">New Password (optional)</label>
+                  <input className="form-input" type="password" placeholder="Leave blank to keep current" value={profileForm.password} onChange={e => setProfileForm({ ...profileForm, password: e.target.value })} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowProfile(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={profileSaving}>{profileSaving ? 'Saving...' : 'Save Profile'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

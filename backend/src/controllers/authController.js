@@ -93,4 +93,24 @@ const getMe = (req, res) => {
   res.json({ ...userData, token });
 };
 
-module.exports = { register, login, logout, forgotPassword, getMe };
+const updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, password } = req.body;
+    const user = db.findById('users', req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const updates = {};
+    if (firstName) updates.firstName = firstName;
+    if (lastName) updates.lastName = lastName;
+    if (password) updates.password = await bcrypt.hash(password, 10);
+
+    const updatedUser = db.update('users', req.user.id, updates);
+    addBlock({ action: 'USER_PROFILE_UPDATE', recordType: 'user', recordId: user.id, actor: user.email, actorRole: user.role, details: { fields: Object.keys(updates).join(',') } });
+
+    res.json({ message: 'Profile updated successfully', user: { ...updatedUser, password: '' } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update profile', details: err.message });
+  }
+};
+
+module.exports = { register, login, logout, forgotPassword, getMe, updateProfile };
