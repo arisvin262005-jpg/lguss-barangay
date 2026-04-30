@@ -126,10 +126,10 @@ const html = `<!DOCTYPE html>
 
 <h2>Background</h2>
 <ul>
-  <li><strong>Technologies:</strong> React.js 19, Node.js &amp; Express.js 5, Firebase Firestore, PouchDB 9, NVIDIA NIM API (meta/llama-3.3-70b-instruct), PDFKit, jsPDF, AES-256 Encryption, JWT, Render (Cloud Hosting), Progressive Web App (PWA)</li>
+  <li><strong>Technologies:</strong> React.js 19, Node.js &amp; Express.js 5, Firebase Firestore (Cloud NoSQL Database), LocalStorage-based Offline Queue (Offline-First Sync), NVIDIA NIM API (meta/llama-3.3-70b-instruct), PDFKit, jsPDF, AES-256 Encryption, JWT, Render (Cloud Hosting), Progressive Web App (PWA)</li>
   <li><strong>Target Users:</strong> Barangay Captains, Secretaries, and Administrative Staff of Mamburao, Occidental Mindoro</li>
   <li><strong>Existing Studies/Software:</strong> Traditional barangay operations in Mamburao rely on manual, paper-based record-keeping. Existing e-Government platforms (e.g., eGovPH) offer limited offline support and do not address the specific administrative needs of rural LGUs with intermittent internet connectivity. Prior academic studies on Barangay Management Information Systems (BMIS) focused primarily on online-only implementations without AI-based decision support.</li>
-  <li><strong>Current Gap / Market Landscape:</strong> No existing system in Mamburao integrates offline-first data persistence, AI-predictive analytics, and a Rule-Based Decision Support System (DSS) in a single unified platform tailored for rural barangay operations. Rural barangays frequently experience internet outages, making fully online systems unreliable for continuous service delivery.</li>
+  <li><strong>Current Gap / Market Landscape:</strong> No existing system in Mamburao integrates offline-first data persistence using a browser-side queue mechanism, AI-predictive analytics, and a Rule-Based Decision Support System (DSS) in a single unified platform tailored for rural barangay operations. Rural barangays frequently experience internet outages, making fully online systems unreliable for continuous service delivery.</li>
 </ul>
 
 <h2>Problem Statement</h2>
@@ -145,7 +145,7 @@ const html = `<!DOCTYPE html>
 <h2>Specific Objectives</h2>
 <ol>
   <li>To develop a <strong>comprehensive resident profiling module</strong> that enables barangay staff to add, update, search, and manage constituent records including household data, PWD registry, and senior citizen registries — operable with or without internet connection.</li>
-  <li>To implement an <strong>offline-first synchronization architecture</strong> using PouchDB and Firebase Firestore that enables uninterrupted data entry during internet outages and automatically synchronizes all queued records upon reconnection.</li>
+  <li>To implement an <strong>offline-first synchronization mechanism</strong> using a browser-based LocalStorage queue that enables uninterrupted data entry during internet outages and automatically synchronizes all pending records to Firebase Firestore upon reconnection.</li>
   <li>To build a <strong>Rule-Based Decision Support System (DSS)</strong> that automatically evaluates resident eligibility for barangay certifications by cross-checking active KP cases before issuance is allowed.</li>
   <li>To integrate an <strong>AI Predictive Analytics Engine</strong> powered by NVIDIA's Llama 3.3 70B model (via NVIDIA NIM API) that analyzes community case data, scores jurisdictional risk levels, detects repeat offenders, and generates actionable governance recommendations for barangay officials.</li>
   <li>To develop a <strong>KP (Katarungang Pambarangay) Case Management module</strong> with controlled field-level privacy locks and mediation status tracking, ensuring secure and compliant case handling per barangay justice standards.</li>
@@ -176,13 +176,13 @@ This study contributes a working reference architecture for offline-first govern
   <li><strong>Rule-Based Decision Support System (DSS)</strong> — Automated eligibility evaluation for certification requests based on active KP case records.</li>
   <li><strong>DRRM Module</strong> — Disaster Risk Reduction and Management records management.</li>
   <li><strong>Legislation Records</strong> — Digital archiving of barangay ordinances and resolutions.</li>
-  <li><strong>Offline-First Sync</strong> — PouchDB local caching with automatic cloud synchronization to Firebase Firestore upon reconnection.</li>
+  <li><strong>Offline-First Sync</strong> — LocalStorage-based offline action queue that captures all data operations during internet outages and automatically replays them to Firebase Firestore upon reconnection.</li>
 </ol>
 
 <h2>Limitation</h2>
 <ol>
   <li>The system is scoped specifically for the <strong>barangays of Mamburao, Occidental Mindoro</strong> and may require reconfiguration for deployment in other municipalities or LGUs.</li>
-  <li>The <strong>AI Analytics module</strong> requires an active internet connection to invoke the NVIDIA NIM API (Llama 3.3 70B). In offline mode, the system falls back to a local rule-based engine with limited analytical depth compared to the LLM-powered version.</li>
+  <li>The <strong>offline sync mechanism</strong> is implemented using a LocalStorage-based queue. Data entered without internet is stored locally and replayed to Firebase Firestore upon reconnection. This approach works in all modern browsers without additional server infrastructure.</li>
   <li>The system does not currently integrate with the <strong>National ID System (PhilSys)</strong> or any external national government database, and resident records are managed independently within the system.</li>
   <li>The system is a <strong>web-based application</strong> and does not include a dedicated native mobile application. Mobile access is supported through the Progressive Web App (PWA) feature via a mobile browser.</li>
   <li>The <strong>free-tier cloud hosting</strong> on Render may impose performance constraints (e.g., server cold start delays) under heavy concurrent usage and is intended for pilot deployment only.</li>
@@ -196,8 +196,8 @@ This study contributes a working reference architecture for offline-first govern
 <tr><th>Layer</th><th>Technology Used</th></tr>
 <tr><td>Frontend</td><td>React.js 19, Vite 6, Tailwind CSS 4</td></tr>
 <tr><td>Backend</td><td>Node.js 18+, Express.js 5</td></tr>
-<tr><td>Local Offline Database</td><td>PouchDB 9 (Offline-First)</td></tr>
-<tr><td>Cloud Database</td><td>Firebase Firestore (NoSQL)</td></tr>
+<tr><td>Offline Storage</td><td>LocalStorage (Browser-side Offline Queue)</td></tr>
+<tr><td>Cloud Database</td><td>Firebase Firestore (NoSQL Cloud Database)</td></tr>
 <tr><td>AI Engine</td><td>NVIDIA NIM API — meta/llama-3.3-70b-instruct</td></tr>
 <tr><td>PDF Generation</td><td>PDFKit, jsPDF, jsPDF-AutoTable</td></tr>
 <tr><td>Security</td><td>JWT, AES-256 Encryption (CryptoJS), Helmet.js, Rate Limiting</td></tr>

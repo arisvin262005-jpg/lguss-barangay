@@ -214,4 +214,313 @@ const getDuplicateCaseReport = (req, res) => {
   }
 };
 
-module.exports = { getDashboardStats, getMonthlyCertReport, getCaseSummary, getResidentMasterlist, getSyncReport, getTimeSavedReport, getDuplicateCaseReport };
+/* ═══════════════════════════════════════════════════════════════════
+   PREDICTIVE ANALYTICS — 5 Statistical Forecasting Features
+   All computed from existing system data — no AI/API required.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/**
+ * GET /api/reports/forecast/service-demand
+ * Predicts which months will have peak document requests (clearance, indigency, etc.)
+ * based on historical certification data grouped by month.
+ */
+const getServiceDemandForecast = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeCerts = Array.isArray(db.certifications) ? db.certifications : [];
+    let certs = role === ROLES.ADMIN ? safeCerts : safeCerts.filter(c => c && c.barangay === barangay);
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthLabels = [
+      'Enero','Pebrero','Marso','Abril','Mayo','Hunyo',
+      'Hulyo','Agosto','Setyembre','Oktubre','Nobyembre','Disyembre'
+    ];
+    const byMonth = Array(12).fill(0);
+    const byType = {};
+
+    certs.forEach(c => {
+      if (!c) return;
+      const d = new Date(c.issuedAt || c.createdAt || new Date());
+      if (!isNaN(d.getMonth())) {
+        byMonth[d.getMonth()]++;
+        byType[c.certType] = (byType[c.certType] || 0) + 1;
+      }
+    });
+
+    const avg = byMonth.reduce((s, v) => s + v, 0) / 12 || 1;
+    const monthData = months.map((m, i) => ({
+      month: m, label: monthLabels[i], count: byMonth[i],
+      demand: byMonth[i] > avg * 1.3 ? 'HIGH' : byMonth[i] > avg * 0.7 ? 'NORMAL' : 'LOW',
+      index: i,
+    }));
+
+    const peakMonths   = monthData.filter(m => m.demand === 'HIGH').map(m => m.month);
+    const topCertType  = Object.entries(byType).sort((a,b) => b[1]-a[1])[0];
+    const nextMonthIdx = (new Date().getMonth() + 1) % 12;
+    const nextMonthDemand = monthData[nextMonthIdx];
+
+    res.json({
+      monthData,
+      byType,
+      peakMonths,
+      topCertType: topCertType ? { type: topCertType[0], count: topCertType[1] } : null,
+      nextMonthForecast: nextMonthDemand,
+      recommendation: peakMonths.length > 0
+        ? `Dagdag na staffing at supplies ang kailangan sa mga buwan na: ${peakMonths.join(', ')}. Ang pinaka-maraming hinihiling na dokumento ay ang ${topCertType?.[0] || 'Barangay Clearance'}.`
+        : 'Ang demand ay pantay-pantay sa buong taon. Maintain ang current staffing levels.',
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getServiceDemandForecast Error]', err);
+    res.status(500).json({ error: 'Failed to generate service demand forecast', details: err.message });
+  }
+};
+
+/**
+ * GET /api/reports/forecast/demographic-trends
+ * Projects future population changes by age group and special sector (Senior, PWD, 4Ps).
+ * Uses current distribution + simple growth rate.
+ */
+const getDemographicTrendsForecast = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeRes = Array.isArray(db.residents) ? db.residents : [];
+    let residents = role === ROLES.ADMIN ? safeRes : safeRes.filter(r => r && r.barangay === barangay);
+
+    const now = new Date();
+    const ageGroups = { '0-17': 0, '18-35': 0, '36-59': 0, '60+': 0 };
+    let senior = 0, pwd = 0, fourPs = 0, soloPar = 0, voter = 0;
+
+    residents.forEach(r => {
+      if (!r) return;
+      const dob = r.birthDate || r.dateOfBirth;
+      if (dob) {
+        const age = now.getFullYear() - new Date(dob).getFullYear();
+        if (age <= 17)      ageGroups['0-17']++;
+        else if (age <= 35) ageGroups['18-35']++;
+        else if (age <= 59) ageGroups['36-59']++;
+        else                ageGroups['60+']++;
+      }
+      if (r.tags?.senior)  senior++;
+      if (r.tags?.pwd)     pwd++;
+      if (r.tags?.fourPs)  fourPs++;
+      if (r.tags?.soloPar) soloPar++;
+      if (r.tags?.voter)   voter++;
+    });
+
+    // Project 3-year growth — senior citizens grow fastest (3%/yr), general pop ~1.5%/yr
+    const GROWTH = { '0-17': 0.01, '18-35': 0.015, '36-59': 0.015, '60+': 0.03 };
+    const projected3yr = {};
+    Object.keys(ageGroups).forEach(g => {
+      projected3yr[g] = Math.round(ageGroups[g] * Math.pow(1 + GROWTH[g], 3));
+    });
+
+    const total = residents.length || 1;
+    res.json({
+      current: { total, ageGroups, senior, pwd, fourPs, soloPar, voter },
+      projected3yr,
+      sectorGrowth: [
+        { sector: 'Senior Citizens', current: senior, projected: Math.round(senior * 1.09), growthPct: 9 },
+        { sector: 'PWD',             current: pwd,    projected: Math.round(pwd    * 1.04), growthPct: 4 },
+        { sector: '4Ps Beneficiary', current: fourPs, projected: Math.round(fourPs * 1.02), growthPct: 2 },
+        { sector: 'Solo Parent',     current: soloPar,projected: Math.round(soloPar* 1.03), growthPct: 3 },
+      ],
+      insight: `Sa susunod na 3 taon, inaasahang tataas ang senior citizens ng halos 9%. Kailangan dagdag na pondo para sa mga programang pangkalusugan at OSCA services.`,
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getDemographicTrendsForecast Error]', err);
+    res.status(500).json({ error: 'Failed to generate demographic forecast', details: err.message });
+  }
+};
+
+/**
+ * GET /api/reports/forecast/incident-hotspots
+ * Predicts which barangays and time periods are at highest risk based on
+ * historical incident + case frequency — for Tanod deployment planning.
+ */
+const getIncidentHotspotForecast = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeCases     = Array.isArray(db.cases)     ? db.cases     : [];
+    const safeIncidents = Array.isArray(db.incidents) ? db.incidents : [];
+    const safeResidents = Array.isArray(db.residents) ? db.residents : [];
+
+    let cases     = role === ROLES.ADMIN ? safeCases     : safeCases.filter(c => c && c.barangay === barangay);
+    let incidents = role === ROLES.ADMIN ? safeIncidents : safeIncidents.filter(i => i && i.barangay === barangay);
+
+    // Case frequency by barangay
+    const casesByBrgy = {};
+    cases.forEach(c => { if (c?.barangay) casesByBrgy[c.barangay] = (casesByBrgy[c.barangay] || 0) + 1; });
+    incidents.forEach(i => { if (i?.barangay) casesByBrgy[i.barangay] = (casesByBrgy[i.barangay] || 0) + 0.5; });
+
+    // Case frequency by month (to detect seasonal patterns)
+    const byMonth = Array(12).fill(0);
+    cases.forEach(c => {
+      if (c?.filedDate) byMonth[new Date(c.filedDate).getMonth()]++;
+    });
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthlyTrend = months.map((m, i) => ({ month: m, count: byMonth[i] }));
+    const peakMonth = monthlyTrend.reduce((a, b) => a.count >= b.count ? a : b, { month: '—', count: 0 });
+
+    // Build risk zones
+    const zones = Object.entries(casesByBrgy).map(([brgy, score]) => {
+      const pop = safeResidents.filter(r => r?.barangay === brgy).length || 50;
+      const riskScore = Math.min(parseFloat(((score / pop) * 1000).toFixed(1)), 99);
+      return {
+        barangay: brgy, incidentCount: Math.round(score), population: pop, riskScore,
+        riskLevel: riskScore > 30 ? 'CRITICAL' : riskScore > 15 ? 'ELEVATED' : 'STABLE',
+        recommendation: riskScore > 30
+          ? 'Dagdag na Tanod patrol — lalo na tuwing gabi (6PM–12MN).'
+          : riskScore > 15
+          ? 'Monitor closely. Schedule additional community meetings.'
+          : 'Stable zone. Maintain regular patrol frequency.',
+      };
+    }).sort((a, b) => b.riskScore - a.riskScore);
+
+    res.json({
+      zones,
+      monthlyTrend,
+      peakMonth,
+      topRiskZone: zones[0] || null,
+      insight: zones[0]
+        ? `Ang ${zones[0].barangay} ang pinaka-mataas ang incident rate na may risk score na ${zones[0].riskScore}. Ang pinaka-aktibong buwan ay ${peakMonth.month} — iprecompute ang dagdag na Tanod patrol bago dumating ang buwan na iyon.`
+        : 'Walang sapat na data para mag-generate ng hotspot analysis.',
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getIncidentHotspotForecast Error]', err);
+    res.status(500).json({ error: 'Failed to generate hotspot forecast', details: err.message });
+  }
+};
+
+/**
+ * GET /api/reports/forecast/health-risk
+ * Identifies residents at high health risk for barangay health program targeting.
+ * Flags: Senior + PWD, Solo Parent households, low-income families (4Ps).
+ */
+const getHealthRiskForecast = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeRes = Array.isArray(db.residents) ? db.residents : [];
+    let residents = role === ROLES.ADMIN ? safeRes : safeRes.filter(r => r && r.barangay === barangay);
+
+    const now = new Date();
+    const highRisk = [], moderateRisk = [], lowRisk = [];
+
+    residents.forEach(r => {
+      if (!r) return;
+      const age = r.birthDate ? now.getFullYear() - new Date(r.birthDate).getFullYear() : 0;
+      const isSenior = age >= 60 || r.tags?.senior;
+      const isPwd    = r.tags?.pwd;
+      const is4Ps    = r.tags?.fourPs;
+      const isSolo   = r.tags?.soloPar;
+
+      const riskFactors = [isSenior, isPwd, is4Ps, isSolo].filter(Boolean).length;
+      const entry = { id: r.id, name: `${r.firstName} ${r.lastName}`, age, barangay: r.barangay, tags: r.tags, factors: [] };
+
+      if (isSenior) entry.factors.push('Senior Citizen');
+      if (isPwd)    entry.factors.push('PWD');
+      if (is4Ps)    entry.factors.push('4Ps Beneficiary');
+      if (isSolo)   entry.factors.push('Solo Parent');
+
+      if      (riskFactors >= 2) highRisk.push(entry);
+      else if (riskFactors === 1) moderateRisk.push(entry);
+      else                        lowRisk.push(entry);
+    });
+
+    // Month-based health outbreak tendency (dry months = dengue peak, rainy = flu/leptospira)
+    const currentMonth = now.getMonth();
+    const outbreakRisk = currentMonth >= 5 && currentMonth <= 10
+      ? { type: 'Dengue / Leptospirosis', season: 'Tag-ulan', level: 'HIGH', action: 'Intensify cleanup drives at lagyan ng mosquito repellent sa mga high-risk households.' }
+      : { type: 'Influenza / Respiratory Illness', season: 'Tag-lamig / Tag-init', level: 'MODERATE', action: 'I-distribute ang Vitamin C at masks sa mga senior at PWD residents.' };
+
+    res.json({
+      summary: { highRisk: highRisk.length, moderateRisk: moderateRisk.length, lowRisk: lowRisk.length, total: residents.length },
+      highRiskResidents: highRisk.slice(0, 20),
+      outbreakRisk,
+      insight: `May ${highRisk.length} na residente ang nasa mataas na panganib na pangkalusugan. Ang seasonal na sakit na babantayan ngayon ay ${outbreakRisk.type} (${outbreakRisk.season}).`,
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getHealthRiskForecast Error]', err);
+    res.status(500).json({ error: 'Failed to generate health risk forecast', details: err.message });
+  }
+};
+
+/**
+ * GET /api/reports/forecast/calamity-vulnerability
+ * Ranks residents/households by DRRM vulnerability for evacuation planning.
+ * Factors: house type, senior/PWD tags, proximity indicators from household data.
+ */
+const getCalamityVulnerabilityForecast = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeRes = Array.isArray(db.residents)   ? db.residents   : [];
+    const safeHH  = Array.isArray(db.households)  ? db.households  : [];
+    const safeDRRM = Array.isArray(db.drrmPlans)   ? db.drrmPlans   : [];
+
+    let residents  = role === ROLES.ADMIN ? safeRes : safeRes.filter(r => r && r.barangay === barangay);
+    let households = role === ROLES.ADMIN ? safeHH  : safeHH.filter(h => h && h.barangay === barangay);
+
+    const now = new Date();
+    const HOUSE_RISK = { 'Light Materials': 3, 'Wood': 2, 'Semi-Concrete': 1, 'Concrete': 0 };
+
+    // Score each household
+    const vulnerableHH = households.map(hh => {
+      if (!hh) return null;
+      const houseScore = HOUSE_RISK[hh.houseType] ?? 1;
+      const noElec     = hh.electricity === false ? 1 : 0;
+      const badWater   = (!hh.waterSource || hh.waterSource.toLowerCase().includes('open') || hh.waterSource.toLowerCase().includes('spring')) ? 1 : 0;
+
+      // Find members and tally vulnerable ones
+      const members = residents.filter(r => r && r.householdId === hh.id);
+      const vulnerableMembers = members.filter(r => {
+        const age = r.birthDate ? now.getFullYear() - new Date(r.birthDate).getFullYear() : 0;
+        return age >= 60 || r.tags?.senior || r.tags?.pwd;
+      });
+
+      const totalScore = houseScore + noElec + badWater + vulnerableMembers.length;
+      return {
+        householdId: hh.id, householdNumber: hh.householdNumber, address: hh.address, barangay: hh.barangay,
+        purok: hh.purok, houseType: hh.houseType, memberCount: hh.memberCount,
+        vulnerableMembers: vulnerableMembers.length, vulnerableMemberNames: vulnerableMembers.map(m => `${m.firstName} ${m.lastName}`),
+        score: totalScore,
+        priority: totalScore >= 4 ? 'PRIORITY 1' : totalScore >= 2 ? 'PRIORITY 2' : 'PRIORITY 3',
+        flags: [
+          houseScore >= 2    && 'Vulnerable na tirahan (Hindi Konkreto)',
+          noElec             && 'Walang kuryente',
+          badWater           && 'Hindi ligtas na pinagkukunan ng tubig',
+          vulnerableMembers.length > 0 && `${vulnerableMembers.length} Senior/PWD na miyembro`,
+        ].filter(Boolean),
+      };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+
+    const p1 = vulnerableHH.filter(h => h.priority === 'PRIORITY 1').length;
+    const evacuationSites = safeDRRM.map(d => d.evacuationSite).filter(Boolean);
+
+    res.json({
+      households: vulnerableHH,
+      summary: {
+        total: vulnerableHH.length,
+        priority1: p1,
+        priority2: vulnerableHH.filter(h => h.priority === 'PRIORITY 2').length,
+        priority3: vulnerableHH.filter(h => h.priority === 'PRIORITY 3').length,
+      },
+      evacuationSites: evacuationSites.length ? evacuationSites : ['Wala pang nakatalagang evacuation site'],
+      insight: `May ${p1} na pamilya ang kailangang unahin sa evacuation (Priority 1). Kabilang dito ang mga tahanan na gawa sa magaang na materyales at may senior citizen o PWD na miyembro.`,
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getCalamityVulnerabilityForecast Error]', err);
+    res.status(500).json({ error: 'Failed to generate calamity vulnerability forecast', details: err.message });
+  }
+};
+
+module.exports = {
+  getDashboardStats, getMonthlyCertReport, getCaseSummary,
+  getResidentMasterlist, getSyncReport, getTimeSavedReport, getDuplicateCaseReport,
+  // Predictive Forecasting
+  getServiceDemandForecast, getDemographicTrendsForecast, getIncidentHotspotForecast,
+  getHealthRiskForecast, getCalamityVulnerabilityForecast,
+};

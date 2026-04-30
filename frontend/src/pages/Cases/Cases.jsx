@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api, { resolveOfflineResponse } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Scale, Plus, Eye, EyeOff, Edit2, X, Save, Calendar, CheckCircle2, Clock, AlertTriangle, FileText, Printer } from 'lucide-react';
+import { Scale, Plus, Eye, EyeOff, Edit2, X, Save, Calendar, CheckCircle2, Clock, AlertTriangle, FileText, Globe, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
 
 const CASE_TYPES = ['Land Dispute','Family Dispute','Debt','Physical Injury','Noise Complaint','Property Damage','Others'];
 const STATUS_FLOW = ['Filed','Mediation Scheduled','Under Mediation','Settled','Escalated to Court','Dismissed'];
@@ -95,7 +95,19 @@ export default function Cases() {
   const [form, setForm] = useState({ caseNumber:'', complainantId:'', respondentId:'', caseType:'Land Dispute', description:'', filedDate: new Date().toISOString().split('T')[0] });
   const [hearingForm, setHearingForm] = useState({ hearingDate:'', hearingTime:'09:00', hearingVenue:'', notes:'' });
   const [privacyMode, setPrivacyMode] = useState(true);
+  const [crossCheck, setCrossCheck] = useState({ loading: false, data: null, open: false });
   const canEdit = hasRole('Admin', 'Secretary');
+
+  const loadCrossBarangay = async (residentId) => {
+    if (!residentId) return;
+    setCrossCheck({ loading: true, data: null, open: true });
+    try {
+      const res = await api.get(`/cases/cross-check/${residentId}`);
+      setCrossCheck({ loading: false, data: res.data, open: true });
+    } catch {
+      setCrossCheck({ loading: false, data: null, open: true });
+    }
+  };
 
   const maskName = (name) => {
     if (!privacyMode) return name;
@@ -313,6 +325,83 @@ export default function Cases() {
         </table>
       </div>
 
+      {/* ─── CROSS-BARANGAY MODAL ─── */}
+      {crossCheck.open && (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setCrossCheck(c => ({...c, open: false}))}>
+          <div className="modal" style={{ maxWidth: 650 }}>
+            <div className="modal-header">
+              <div>
+                <div className="modal-title" style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
+                  <Globe size={18} color="#1a4f8a" /> Cross-Barangay Case History
+                </div>
+                <div style={{ fontSize:'0.78rem', color:'#64748b' }}>Identity matched across all barangays — no AI required</div>
+              </div>
+              <button onClick={() => setCrossCheck(c => ({...c, open: false}))} className="btn-icon"><X size={16} /></button>
+            </div>
+            <div className="modal-body">
+              {crossCheck.loading && (
+                <div style={{ textAlign:'center', padding:'2rem', color:'#94a3b8' }}>
+                  <div style={{ width:32, height:32, border:'3px solid #e2e8f0', borderTopColor:'#1a4f8a', borderRadius:'50%', margin:'0 auto 1rem', animation:'spin 0.8s linear infinite' }} />
+                  Scanning all barangay records...
+                </div>
+              )}
+              {!crossCheck.loading && crossCheck.data && (() => {
+                const { summary, cases: xCases } = crossCheck.data;
+                const RISK_COL = { HIGH:'#dc2626', MODERATE:'#d97706', CLEAR:'#16a34a' };
+                return (
+                  <div>
+                    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.6rem', marginBottom:'1rem' }}>
+                      {[['Total Cases',summary.totalCases,'#1a4f8a'],['Cross-Barangay',summary.crossBarangayCases,'#7c3aed'],['Active Cases',summary.activeCases,'#dc2626']].map(([l,v,c]) => (
+                        <div key={l} style={{ background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:9, padding:'0.75rem', textAlign:'center' }}>
+                          <div style={{ fontSize:'1.5rem', fontWeight:900, color:c }}>{v}</div>
+                          <div style={{ fontSize:'0.68rem', color:'#64748b', fontWeight:700 }}>{l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.75rem 1rem', borderRadius:10, background: RISK_COL[summary.riskLevel]+'12', border:`1px solid ${RISK_COL[summary.riskLevel]}33`, marginBottom:'1rem' }}>
+                      <ShieldAlert size={20} color={RISK_COL[summary.riskLevel]} />
+                      <div>
+                        <div style={{ fontWeight:800, color:RISK_COL[summary.riskLevel], fontSize:'0.9rem' }}>Risk Level: {summary.riskLevel}</div>
+                        <div style={{ fontSize:'0.73rem', color:'#64748b' }}>Complainant in {summary.asComplainant} case(s) · Respondent in {summary.asRespondent} case(s) · Barangays: {summary.barangaysInvolved.join(', ') || '—'}</div>
+                      </div>
+                    </div>
+                    {xCases.length === 0 ? (
+                      <div style={{ textAlign:'center', padding:'1.5rem', color:'#94a3b8', fontSize:'0.85rem' }}>✅ No case history found in any barangay.</div>
+                    ) : (
+                      xCases.map(c => {
+                        const cfg = STATUS_CONFIG[c.status] || { color:'#64748b', bg:'#f8fafc', border:'#e2e8f0' };
+                        return (
+                          <div key={c.id} style={{ border:`1px solid ${c.isCrossBarangay ? '#ddd6fe' : '#e2e8f0'}`, borderRadius:9, padding:'0.75rem 1rem', marginBottom:'0.5rem', background: c.isCrossBarangay ? '#faf5ff' : '#fff' }}>
+                            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+                              <div>
+                                <span style={{ fontWeight:800, color:'#1a4f8a', fontSize:'0.85rem' }}>{c.caseNumber}</span>
+                                {c.isCrossBarangay && <span style={{ marginLeft:6, fontSize:'0.62rem', fontWeight:800, background:'#ede9fe', color:'#7c3aed', padding:'0.15rem 0.5rem', borderRadius:100, border:'1px solid #ddd6fe' }}>📍 From: {c.originBarangay}</span>}
+                              </div>
+                              <div style={{ display:'flex', gap:4 }}>
+                                <span style={{ fontSize:'0.62rem', fontWeight:800, background: cfg.bg, color: cfg.color, padding:'0.15rem 0.55rem', borderRadius:100, border:`1px solid ${cfg.border||cfg.color+'33'}` }}>{c.status}</span>
+                                <span style={{ fontSize:'0.62rem', fontWeight:800, background: c.involvedAs==='Respondent'?'#fef2f2':'#f0fdf4', color: c.involvedAs==='Respondent'?'#dc2626':'#16a34a', padding:'0.15rem 0.55rem', borderRadius:100 }}>{c.involvedAs}</span>
+                              </div>
+                            </div>
+                            <div style={{ fontSize:'0.75rem', color:'#64748b', marginTop:4 }}>{c.caseType} · Filed: {c.filedDate || '—'}</div>
+                            <div style={{ fontSize:'0.73rem', color:'#475569', marginTop:3 }}>vs. {c.involvedAs==='Complainant' ? c.respondentName : c.complainantName}</div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                );
+              })()}
+              {!crossCheck.loading && !crossCheck.data && (
+                <div style={{ textAlign:'center', padding:'2rem', color:'#dc2626', fontSize:'0.85rem' }}>Failed to load cross-barangay history. Please try again.</div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setCrossCheck(c => ({...c, open:false}))}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── VIEW MODAL ─── */}
       {modal === 'view' && selected && (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(null)}>
@@ -396,6 +485,18 @@ export default function Cases() {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={() => setModal(null)}>Close</button>
+              {selected.complainantId && (
+                <button type="button" style={{ display:'flex', alignItems:'center', gap:'0.4rem', padding:'0.45rem 1rem', background:'#f5f3ff', border:'1.5px solid #ddd6fe', color:'#7c3aed', borderRadius:9, fontWeight:700, fontSize:'0.8rem', cursor:'pointer' }}
+                  onClick={() => { setModal(null); loadCrossBarangay(selected.complainantId); }}>
+                  <Globe size={14} /> Check History (Complainant)
+                </button>
+              )}
+              {selected.respondentId && (
+                <button type="button" style={{ display:'flex', alignItems:'center', gap:'0.4rem', padding:'0.45rem 1rem', background:'#fef2f2', border:'1.5px solid #fca5a5', color:'#dc2626', borderRadius:9, fontWeight:700, fontSize:'0.8rem', cursor:'pointer' }}
+                  onClick={() => { setModal(null); loadCrossBarangay(selected.respondentId); }}>
+                  <ShieldAlert size={14} /> Check History (Respondent)
+                </button>
+              )}
               {canEdit && selected.status !== 'Settled' && selected.status !== 'Dismissed' && (
                 <button type="button" className="btn btn-primary" onClick={() => openEdit(selected)}>
                   <Edit2 size={14} /> Edit Case

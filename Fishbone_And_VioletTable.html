@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; margin: 40px; }
+  h2 { font-size: 13pt; font-weight: bold; margin-top: 18pt; text-transform: uppercase; }
+  
+  /* Violet Table Styling */
+  .violet-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .violet-table th {
+    background-color: #8A2BE2; /* Violet */
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    border: 1px solid #4B0082;
+    text-align: center;
+  }
+  .violet-table td {
+    padding: 10px;
+    border: 1px solid #000;
+    vertical-align: top;
+  }
+  .violet-table tr:nth-child(even) {
+    background-color: #f2e6ff; /* Light violet for alternate rows */
+  }
+
+  /* Fishbone / Cause and Effect Text Representation */
+  .fishbone-box {
+    border: 2px solid #000;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fafafa;
+  }
+  .fishbone-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14pt;
+    margin-bottom: 20px;
+  }
+  .fishbone-grid {
+    display: flex;
+    justify-content: space-between;
+  }
+  .fishbone-column {
+    width: 48%;
+  }
+  .bone {
+    margin-bottom: 15px;
+  }
+  .bone-title {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #b30000;
+  }
+  .bone-items {
+    margin: 5px 0 0 15px;
+  }
+  .effect-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #ffe6e6;
+    border: 2px solid #b30000;
+    text-align: center;
+    font-weight: bold;
+    font-size: 13pt;
+  }
+</style>
+</head>
+<body>
+
+<h2>A. Fishbone Diagram (Problem Analysis of the Manual System)</h2>
+<p>Ang sumusunod na Cause-and-Effect (Fishbone) Diagram ay nagpapakita ng mga pangunahing problema ng kasalukuyang manwal na sistema ng barangay na naging basehan para sa pagbuo ng ProfiligSystem.</p>
+
+<div class="fishbone-box">
+  <div class="fishbone-title">FISHBONE DIAGRAM: MANWAL NA SISTEMA NG BARANGAY</div>
+  <div class="fishbone-grid">
+    <div class="fishbone-column">
+      <div class="bone">
+        <div class="bone-title">MANPOWER (Tao)</div>
+        <ul class="bone-items">
+           <li>Kakulangan sa IT training ng mga barangay staff.</li>
+           <li>Mabagal na paghahanap ng records dahil manu-mano.</li>
+           <li>Nauubos ang oras sa paglipat-lipat ng pahina ng logbook.</li>
+        </ul>
+      </div>
+      <div class="bone">
+        <div class="bone-title">MACHINES (Kagamitan)</div>
+        <ul class="bone-items">
+           <li>Walang centralized database server.</li>
+           <li>Unstable o madalas walang internet connection.</li>
+           <li>Mabagal na mga lumang computer.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="fishbone-column">
+      <div class="bone">
+        <div class="bone-title">METHODS (Paraan)</div>
+        <ul class="bone-items">
+           <li>Mano-manong paglista sa mga record logbooks.</li>
+           <li>Walang automated na pag-detect ng mga repeat offenders.</li>
+           <li>Mahirap i-verify ang pagkakakilanlan ng residente.</li>
+        </ul>
+      </div>
+      <div class="bone">
+        <div class="bone-title">MATERIALS (Materyales)</div>
+        <ul class="bone-items">
+           <li>Mataas na gastos sa papel at ink (printing ng physical records).</li>
+           <li>Madaling masira, mabasa, o mawala ang mga physical logbooks.</li>
+           <li>Kakulangan sa physical storage/cabinets para sa lumang records.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="effect-box">
+    EFFECT (Epekto): <br/>
+    Mabagal, hindi sigurado (inaccurate), at madaling masirang sistema ng Barangay Profiling at Certification.
+  </div>
+</div>
+
+<br><br>
+
+<h2>B. System Development Phases (SDLC Phase Table)</h2>
+<p>Ang sumusunod na talahanayan ay nagpapakita ng mga yugto (phases) sa pagbuo ng ProfiligSystem, na sumusunod sa Iterative o Agile Methodology.</p>
+
+<table class="violet-table">
+  <thead>
+    <tr>
+      <th style="width: 15%;">PHASE</th>
+      <th style="width: 25%;">ACTIVITY (Gawain)</th>
+      <th style="width: 60%;">DESCRIPTION (Paliwanag)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Phase 1</strong></td>
+      <td><strong>Planning & Requirements Gathering</strong></td>
+      <td>Pagsasagawa ng interview sa mga barangay officials (Secretary at Admin). Dito inalam ang mga problema tulad ng kawalan ng internet, mabagal na paghahanap ng record, at pangangailangan para sa Offline-Ready na sistema.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 2</strong></td>
+      <td><strong>System Design</strong></td>
+      <td>Pagbuo ng arkitektura ng system kabilang ang Database ERD, DFD, at Hierarchical Diagram. Dito idinisenyo ang UI/UX gamit ang Figma at ginawa ang logic para sa LocalStorage caching at Firebase sync.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 3</strong></td>
+      <td><strong>System Development & AI Integration</strong></td>
+      <td>Pagsulat ng code (coding) gamit ang React, Node.js, at pag-integrate ng NVIDIA Llama 3.3 para sa AI pattern detection. Binuo rin dito ang Offline-First capability upang gumana ang system kahit walang internet.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 4</strong></td>
+      <td><strong>Testing & Evaluation</strong></td>
+      <td>Pagsasagawa ng Unit Testing at Integration Testing. Pinagamit sa mga piling user ang system upang makakuha ng feedback gamit ang System Usability Scale (SUS) questionnaire upang masiguro ang kalidad bago ang final deployment.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 5</strong></td>
+      <td><strong>Deployment & Maintenance</strong></td>
+      <td>Opisyal na pag-deploy ng Frontend sa Vercel at Backend sa Render. Sinigurado rin ang security (JWT at Hashing) upang maprotektahan ang data privacy ng mga residente ng Mamburao.</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
