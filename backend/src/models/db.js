@@ -3,21 +3,44 @@
 
 const { v4: uuidv4 } = require('uuid');
 
+const passwordHash = '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy'; // default password "admin123"
+
 let users = [
-  { id: 'admin-001', firstName: 'Juan', lastName: 'dela Cruz', email: 'admin@barangay.gov.ph',
-    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
-    barangay: 'Barangay 1 (Poblacion)', role: 'Admin', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
-  { id: 'sec-001', firstName: 'Maria', lastName: 'Santos', email: 'secretary@barangay.gov.ph',
-    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
-    barangay: 'Barangay 2 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
-  { id: 'tanod-001', firstName: 'Pedro', lastName: 'Reyes', email: 'tanod@barangay.gov.ph',
-    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
-    barangay: 'Barangay 1 (Poblacion)', role: 'Tanod', isVerified: true,
-    lat: 13.2236, lng: 120.5989, onDuty: true, createdAt: '2024-01-01T00:00:00.000Z' },
-  { id: 'tanod-002', firstName: 'Roberto', lastName: 'Flores', email: 'tanod2@barangay.gov.ph',
-    password: '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy',
-    barangay: 'Barangay 1 (Poblacion)', role: 'Tanod', isVerified: true,
-    lat: 13.2251, lng: 120.6012, onDuty: true, createdAt: '2024-01-10T00:00:00.000Z' },
+  // Master Admin (Only One)
+  { id: 'admin-001', firstName: 'CRPS', lastName: 'Administrator', email: 'admin@mamburao.gov.ph',
+    password: passwordHash, barangay: 'LGU Mamburao', role: 'Admin', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  
+  // 15 Permanent Barangay Secretary Accounts
+  { id: 'sec-001', firstName: 'Monica', lastName: 'Robles', email: 'brgy1@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 1 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-002', firstName: 'Shiela', lastName: 'Villalobos', email: 'brgy2@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 2 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-003', firstName: 'Mara Cammille', lastName: 'Poblete', email: 'brgy3@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 3 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-004', firstName: 'Rhea', lastName: 'Venturero', email: 'brgy4@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 4 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-005', firstName: 'Rhea', lastName: 'Rebato', email: 'brgy5@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 5', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-006', firstName: 'Florian Galopa', lastName: 'Alastre', email: 'brgy6@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 6', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-007', firstName: 'Janice', lastName: 'Arnedo', email: 'brgy7@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 7', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-008', firstName: 'Diane Reyes', lastName: 'Mesina', email: 'brgy8@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Barangay 8', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-009', firstName: 'Jenny', lastName: 'Navaro', email: 'payompon@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Payompon', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-010', firstName: 'Sherily P.', lastName: 'Gappi', email: 'tangkalan@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Tangkalan', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-011', firstName: 'Anthon', lastName: 'Valle', email: 'fatima@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Fatima', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-012', firstName: 'Shirley', lastName: 'Magana', email: 'sanluis@mamburao.gov.ph',
+    password: passwordHash, barangay: 'San Luis', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-013', firstName: 'Clarisse V.', lastName: 'Parahinog', email: 'balansay@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Balansay', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-014', firstName: 'Thalia', lastName: 'Dela Luna', email: 'tayamaan@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Tayamaan', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'sec-015', firstName: 'Maureen', lastName: 'Callejo', email: 'talabaan@mamburao.gov.ph',
+    password: passwordHash, barangay: 'Talabaan', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' }
 ];
 
 let households = [
