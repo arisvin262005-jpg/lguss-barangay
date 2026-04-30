@@ -7,7 +7,7 @@ const path = require('path');
 
 const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
 
-const passwordHash = '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy'; // default password "admin123"
+const passwordHash = '$2b$10$meWyEIuhmUdmN.29WnD2GuZq91jrXqlfGqPAl/6EzKr4gPMJ5FSVq'; // Correct bcrypt hash for "admin123"
 
 let users = [
   // Master Admin (Only One)
