@@ -2,6 +2,10 @@
 // In production: PouchDB/CouchDB persistent storage
 
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
+
+const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
 
 const passwordHash = '$2b$10$7hLI/nUW9a32fppVdS9TNen0Ix0vC1hC7vMYa4qgUWBXpvVeBiuUy'; // default password "admin123"
 
@@ -253,29 +257,32 @@ const db = {
   legislation, incidents, assets, drrmPlans, gadPrograms,
   dssLogs, syncQueue, blockchain: [],
 
-  findById:    (collection, id)     => db[collection].find((r) => r.id === id),
-  findByEmail: (email)              => users.find((u) => u.email === email),
+  findById:    (collection, id)     => db[collection].find((r) => r && r.id === id),
+  findByEmail: (email)              => db.users.find((u) => u && u.email === email),
   
   insert: (collection, record) => {
     const newRecord = { ...record, id: record.id || uuidv4(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
     if (!Array.isArray(db[collection])) db[collection] = [];
     db[collection].push(newRecord);
+    saveToLocalDisk();
     syncToFirebase(collection, newRecord); // LIVE FIREBASE SYNC
     return newRecord;
   },
   
   update: (collection, id, updates) => {
-    const idx = db[collection].findIndex((r) => r.id === id);
+    const idx = db[collection].findIndex((r) => r && r.id === id);
     if (idx === -1) return null;
     db[collection][idx] = { ...db[collection][idx], ...updates, updatedAt: new Date().toISOString() };
+    saveToLocalDisk();
     syncToFirebase(collection, db[collection][idx]); // LIVE FIREBASE SYNC
     return db[collection][idx];
   },
   
   delete: (collection, id) => {
-    const idx = db[collection].findIndex((r) => r.id === id);
+    const idx = db[collection].findIndex((r) => r && r.id === id);
     if (idx === -1) return false;
     db[collection].splice(idx, 1);
+    saveToLocalDisk();
     deleteFromFirebase(collection, id); // LIVE FIREBASE SYNC
     return true;
   },
@@ -284,6 +291,43 @@ const db = {
   getFirebaseError: () => (firestore ? null : 'Initialization failed or no credentials provided.'),
   syncToFirebase, // Export for external use
 };
+
+// ── LOCAL OFFLINE PERSISTENCE ──
+function saveToLocalDisk() {
+  const dataToSave = {
+    users: db.users, households: db.households, residents: db.residents,
+    cases: db.cases, certifications: db.certifications, legislation: db.legislation,
+    incidents: db.incidents, assets: db.assets, drrmPlans: db.drrmPlans,
+    gadPrograms: db.gadPrograms, blockchain: db.blockchain
+  };
+  try {
+    if (!fs.existsSync(path.dirname(LOCAL_DB_PATH))) {
+      fs.mkdirSync(path.dirname(LOCAL_DB_PATH), { recursive: true });
+    }
+    fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(dataToSave, null, 2));
+  } catch (err) {
+    console.error('[Local DB] Failed to save to disk:', err.message);
+  }
+}
+
+function loadFromLocalDisk() {
+  try {
+    if (fs.existsSync(LOCAL_DB_PATH)) {
+      const savedData = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+      for (const key in savedData) {
+        if (db[key] && Array.isArray(savedData[key])) {
+          db[key] = savedData[key];
+        }
+      }
+      console.log('[Local DB] ✅ Loaded offline data from local disk successfully.');
+    }
+  } catch (err) {
+    console.error('[Local DB] Failed to load local data:', err.message);
+  }
+}
+
+// Load local disk data immediately on boot so offline mode is fully functional
+loadFromLocalDisk();
 
 // ── STARTUP: Restore data from Firestore (prevents data loss on Render restart) ──
 async function restoreFromFirebase() {
@@ -322,6 +366,7 @@ async function restoreFromFirebase() {
           });
         }
         console.log(`[Firebase] Merged ${docs.length} records into '${col}'`);
+        saveToLocalDisk(); // Save merged data to local disk so it's available offline later
       } else {
         // No Firestore data yet — seed defaults into Firestore
         console.log(`[Firebase] No Firestore data for '${col}', seeding defaults...`);
