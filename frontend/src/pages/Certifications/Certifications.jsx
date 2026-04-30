@@ -32,7 +32,32 @@ export default function Certifications() {
   const [saving, setSaving] = useState(false);
   const [dssResult, setDssResult] = useState(null);
   const [dssLoading, setDssLoading] = useState(false);
+  const [localCaseWarning, setLocalCaseWarning] = useState(null);
+  const [checkingLocal, setCheckingLocal] = useState(false);
   const canEdit = hasRole('Admin','Secretary');
+
+  const checkLocalCases = async (resId) => {
+    if (!resId) { setLocalCaseWarning(null); return; }
+    setCheckingLocal(true);
+    try {
+      const { data } = await api.get(`/cases/cross-check/${resId}`);
+      if (data && data.cases && data.cases.length > 0) {
+        const active = data.cases.filter(c => !['Settled', 'Dismissed'].includes(c.status));
+        setLocalCaseWarning({
+          total: data.cases.length,
+          active: active.length,
+          risk: data.summary?.riskLevel || 'CLEAR',
+          details: active.map(c => `${c.caseNumber} (${c.status})`).join(', ')
+        });
+      } else {
+        setLocalCaseWarning(null);
+      }
+    } catch {
+      setLocalCaseWarning(null);
+    } finally {
+      setCheckingLocal(false);
+    }
+  };
 
   const getResidentName = (id) => {
     if (!id) return 'Unknown Resident';
@@ -201,7 +226,7 @@ export default function Certifications() {
         <div><div className="page-title">Certifications & Issuances <small style={{ fontSize:'0.7rem', color:'#94a3b8' }}>v2.5</small></div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
         <div>
           <button className="btn btn-secondary" onClick={fetchData} style={{ marginRight: '0.5rem' }}><Clock size={16}/> Refresh</button>
-          {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
+          {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setLocalCaseWarning(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
         </div>
       </div>
 
@@ -285,11 +310,33 @@ export default function Certifications() {
               <div className="modal-body">
                 <div className="form-group">
                   <label className="form-label">Resident *</label>
-                  <select className="form-select" required value={form.residentId} onChange={e=>{ setForm({...form,residentId:e.target.value}); setDssResult(null); }}>
+                  <select className="form-select" required value={form.residentId} onChange={e=>{ 
+                    const val = e.target.value;
+                    setForm({...form,residentId:val}); 
+                    setDssResult(null); 
+                    checkLocalCases(val);
+                  }}>
                     <option value="">Select resident...</option>
                     {residents.map(r=><option key={r.id} value={r.id}>{r.lastName}, {r.firstName} — {r.barangay}</option>)}
                   </select>
                 </div>
+
+                {/* Instant Local Case Check (No AI/Internet needed) */}
+                {checkingLocal && <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>Scanning local records...</div>}
+                {!checkingLocal && localCaseWarning && (
+                  <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '0.75rem', marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                    <AlertCircle size={16} color="#dc2626" style={{ marginTop: 2 }} />
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#dc2626' }}>
+                        Local Record Alert: {localCaseWarning.active > 0 ? 'ACTIVE CASE DETECTED' : 'Case History Found'}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#7f1d1d' }}>
+                        This resident has <b>{localCaseWarning.total}</b> case(s) on record (Risk: {localCaseWarning.risk}).
+                        {localCaseWarning.active > 0 && <span> Active cases: {localCaseWarning.details}</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="form-group">
                   <label className="form-label">Certificate Type *</label>
                   <select className="form-select" value={form.certType} onChange={e=>setForm({...form,certType:e.target.value})}>
@@ -301,10 +348,13 @@ export default function Certifications() {
                   <input className="form-input" required value={form.purpose} onChange={e=>setForm({...form,purpose:e.target.value})} placeholder="e.g., Employment, PHILHEALTH, Banking..." />
                 </div>
 
-                {/* DSS Check */}
+                {/* AI-Powered DSS Check (Optional) */}
                 <div style={{ background:'#f8fafc',border:'1px solid #dde3ed',borderRadius:8,padding:'0.875rem',marginTop:'0.5rem' }}>
                   <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.625rem' }}>
-                    <span style={{ fontWeight:700,fontSize:'0.82rem',color:'#1a4f8a' }}>🤖 Decision Support System Check</span>
+                    <div>
+                      <span style={{ fontWeight:700,fontSize:'0.82rem',color:'#1a4f8a', display: 'block' }}>🤖 AI Decision Support Check (Optional)</span>
+                      <span style={{ fontSize:'0.7rem',color:'#64748b' }}>Requires internet connection</span>
+                    </div>
                     <button type="button" className="btn btn-outline btn-sm" onClick={runDss} disabled={!form.residentId||dssLoading}>
                       {dssLoading?'Checking...':'Run DSS Check'}
                     </button>
