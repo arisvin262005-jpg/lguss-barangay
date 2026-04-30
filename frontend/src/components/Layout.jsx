@@ -161,7 +161,7 @@ export default function Layout({ children }) {
         {/* Header */}
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <img src="/logo-crps.png" alt="CRPS" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <img src="/assets/astig_logo.png" alt="System Logo" style={{ width: 34, height: 34, objectFit: 'contain' }} />
           </div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
