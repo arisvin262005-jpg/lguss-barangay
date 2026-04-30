@@ -300,9 +300,9 @@ async function restoreFromFirebase() {
       const snapshot = await firestore.collection(col).get();
       if (!snapshot.empty) {
         const docs = snapshot.docs.map(d => d.data());
+        const firestoreIds = new Set(docs.map(d => d.id));
         if (Array.isArray(db[col])) {
           // Merge strategy: update existing records, add new ones
-          // NEVER wipe db[col].length = 0 — that causes 500s during the restore window
           docs.forEach(doc => {
             if (!doc || !doc.id) return;
             const idx = db[col].findIndex(r => r && r.id === doc.id);
@@ -310,6 +310,14 @@ async function restoreFromFirebase() {
               db[col][idx] = doc;
             } else {
               db[col].push(doc);
+            }
+          });
+          // FORCE SYNC: If there are hardcoded default accounts (like the 16 new ones) 
+          // that are not yet in Firebase, upload them now.
+          db[col].forEach(record => {
+            if (record && record.id && !firestoreIds.has(record.id)) {
+              console.log(`[Firebase] Auto-syncing missing local record to cloud: ${record.id}`);
+              syncToFirebase(col, record);
             }
           });
         }
