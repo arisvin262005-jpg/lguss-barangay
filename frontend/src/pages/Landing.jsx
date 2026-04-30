@@ -93,7 +93,7 @@ export default function Landing() {
   const [scrolled, setScrolled]   = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { isInstallable, isInstalled, installApp } = usePWA();
+  const { installPrompt, isInstalled, showInstallPrompt } = usePWA();
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 100);
@@ -470,8 +470,15 @@ export default function Landing() {
               {id === 'home' ? '🏠 Home' : id === 'subsystems' ? '🛠️ Systems' : id === 'about' ? 'ℹ️ Background' : id === 'barangays' ? '📍 Coverage' : '❓ FAQs'}
             </a>
           ))}
-          {isInstallable && !isInstalled && (
-            <button onClick={() => { closeNav(); installApp(); }} style={{
+          {!isInstalled && (
+            <button onClick={() => { 
+              closeNav(); 
+              if (installPrompt && showInstallPrompt) {
+                showInstallPrompt();
+              } else {
+                alert("Para ma-install:\n\n📱 Android: Pindutin ang '3 dots' sa taas at piliin ang 'Install app' o 'Add to Home screen'.\n\n🍎 iOS/iPhone: Pindutin ang 'Share' icon sa baba at piliin ang 'Add to Home Screen'.");
+              }
+            }} style={{
               background:`linear-gradient(135deg,#10b981,#059669)`,
               color:'#fff', border:'none', padding:'0.85rem', borderRadius:10,
               fontWeight:700, cursor:'pointer', fontSize:'1rem', marginTop: '0.5rem',
@@ -576,8 +583,14 @@ export default function Landing() {
             <button onClick={() => setAuthModal('login')} className="btn-glass" style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
               <LogIn size={18} /> Sign In to Portal
             </button>
-            {isInstallable && !isInstalled && (
-              <button onClick={installApp} className="btn-primary" style={{ display:'flex', alignItems:'center', gap:'0.5rem', background: 'linear-gradient(135deg,#10b981,#059669)', border: 'none' }}>
+            {!isInstalled && (
+              <button onClick={() => {
+                if (installPrompt && showInstallPrompt) {
+                  showInstallPrompt();
+                } else {
+                  alert("Para ma-install:\n\n📱 Android: Pindutin ang '3 dots' sa taas at piliin ang 'Install app' o 'Add to Home screen'.\n\n🍎 iOS/iPhone: Pindutin ang 'Share' icon sa baba at piliin ang 'Add to Home Screen'.");
+                }
+              }} className="btn-primary" style={{ display:'flex', alignItems:'center', gap:'0.5rem', background: 'linear-gradient(135deg,#10b981,#059669)', border: 'none' }}>
                 <Download size={18} /> Install App
               </button>
             )}
