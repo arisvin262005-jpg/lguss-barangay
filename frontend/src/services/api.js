@@ -36,15 +36,19 @@ const saveCache = (cache) => {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
 };
 const getCachedResponse = (url) => {
+  const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+  const barangaySuffix = user?.barangay ? `_${user.barangay.replace(/\s+/g, '_')}` : '';
   const cache = loadCache();
-  const entry = cache[url];
+  const entry = cache[url + barangaySuffix];
   if (!entry) return null;
-  if (Date.now() - entry.ts > CACHE_TTL) { delete cache[url]; saveCache(cache); return null; }
+  if (Date.now() - entry.ts > CACHE_TTL) { delete cache[url + barangaySuffix]; saveCache(cache); return null; }
   return entry.data;
 };
 const setCachedResponse = (url, data) => {
+  const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+  const barangaySuffix = user?.barangay ? `_${user.barangay.replace(/\s+/g, '_')}` : '';
   const cache = loadCache();
-  cache[url] = { data, ts: Date.now() };
+  cache[url + barangaySuffix] = { data, ts: Date.now() };
   saveCache(cache);
 };
 
@@ -175,12 +179,20 @@ api.interceptors.request.use((config) => {
     return config;
   }
 
-  // ── Offline GET → serve from PERSISTENT localStorage cache ──
+  // ── Offline GET → serve from PERSISTENT segregated cache ──
   if (isOffline && config.method === 'get') {
     config.adapter = async () => {
       let cachedData = getCachedResponse(config.url);
       if (!cachedData) cachedData = { data: [] };
       else cachedData = JSON.parse(JSON.stringify(cachedData)); // deep clone
+
+      // FORCE FILTERING (Security Layer): Ensure offline users only see their own barangay
+      const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+      if (user && user.role !== 'Admin') {
+        const filterFn = (item) => !item.barangay || item.barangay === user.barangay;
+        if (Array.isArray(cachedData)) cachedData = cachedData.filter(filterFn);
+        else if (cachedData?.data && Array.isArray(cachedData.data)) cachedData.data = cachedData.data.filter(filterFn);
+      }
 
       // Merge offline queued POSTs/PUTs optimistically so new records appear immediately
       const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
