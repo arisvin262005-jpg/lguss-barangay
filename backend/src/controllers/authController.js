@@ -10,18 +10,30 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '30m';
 const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password, barangay, role } = req.body;
+
+    // Only 'Secretary' is allowed for self-registration. Admin is a permanent singleton.
+    if (!firstName || !lastName || !email || !password || !barangay) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+    if (role === 'Admin') {
+      return res.status(403).json({ error: 'Admin accounts cannot be created via registration.' });
+    }
+    const allowedRoles = ['Secretary'];
+    const assignedRole = allowedRoles.includes(role) ? role : 'Secretary';
+
     if (db.findByEmail(email)) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ error: 'Email already registered.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = db.insert('users', {
       id: uuidv4(), firstName, lastName, email, password: hashedPassword,
-      barangay, role: role || 'Viewer', isVerified: false,
+      barangay, role: assignedRole,
+      // isVerified stays false — Admin must approve before user can log in
+      isVerified: false,
+      pendingApproval: true,
     });
-    // Mock email verification — auto-verify in dev
-    db.update('users', user.id, { isVerified: true });
-    addBlock({ action: 'USER_REGISTERED', recordType: 'user', recordId: user.id, actor: email, actorRole: role, details: { email, role, barangay } });
-    res.status(201).json({ message: 'Registration successful. You can now log in.', userId: user.id });
+    addBlock({ action: 'USER_REGISTERED', recordType: 'user', recordId: user.id, actor: email, actorRole: assignedRole, details: { email, role: assignedRole, barangay } });
+    res.status(201).json({ message: 'Registration submitted. Your account is pending admin approval.', userId: user.id });
   } catch (err) {
     res.status(500).json({ error: 'Registration failed', details: err.message });
   }
@@ -40,7 +52,9 @@ const login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
-    if (!user.isVerified) return res.status(403).json({ error: 'Email not verified' });
+    if (!user.isVerified) {
+      return res.status(403).json({ error: 'Your account is pending approval by the Administrator. Please wait for confirmation.' });
+    }
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, barangay: user.barangay, name: `${user.firstName} ${user.lastName}` },
@@ -113,4 +127,49 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, forgotPassword, getMe, updateProfile };
+// ── Admin: list all users ──
+const getUsers = (req, res) => {
+  try {
+    const users = db.users.map(({ password, ...u }) => u);
+    res.json({ data: users });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users', details: err.message });
+  }
+};
+
+// ── Admin: approve a pending Secretary account ──
+const approveUser = (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = db.findById('users', id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.role === 'Admin') return res.status(400).json({ error: 'Cannot modify the Admin account.' });
+    const updated = db.update('users', id, {
+      isVerified: true,
+      pendingApproval: false,
+      approvedBy: req.user.id,
+      approvedAt: new Date().toISOString(),
+    });
+    addBlock({ action: 'USER_APPROVED', recordType: 'user', recordId: id, actor: req.user.email, actorRole: req.user.role, details: { approvedUser: user.email } });
+    res.json({ message: `Account for ${user.firstName} ${user.lastName} approved successfully.`, user: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Approval failed', details: err.message });
+  }
+};
+
+// ── Admin: reject/delete a pending or existing Secretary account ──
+const rejectUser = (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = db.findById('users', id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.role === 'Admin') return res.status(400).json({ error: 'Cannot delete the Admin account.' });
+    db.delete('users', id);
+    addBlock({ action: 'USER_REJECTED', recordType: 'user', recordId: id, actor: req.user.email, actorRole: req.user.role, details: { rejectedUser: user.email } });
+    res.json({ message: `Account for ${user.firstName} ${user.lastName} has been removed.` });
+  } catch (err) {
+    res.status(500).json({ error: 'Rejection failed', details: err.message });
+  }
+};
+
+module.exports = { register, login, logout, forgotPassword, getMe, updateProfile, getUsers, approveUser, rejectUser };

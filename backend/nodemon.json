@@ -1,0 +1,3 @@
+{
+  "ignore": ["data/*", "log.txt", "server_error_log.txt", "bims_db/*"]
+}

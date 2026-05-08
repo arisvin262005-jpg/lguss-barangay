@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { register, login, logout, forgotPassword, getMe } = require('../controllers/authController');
+const { register, login, logout, forgotPassword, getMe, updateProfile, getUsers, approveUser, rejectUser } = require('../controllers/authController');
 const { loginLimiter } = require('../middleware/rateLimiter');
 const { authenticate } = require('../middleware/auth');
 
@@ -19,12 +19,27 @@ const softAuthenticate = (req, res, next) => {
   }
 };
 
+// ── Middleware: Admin-only guard ──
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== 'Admin') {
+    return res.status(403).json({ error: 'Admin access required.' });
+  }
+  next();
+};
+
+// Public routes
 router.post('/register', register);
 router.post('/login', loginLimiter, login);
 router.post('/logout', logout);
 router.post('/forgot-password', forgotPassword);
 router.get('/me', softAuthenticate, getMe);
-const { updateProfile } = require('../controllers/authController');
+
+// Authenticated routes
 router.put('/update-profile', authenticate, updateProfile);
+
+// ── Admin-only routes ──
+router.get('/users',            authenticate, requireAdmin, getUsers);
+router.post('/approve/:id',     authenticate, requireAdmin, approveUser);
+router.delete('/users/:id',     authenticate, requireAdmin, rejectUser);
 
 module.exports = router;

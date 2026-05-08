@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSync } from '../context/SyncContext';
@@ -21,56 +21,56 @@ const NAV_GROUPS = [
   },
   {
     label: 'Inhabitants',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: Home,         label: 'Household Records',  path: '/households',     roles: ['Admin','Secretary'] },
-      { icon: Users,        label: 'Resident Profiling', path: '/residents',      roles: ['Admin','Secretary'] },
-      { icon: UserCheck,    label: 'Senior Citizens',    path: '/senior-citizens',roles: ['Admin','Secretary'] },
-      { icon: Accessibility,label: 'PWD Registry',       path: '/pwd',            roles: ['Admin','Secretary'] },
-      { icon: Vote,         label: 'Voter Registry',     path: '/voters',         roles: ['Admin','Secretary'] },
+      { icon: Home,         label: 'Household Records',  path: '/households',     roles: ['Secretary'] },
+      { icon: Users,        label: 'Resident Profiling', path: '/residents',      roles: ['Secretary'] },
+      { icon: UserCheck,    label: 'Senior Citizens',    path: '/senior-citizens',roles: ['Secretary'] },
+      { icon: Accessibility,label: 'PWD Registry',       path: '/pwd',            roles: ['Secretary'] },
+      { icon: Vote,         label: 'Voter Registry',     path: '/voters',         roles: ['Secretary'] },
     ]
   },
   {
     label: 'Issuances',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: FileText,      label: 'Certifications', path: '/certifications',  roles: ['Admin','Secretary'] },
+      { icon: FileText,      label: 'Certifications', path: '/certifications',  roles: ['Secretary'] },
     ]
   },
   {
     label: 'Katarungang Pambarangay',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: Scale,    label: 'Case List',          path: '/cases',       roles: ['Admin','Secretary'] },
-      { icon: Calendar, label: 'Hearing Schedule',   path: '/hearings',    roles: ['Admin','Secretary'] },
+      { icon: Scale,    label: 'Case List',          path: '/cases',       roles: ['Secretary'] },
+      { icon: Calendar, label: 'Hearing Schedule',   path: '/hearings',    roles: ['Secretary'] },
     ]
   },
   {
     label: 'Legislation',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: BookOpen, label: 'Ordinances & Resolutions', path: '/legislation', roles: ['Admin','Secretary'] },
+      { icon: BookOpen, label: 'Ordinances & Resolutions', path: '/legislation', roles: ['Secretary'] },
     ]
   },
   {
     label: 'Incidents & Complaints',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: AlertTriangle, label: 'File & Track Complaints', path: '/incidents', roles: ['Admin','Secretary'] },
+      { icon: AlertTriangle, label: 'File & Track Complaints', path: '/incidents', roles: ['Secretary'] },
     ]
   },
   {
     label: 'Asset & Infrastructure',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: Building2, label: 'Barangay Assets', path: '/assets', roles: ['Admin','Secretary'] },
+      { icon: Building2, label: 'Barangay Assets', path: '/assets', roles: ['Secretary'] },
     ]
   },
   {
     label: 'DRRM & GAD',
-    roles: ['Admin','Secretary'],
+    roles: ['Secretary'],
     items: [
-      { icon: Shield, label: 'DRRM & GAD Programs', path: '/drrm', roles: ['Admin','Secretary'] },
+      { icon: Shield, label: 'DRRM & GAD Programs', path: '/drrm', roles: ['Secretary'] },
     ]
   },
   {
@@ -110,6 +110,27 @@ export default function Layout({ children }) {
   const [showProfile, setShowProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', password: '' });
   const [profileSaving, setProfileSaving] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Fetch pending approvals count for Admin badge
+  const fetchPendingCount = useCallback(async () => {
+    if (!hasRole('Admin')) return;
+    try {
+      const { default: api } = await import('../services/api');
+      const { data } = await api.get('/auth/users');
+      const allUsers = data.data || data || [];
+      setPendingCount(allUsers.filter(u => !u.isVerified && u.role !== 'Admin').length);
+    } catch {
+      // silent fail — badge just won’t show
+    }
+  }, [hasRole]);
+
+  useEffect(() => {
+    fetchPendingCount();
+    // Re-check every 60 seconds
+    const interval = setInterval(fetchPendingCount, 60_000);
+    return () => clearInterval(interval);
+  }, [fetchPendingCount]);
 
   const handleOpenProfile = () => {
     if (!user) return;
@@ -193,7 +214,9 @@ export default function Layout({ children }) {
         {/* Header */}
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <img src="/assets/astig_logo.png" alt="System Logo" style={{ width: 34, height: 34, objectFit: 'contain' }} />
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: '#fff', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/assets/astig_logo.png" alt="System Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
           </div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
@@ -246,6 +269,9 @@ export default function Layout({ children }) {
                           <span className="nav-item-label">{item.label}</span>
                           {item.path === '/sync' && syncStats.pending > 0 && (
                             <span className="nav-item-badge">{syncStats.pending}</span>
+                          )}
+                          {item.path === '/settings' && pendingCount > 0 && (
+                            <span className="nav-item-badge" style={{ background: '#dc2626' }}>{pendingCount}</span>
                           )}
                         </>
                       )}

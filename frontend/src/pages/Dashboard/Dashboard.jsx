@@ -47,16 +47,21 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchStats();
-    // Auto-refresh every 30s for near real-time dashboard
-    const interval = setInterval(fetchStats, 30000);
+    // Real-time auto-refresh every 5 seconds
+    const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Also refresh when sync completes
+  // Also refresh when sync completes or window gains focus
   useEffect(() => {
     const onSync = () => fetchStats();
+    const onFocus = () => { if (document.visibilityState === 'visible') fetchStats(); };
     window.addEventListener('sync-complete', onSync);
-    return () => window.removeEventListener('sync-complete', onSync);
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      window.removeEventListener('sync-complete', onSync);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
   }, []);
 
   const hour = new Date().getHours();
@@ -85,7 +90,7 @@ export default function Dashboard() {
               <Download size={16} /> Install App
             </button>
           )}
-          {hasRole('Admin', 'Secretary') && (
+          {hasRole('Secretary') && (
             <>
               <Link to="/residents" className="btn btn-outline btn-sm"><Plus size={14} /> Add Resident</Link>
               <Link to="/cases"     className="btn btn-outline btn-sm"><Plus size={14} /> File Case</Link>
@@ -143,15 +148,12 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Stat cards */}
+      {/* Stat cards - Strictly database counts only */}
       <div className="grid-responsive" style={{ marginBottom: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
         <StatCard icon={Users}      label="Total Residents"        value={stats?.residents   ?? 0}    sub="Registered profiles"        color="#1a4f8a" loading={loading} />
         <StatCard icon={Home}       label="Total Households"       value={stats?.households  ?? 0}    sub="Registered households"      color="#7c3aed" loading={loading} />
         <StatCard icon={FileText}   label="Pending Certs"          value={stats?.pendingCerts?? 0}    sub="Awaiting processing"        color="#d97706" loading={loading} />
         <StatCard icon={Scale}      label="Active KP Cases"        value={stats?.activeCases ?? 0}    sub="Under Mediation"            color="#dc2626" loading={loading} />
-
-        <StatCard icon={RefreshCw}  label="Sync Success"           value={`${syncStats.successRate}%`}sub={`${syncStats.pending} Pending Sync`} color={syncStats.successRate>=90?'#16a34a':'#d97706'} loading={false} />
-        <StatCard icon={MonitorCheck} label="Offline Capacity"     value={`${offlineStats?.cached ?? 0}`} sub="Locally Secured"           color="#0891b2" loading={loading} />
         <StatCard icon={TrendingUp} label="Certs (Month)"          value={stats?.certThisMonth?? 0}   sub="Issued this month"          color="#0284c7" loading={loading} />
       </div>
 

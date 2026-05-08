@@ -427,7 +427,7 @@ export default function Landing() {
       <header className={`lp-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="lp-container lp-nav">
           <div className="lp-logo-group" style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
-            <img src="/assets/astig_logo.png" alt="CRPS" style={{ width:40, height:40, objectFit:'contain' }} />
+            <img src="/assets/astig_logo.png" alt="CRPS" style={{ width:40, height:40, objectFit:'contain', mixBlendMode: 'multiply' }} />
             <img src="https://gimgs2.nohat.cc/thumb/f/640/barangay-3-balansay-mamburao-municipal-gymnasium-logo-appraisals-pennant--5281772497534976.jpg" alt="Mamburao" style={{ width:38, height:38, borderRadius:'50%', objectFit:'cover', border:'2px solid #e2e8f0' }} />
             <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:40, height:40, objectFit:'contain' }} />
             <div className="lp-logo-text">
@@ -1131,10 +1131,21 @@ function RegisterForm({ onSwitch }) {
   };
 
   if (success) return (
-    <div style={{ padding:'3.5rem 2rem', textAlign:'center' }}>
-      <CheckCircle2 size={52} color="#10b981" style={{ margin:'0 auto 1.5rem', display:'block' }} />
-      <h2 style={{ fontWeight:900, fontSize:'1.4rem', color:'#10b981', marginBottom:'0.5rem' }}>Registration Successful!</h2>
-      <p style={{ color:'#64748b', fontSize:'0.95rem' }}>Your official account was created. Redirecting to sign in...</p>
+    <div style={{ padding:'2.5rem 2rem', textAlign:'center' }}>
+      <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#1a4f8a,#0ea5e9)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.25rem', boxShadow:'0 0 24px rgba(14,165,233,0.4)' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h2 style={{ fontWeight:900, fontSize:'1.3rem', color:'#1a4f8a', marginBottom:'0.5rem' }}>Registration Submitted!</h2>
+      <p style={{ color:'#475569', fontSize:'0.9rem', lineHeight:1.6, marginBottom:'1rem' }}>
+        Your <strong>Secretary</strong> account is <span style={{ color:'#d97706', fontWeight:800 }}>pending admin approval.</span><br/>You can log in once the LGU Administrator approves your request.
+      </p>
+      <div style={{ background:'rgba(26,79,138,0.06)', border:'1px solid rgba(26,79,138,0.15)', borderRadius:10, padding:'0.75rem 1rem', textAlign:'left', marginBottom:'1.25rem' }}>
+        <div style={{ fontSize:'0.78rem', color:'#334155', lineHeight:1.8 }}>
+          ✅ <strong>Next:</strong> Contact your LGU Administrator to approve your account.<br/>
+          📧 Once approved, sign in using your registered email &amp; password.
+        </div>
+      </div>
+      <button type="button" onClick={onSwitch} style={{ background:`linear-gradient(135deg,${GOV_BLUE},${GOV_LIGHT})`, color:'#fff', border:'none', borderRadius:10, padding:'0.7rem 1.75rem', fontWeight:700, cursor:'pointer', fontSize:'0.9rem' }}>Back to Sign In</button>
     </div>
   );
 
@@ -1170,9 +1181,9 @@ function RegisterForm({ onSwitch }) {
           </div>
           <div style={{ flex:1 }}>
             <label style={labelStyle}>Role</label>
-            <select value={form.role} onChange={e=>setForm({...form, role:e.target.value})} style={inputStyle}>
-              {['Admin','Secretary'].map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
+            <div style={{ ...inputStyle, display:'flex', alignItems:'center', gap:'0.4rem', background:'rgba(26,79,138,0.05)', borderColor:'rgba(26,79,138,0.2)', cursor:'default', color:'#1a4f8a', fontWeight:700 }}>
+              📋 Secretary
+            </div>
           </div>
         </div>
         <div>
@@ -1207,8 +1218,8 @@ function RegisterForm({ onSwitch }) {
           <input type="checkbox" required checked={form.privacyAgreed} onChange={e=>setForm({...form, privacyAgreed:e.target.checked})} style={{ marginTop:3 }} />
           <span style={{ fontSize:'0.78rem', color:'#64748b', lineHeight:1.5 }}>I agree to the <strong>Data Privacy Act of 2012</strong> and consent to the processing of my official data.</span>
         </label>
-        <button type="submit" disabled={loading} style={{ ...submitBtnStyle, background:'linear-gradient(135deg,#10b981,#059669)', boxShadow:'0 4px 12px rgba(16,185,129,0.35)' }}>
-          {loading ? <><span style={spinnerStyle}/> Creating account...</> : <><UserPlus size={17}/> Initialize Access</>}
+        <button type="submit" disabled={loading} style={{ ...submitBtnStyle, background:'linear-gradient(135deg,#1a4f8a,#0ea5e9)', boxShadow:'0 4px 12px rgba(26,79,138,0.35)' }}>
+          {loading ? <><span style={spinnerStyle}/> Submitting...</> : <><UserPlus size={17}/> Submit Registration Request</>}
         </button>
       </form>
       <div style={{ textAlign:'center', marginTop:'1rem', fontSize:'0.85rem', color:'#94a3b8' }}>
