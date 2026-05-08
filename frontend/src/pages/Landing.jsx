@@ -836,12 +836,14 @@ export default function Landing() {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'1.5rem' }}>
             {[
               { name:'Arvin Dela Rosa Marasigan', role:'Lead Developer & System Architect', emoji:'💻', badge:'Full Stack', color:'#2563eb' },
-              { name:'Hannah Alfaro', role:'Frontend Developer & UI/UX Designer', emoji:'🎨', badge:'Frontend', color:'#8b5cf6' },
+              { name:'Hannah Alfaro', role:'Frontend Developer & UI/UX Designer', emoji:'🎨', badge:'Frontend', color:'#8b5cf6', img: 'https://scontent.fmnl34-1.fna.fbcdn.net/v/t1.15752-9/675218204_1694104088683785_6777539584026093607_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeHw6LKfh2atawzsd3w5lomUbTCeEAmAbORtMJ4QCYBs5CeF4oroExB95byGXKgHmTlvr8zFsL6yBfFxb119XmWl&_nc_ohc=hXm8Q9fDx5IQ7kNvwFQQjlD&_nc_oc=AdrwiZw3CWg9sfQGvyrJS4IuyoD7vt1Qfs_2GJzzmQEUaeL3HLs_MKT4RykwkU1GG7g7l1Ih-5WKHT_peuHuMvOX&_nc_zt=23&_nc_ht=scontent.fmnl34-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5QFoKoM3_LXuzO8pagMtRLXpqQ6pyOEDqbagrtL2SK2_uw&oe=6A25AB1C' },
               { name:'Lanibel Cabrera', role:'Frontend Developer & QA Analyst', emoji:'🔍', badge:'Frontend / QA', color:'#10b981' },
             ].map((m, i) => (
               <AnimatedCard key={i} delay={i * 100}>
                 <div className="team-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                  <div className="team-avatar">{m.emoji}</div>
+                  <div className="team-avatar" style={{ overflow: 'hidden', padding: m.img ? 0 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {m.img ? <img src={m.img} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : m.emoji}
+                  </div>
                   <div style={{ fontWeight:900, fontSize:'1rem', color:'#0f172a', marginBottom:'0.35rem', textAlign:'center' }}>{m.name}</div>
                   <div style={{ fontSize:'0.82rem', color:'#64748b', lineHeight:1.5, marginBottom:'1rem', textAlign:'center' }}>{m.role}</div>
                   <span style={{ background:`${m.color}14`, border:`1px solid ${m.color}33`, color:m.color, padding:'0.3rem 0.8rem', borderRadius:100, fontSize:'0.73rem', fontWeight:700 }}>{m.badge}</span>
