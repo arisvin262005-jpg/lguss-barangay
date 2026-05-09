@@ -8,14 +8,14 @@ const SESSION_KEY = 'lguss_user_session';
 const TOKEN_KEY   = 'lguss_jwt_token';
 
 export const AuthProvider = ({ children }) => {
-  // ── 1. Trust localStorage FIRST — no loading flicker ──
+  // ── 1. Trust sessionStorage FIRST — no loading flicker ──
   const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; }
+    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)) || null; }
     catch { return null; }
   });
 
   // If a stored session already exists we are NOT loading — skip fetchMe entirely
-  const hasSavedSession = !!localStorage.getItem(SESSION_KEY);
+  const hasSavedSession = !!sessionStorage.getItem(SESSION_KEY);
   const [loading, setLoading] = useState(!hasSavedSession);
 
   const inactivityTimerRef = useRef(null);
@@ -23,10 +23,10 @@ export const AuthProvider = ({ children }) => {
 
   const persistUser = (u) => {
     setUser(u);
-    if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+    if (u) sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
     else {
-      localStorage.removeItem(SESSION_KEY);
-      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
     }
   };
 
@@ -35,8 +35,8 @@ export const AuthProvider = ({ children }) => {
     if (fetchMeRunning.current) return;
     fetchMeRunning.current = true;
 
-    // Already have a session in localStorage → trust it, skip network check
-    const savedRaw = localStorage.getItem(SESSION_KEY);
+    // Already have a session in sessionStorage → trust it, skip network check
+    const savedRaw = sessionStorage.getItem(SESSION_KEY);
     if (savedRaw) {
       try {
         const saved = JSON.parse(savedRaw);
@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.get('/auth/me');
       if (data && data.authenticated === false) {
         // Verify AGAIN that nothing was written since we started
-        const latestSession = localStorage.getItem(SESSION_KEY);
+        const latestSession = sessionStorage.getItem(SESSION_KEY);
         if (!latestSession) setUser(null);
       } else if (data && data.id) {
-        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+        if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
         persistUser(data);
       }
     } catch {
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }) => {
   // ── 4. Login — persist immediately, never overwritten by fetchMe ──
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+    if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
     persistUser(data.user);
     return data;
   };

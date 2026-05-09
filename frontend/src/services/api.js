@@ -36,7 +36,7 @@ const saveCache = (cache) => {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
 };
 const getCachedResponse = (url) => {
-  const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+  const user = JSON.parse(sessionStorage.getItem('lguss_user_session') || 'null');
   const barangaySuffix = user?.barangay ? `_${user.barangay.replace(/\s+/g, '_')}` : '';
   const cache = loadCache();
   const entry = cache[url + barangaySuffix];
@@ -45,7 +45,7 @@ const getCachedResponse = (url) => {
   return entry.data;
 };
 const setCachedResponse = (url, data) => {
-  const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+  const user = JSON.parse(sessionStorage.getItem('lguss_user_session') || 'null');
   const barangaySuffix = user?.barangay ? `_${user.barangay.replace(/\s+/g, '_')}` : '';
   const cache = loadCache();
   cache[url + barangaySuffix] = { data, ts: Date.now() };
@@ -148,7 +148,7 @@ const createOfflineLoginResponse = (config) => {
 // ─────────────────────────────────────────────────────────────
 api.interceptors.request.use((config) => {
   // Attach JWT Bearer token on every request
-  const token = localStorage.getItem('lguss_jwt_token');
+  const token = sessionStorage.getItem('lguss_jwt_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
