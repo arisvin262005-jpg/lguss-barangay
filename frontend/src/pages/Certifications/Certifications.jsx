@@ -134,16 +134,19 @@ export default function Certifications() {
 
   // ===== PRINT CERTIFICATE PDF =====
   const printCert = (cert) => {
-    const img1 = new Image();
-    img1.src = '/assets/mamburao_logo.png';
-    const img2 = new Image();
-    img2.src = '/assets/barangay_logo.png';
+    const loadImage = (src) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null); // Continue even if logo fails
+      img.src = src;
+    });
 
-    img1.onload = () => {
-      img2.onload = () => {
-        generatePDF(cert, img1, img2);
-      };
-    };
+    Promise.all([
+      loadImage('/assets/mamburao_logo.png'),
+      loadImage('/assets/barangay_logo.png')
+    ]).then(([mamburaoLogo, barangayLogo]) => {
+      generatePDF(cert, mamburaoLogo, barangayLogo);
+    });
   };
 
   const generatePDF = (cert, mamburaoLogo, barangayLogo) => {
@@ -153,8 +156,8 @@ export default function Certifications() {
     const mx = 25, pw = 160;
 
     // Logos
-    doc.addImage(mamburaoLogo, 'PNG', mx, 15, 24, 24);
-    doc.addImage(barangayLogo, 'PNG', mx + pw - 24, 15, 24, 24);
+    if (mamburaoLogo) doc.addImage(mamburaoLogo, 'PNG', mx, 15, 24, 24);
+    if (barangayLogo) doc.addImage(barangayLogo, 'PNG', mx + pw - 24, 15, 24, 24);
 
     // Republic of the Philippines header
     doc.setFontSize(9); doc.setFont('helvetica','normal');
