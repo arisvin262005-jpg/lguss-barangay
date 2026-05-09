@@ -589,6 +589,141 @@ const getCalamityVulnerabilityForecast = (req, res) => {
   }
 };
 
+/**
+ * GET /api/reports/forecast/repeat-offenders
+ * ─────────────────────────────────────────────────────────────────────
+ * PANEL REQUIREMENT: Pattern Detection for Repeat Offenders
+ * ─────────────────────────────────────────────────────────────────────
+ * Rule-Based Decision Support System (DSS) — Pattern Recognition Module
+ *
+ * INPUT  : db.cases  (KP Case records with respondentId, filedDate, status, caseType)
+ *          db.residents (to resolve names)
+ * RULES  : 
+ *   - A resident is a "Repeat Offender" if they appear as respondent in ≥ 2 cases
+ *   - Risk Score (Weighted Additive):
+ *       Base  = number of cases as respondent × 3
+ *       Recent case (< 1yr)  = +2 per case
+ *       Escalated case        = +3 per case
+ *       Settled/Dismissed     = -1 per case
+ *       Threshold: HIGH ≥ 8 | MODERATE 4–7 | LOW < 4
+ * OUTPUT : Sorted list of repeat respondents with risk score + case history
+ *          + frequency trend by month + top case types
+ */
+const getRepeatOffenderAnalysis = (req, res) => {
+  try {
+    const { role, barangay } = req.user || {};
+    const safeResidents = Array.isArray(db.residents) ? db.residents : [];
+    const safeCases     = Array.isArray(db.cases)     ? db.cases     : [];
+
+    const cases = role === ROLES.ADMIN
+      ? safeCases
+      : safeCases.filter(c => c && c.barangay === barangay);
+
+    const now      = new Date();
+    const oneYearAgo = new Date(); oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+    // ── Build respondent frequency map ──
+    const respondentMap = {};
+    cases.forEach(c => {
+      if (!c || !c.respondentId) return;
+      const id = c.respondentId;
+      if (!respondentMap[id]) respondentMap[id] = { cases: [], score: 0 };
+      respondentMap[id].cases.push(c);
+      // Weighted scoring rules
+      respondentMap[id].score += 3; // base: respondent role
+      if (c.filedDate && new Date(c.filedDate) >= oneYearAgo) respondentMap[id].score += 2;
+      if (c.status === 'Escalated to Court') respondentMap[id].score += 3;
+      if (c.status === 'Settled' || c.status === 'Dismissed') respondentMap[id].score -= 1;
+    });
+
+    // ── Filter: only residents with ≥ 2 cases (repeat offenders) ──
+    const repeatOffenders = Object.entries(respondentMap)
+      .filter(([, d]) => d.cases.length >= 2)
+      .map(([resId, d]) => {
+        const r = safeResidents.find(x => x && x.id === resId);
+        const score = Math.max(0, d.score);
+        const riskLevel = score >= 8 ? 'HIGH' : score >= 4 ? 'MODERATE' : 'LOW';
+        // Mask full name — show only first name + masked last name for privacy
+        const firstName = r?.firstName || 'Unknown';
+        const lastNameMasked = r?.lastName
+          ? r.lastName[0] + '*'.repeat(Math.max(0, r.lastName.length - 1))
+          : '***';
+        return {
+          residentId: resId,
+          displayName: `${firstName} ${lastNameMasked}`,
+          barangay: r?.barangay || 'Unknown',
+          totalCases: d.cases.length,
+          activeCases: d.cases.filter(c => !['Settled', 'Dismissed'].includes(c.status)).length,
+          caseTypes: [...new Set(d.cases.map(c => c.caseType).filter(Boolean))],
+          latestCaseDate: d.cases.map(c => c.filedDate).filter(Boolean).sort().reverse()[0] || null,
+          riskScore: score,
+          riskLevel,
+          tags: r?.tags || {},
+        };
+      })
+      .sort((a, b) => b.riskScore - a.riskScore);
+
+    // ── Monthly case frequency trend (pattern detection) ──
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const byMonth = Array(12).fill(0);
+    cases.forEach(c => {
+      if (c?.filedDate) byMonth[new Date(c.filedDate).getMonth()]++;
+    });
+    const monthlyTrend = months.map((m, i) => ({ month: m, count: byMonth[i] }));
+    const peakMonth = monthlyTrend.reduce((a, b) => a.count >= b.count ? a : b, { month: '—', count: 0 });
+
+    // ── Case type frequency ──
+    const caseTypeCount = {};
+    cases.forEach(c => {
+      if (c?.caseType) caseTypeCount[c.caseType] = (caseTypeCount[c.caseType] || 0) + 1;
+    });
+    const topCaseTypes = Object.entries(caseTypeCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([type, count]) => ({ type, count }));
+
+    const highRisk = repeatOffenders.filter(r => r.riskLevel === 'HIGH').length;
+
+    res.json({
+      repeatOffenders,
+      summary: {
+        total: repeatOffenders.length,
+        highRisk,
+        moderate: repeatOffenders.filter(r => r.riskLevel === 'MODERATE').length,
+        low: repeatOffenders.filter(r => r.riskLevel === 'LOW').length,
+        totalCasesAnalyzed: cases.length,
+      },
+      monthlyTrend,
+      peakMonth,
+      topCaseTypes,
+      methodology: {
+        inputData: 'KP Case Records (respondentId, filedDate, status, caseType) + Resident Registry',
+        rules: [
+          'Repeat Offender = Respondent in ≥ 2 distinct KP cases',
+          'Base Score = 3 pts per case as Respondent',
+          'Recent case (< 1yr) = +2 pts',
+          'Escalated to Court = +3 pts',
+          'Settled/Dismissed = -1 pt',
+          'HIGH Risk ≥ 8 | MODERATE 4–7 | LOW < 4',
+        ],
+        outputDecisions: [
+          'Ranked list of repeat respondents for Barangay Justice referral',
+          'Risk level classification (HIGH / MODERATE / LOW)',
+          'Monthly case frequency trend for patrol planning',
+          'Top case types for community intervention targeting',
+        ],
+      },
+      insight: repeatOffenders.length > 0
+        ? `May ${repeatOffenders.length} na nakilalang paulit-ulit na respondent sa mga KP case. ${highRisk} ang nasa HIGH risk level. Ang pinaka-aktibong buwan ng kaso ay ${peakMonth.month} na may ${peakMonth.count} na kaso.`
+        : 'Walang repeat offenders ang natuklasan sa kasalukuyang mga datos.',
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[getRepeatOffenderAnalysis Error]', err);
+    res.status(500).json({ error: 'Failed to generate repeat offender analysis', details: err.message });
+  }
+};
+
 module.exports = {
   getDashboardStats, getMonthlyCertReport, getCaseSummary,
   getResidentMasterlist, getSyncReport, getTimeSavedReport, getDuplicateCaseReport,
@@ -596,4 +731,6 @@ module.exports = {
   // Predictive Forecasting
   getServiceDemandForecast, getDemographicTrendsForecast, getIncidentHotspotForecast,
   getHealthRiskForecast, getCalamityVulnerabilityForecast,
+  // Pattern Detection (Panel Requirement)
+  getRepeatOffenderAnalysis,
 };

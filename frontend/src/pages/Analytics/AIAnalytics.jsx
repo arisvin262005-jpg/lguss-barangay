@@ -226,12 +226,59 @@ function CalamityPanel({ data }) {
   );
 }
 
+/* ── 6. Repeat Offender Pattern Detection (Panel Requirement) ── */
+function RepeatOffenderPanel({ data }) {
+  if (!data) return <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>Add KP Case records to enable pattern detection.</div>;
+  const { summary, repeatOffenders, topCaseTypes, peakMonth } = data;
+  const riskColor = { HIGH: RED, MODERATE: ORANGE, LOW: GREEN };
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.65rem', marginBottom: '1rem' }}>
+        <StatCard label="Repeat Respondents" value={summary.total} color={RED} sub="≥2 KP cases" />
+        <StatCard label="HIGH Risk" value={summary.highRisk} color={ORANGE} sub="Score ≥ 8" />
+        <StatCard label="Cases Scanned" value={summary.totalCasesAnalyzed} color={BLUE} sub="Total KP records" />
+      </div>
+      {/* Privacy note */}
+      <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '0.6rem 0.9rem', marginBottom: '1rem', fontSize: '0.72rem', color: '#92400e', display: 'flex', gap: '0.5rem' }}>
+        <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+        <span>Case particulars are protected. Last names are partially masked (e.g., "Juan D***") per data privacy protocols.</span>
+      </div>
+      {/* Offender list */}
+      <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '0.75rem' }}>
+        <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>Top Repeat Respondents</div>
+        {repeatOffenders.length === 0 && <div style={{ color: '#94a3b8', fontSize: '0.82rem', textAlign: 'center', padding: '1rem' }}>No repeat offenders found in current data.</div>}
+        {repeatOffenders.slice(0, 5).map((r, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.5rem', borderBottom: i < 4 ? '1px solid #f1f5f9' : 'none' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1e293b' }}>{r.displayName}</div>
+              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{r.barangay} &middot; {r.totalCases} cases &middot; {r.activeCases} active</div>
+            </div>
+            <Badge label={r.riskLevel} color={riskColor[r.riskLevel] || BLUE} />
+          </div>
+        ))}
+      </div>
+      {/* Top case types */}
+      {topCaseTypes?.length > 0 && (
+        <div style={{ marginTop: '1rem', background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', padding: '0.75rem' }}>
+          <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>Top Case Types &mdash; Community Intervention Targets</div>
+          {topCaseTypes.map((t, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', padding: '0.3rem 0', borderBottom: i < topCaseTypes.length - 1 ? '1px solid #f1f5f9' : 'none', color: '#334155' }}>
+              <span>{t.type}</span><span style={{ fontWeight: 800, color: RED }}>{t.count}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {peakMonth?.count > 0 && <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: '#64748b', textAlign: 'center' }}>Peak case filing month: <strong style={{ color: ORANGE }}>{peakMonth.month}</strong> ({peakMonth.count} cases)</div>}
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════════ */
 export default function AIAnalytics() {
   const [forecasts, setForecasts] = useState({
-    serviceDemand: null, demographic: null, hotspot: null, health: null, calamity: null, roster: null,
+    serviceDemand: null, demographic: null, hotspot: null, health: null, calamity: null, roster: null, repeatOffenders: null,
   });
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(null);
@@ -246,15 +293,17 @@ export default function AIAnalytics() {
       api.get('/reports/forecast/incident-hotspots'),
       api.get('/reports/forecast/health-risk'),
       api.get('/reports/forecast/calamity-vulnerability'),
-      api.get('/reports/barangay-case-roster')
+      api.get('/reports/barangay-case-roster'),
+      api.get('/reports/forecast/repeat-offenders'),
     ]).then(results => {
       setForecasts({
-        serviceDemand: results[0].status === 'fulfilled' ? results[0].value.data : null,
-        demographic:   results[1].status === 'fulfilled' ? results[1].value.data : null,
-        hotspot:       results[2].status === 'fulfilled' ? results[2].value.data : null,
-        health:        results[3].status === 'fulfilled' ? results[3].value.data : null,
-        calamity:      results[4].status === 'fulfilled' ? results[4].value.data : null,
-        roster:        results[5].status === 'fulfilled' ? results[5].value.data : null,
+        serviceDemand:    results[0].status === 'fulfilled' ? results[0].value.data : null,
+        demographic:      results[1].status === 'fulfilled' ? results[1].value.data : null,
+        hotspot:          results[2].status === 'fulfilled' ? results[2].value.data : null,
+        health:           results[3].status === 'fulfilled' ? results[3].value.data : null,
+        calamity:         results[4].status === 'fulfilled' ? results[4].value.data : null,
+        roster:           results[5].status === 'fulfilled' ? results[5].value.data : null,
+        repeatOffenders:  results[6].status === 'fulfilled' ? results[6].value.data : null,
       });
       setLastRefresh(new Date().toLocaleTimeString('en-PH'));
       setLoading(false);
@@ -272,13 +321,14 @@ export default function AIAnalytics() {
     };
   }, []);
 
-  // Aggregate all AI Insights for the Executive Summary
+  // Aggregate all DSS Insights for the Executive Summary
   const allInsights = [
+    forecasts.repeatOffenders?.insight,
     forecasts.serviceDemand?.recommendation,
     forecasts.hotspot?.insight,
     forecasts.health?.insight,
     forecasts.calamity?.insight,
-    forecasts.demographic?.insight
+    forecasts.demographic?.insight,
   ].filter(Boolean);
 
   return (
@@ -304,12 +354,12 @@ export default function AIAnalytics() {
         </div>
       </div>
 
-      {/* AI Executive Summary (Top Full Width) */}
+      {/* DSS Executive Summary (Top Full Width) */}
       <div style={{ background: 'linear-gradient(135deg, #1e293b, #0f172a)', borderRadius: 20, padding: '2rem', marginBottom: '2rem', color: '#fff', boxShadow: '0 10px 30px rgba(15, 23, 42, 0.2)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, rgba(0,0,0,0) 70%)', borderRadius: '50%' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <Zap size={22} color="#fbbf24" />
-          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>AI Executive Summary</h2>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>DSS Executive Summary — Actionable Insights</h2>
         </div>
         
         {loading ? (
@@ -331,25 +381,41 @@ export default function AIAnalytics() {
         )}
       </div>
 
+      {/* Measurable Outputs Strip (Panel Requirement: measureable results) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(155px,1fr))', gap: '0.85rem', marginBottom: '2rem' }}>
+        {[
+          { label: 'Repeat Offenders', value: forecasts.repeatOffenders?.summary?.total ?? '—', sub: 'Pattern Detected', color: RED },
+          { label: 'HIGH Risk Residents', value: forecasts.health?.summary?.highRisk ?? '—', sub: 'Multi-factor Risk', color: ORANGE },
+          { label: 'Priority 1 Households', value: forecasts.calamity?.summary?.priority1 ?? '—', sub: 'DRRM Evacuation', color: PURPLE },
+          { label: 'Cases Analyzed', value: forecasts.repeatOffenders?.summary?.totalCasesAnalyzed ?? '—', sub: 'KP Record Scan', color: TEAL },
+          { label: 'Peak Demand Months', value: forecasts.serviceDemand?.peakMonths?.length ?? '—', sub: 'Service Forecast', color: BLUE },
+        ].map((m,i) => <StatCard key={i} label={m.label} value={m.value} sub={m.sub} color={m.color} />)}
+      </div>
+
       {/* Grid of Specialized Forecasting Modules */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1.5rem', paddingBottom: '3rem' }}>
-        <DashboardCard icon={MapPin} color={ORANGE} title="Security & Incident Hotspots" subtitle="Tanod deployment optimization based on historical case data" loading={loading}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: '1.5rem', paddingBottom: '3rem' }}>
+
+        <DashboardCard icon={AlertTriangle} color={RED} title="Repeat Offender Pattern Detection" subtitle="Pattern recognition: respondents with ≥2 KP cases (names partially masked for privacy protection)" loading={loading}>
+          <RepeatOffenderPanel data={forecasts.repeatOffenders} />
+        </DashboardCard>
+
+        <DashboardCard icon={MapPin} color={ORANGE} title="Security & Incident Hotspots" subtitle="Weighted risk score per barangay — guides Tanod deployment schedule" loading={loading}>
           <HotspotPanel data={forecasts.hotspot} />
         </DashboardCard>
 
-        <DashboardCard icon={Shield} color={TEAL} title="Disaster & Calamity Vulnerability" subtitle="Priority evacuation ranking based on house type and resident tags" loading={loading}>
+        <DashboardCard icon={Shield} color={TEAL} title="Disaster & Calamity Vulnerability" subtitle="Priority evacuation list — house type + utilities + vulnerable members" loading={loading}>
           <CalamityPanel data={forecasts.calamity} />
         </DashboardCard>
 
-        <DashboardCard icon={Heart} color={PURPLE} title="Health Risk & Outbreaks" subtitle="Seasonal disease forecasting and vulnerable resident mapping" loading={loading}>
+        <DashboardCard icon={Heart} color={PURPLE} title="Health Risk & Outbreak Detection" subtitle="Seasonal disease forecast — multi-factor vulnerable resident mapping" loading={loading}>
           <HealthRiskPanel data={forecasts.health} />
         </DashboardCard>
 
-        <DashboardCard icon={Calendar} color={RED} title="Service Demand Projection" subtitle="Predictive staffing based on certification request volume" loading={loading}>
+        <DashboardCard icon={Calendar} color={RED} title="Service Demand Projection" subtitle="Threshold-based staffing forecast from certification issuance history" loading={loading}>
           <ServiceDemandPanel data={forecasts.serviceDemand} />
         </DashboardCard>
 
-        <DashboardCard icon={Users} color={BLUE} title="Demographic Growth Trends" subtitle="3-Year population and special sector growth forecasting" loading={loading}>
+        <DashboardCard icon={Users} color={BLUE} title="Demographic Growth Trends" subtitle="Compound growth rate projection — 3-year sector population forecast" loading={loading}>
           <DemographicPanel data={forecasts.demographic} />
         </DashboardCard>
       </div>

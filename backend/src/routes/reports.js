@@ -6,6 +6,7 @@ const {
   getBarangayCaseRoster,
   getServiceDemandForecast, getDemographicTrendsForecast, getIncidentHotspotForecast,
   getHealthRiskForecast, getCalamityVulnerabilityForecast,
+  getRepeatOffenderAnalysis,
 } = require('../controllers/reportsController');
 const { authenticate } = require('../middleware/auth');
 
@@ -21,11 +22,15 @@ router.get('/duplicates', getDuplicateCaseReport);
 // System-wide Barangay Case Roster with Risk Scoring
 router.get('/barangay-case-roster', getBarangayCaseRoster);
 
-// Predictive Forecasting Routes
+// Statistical Forecasting — Rule-Based Decision Support System (DSS)
 router.get('/forecast/service-demand',         getServiceDemandForecast);
 router.get('/forecast/demographic-trends',     getDemographicTrendsForecast);
 router.get('/forecast/incident-hotspots',      getIncidentHotspotForecast);
 router.get('/forecast/health-risk',            getHealthRiskForecast);
 router.get('/forecast/calamity-vulnerability', getCalamityVulnerabilityForecast);
 
+// Pattern Detection — Repeat Offender Analysis (Panel Requirement)
+router.get('/forecast/repeat-offenders',       getRepeatOffenderAnalysis);
+
 module.exports = router;
+

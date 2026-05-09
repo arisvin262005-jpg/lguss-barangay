@@ -78,7 +78,7 @@ const NAV_GROUPS = [
     roles: ['Admin','Secretary'],
     items: [
       { icon: Bot,          label: 'Rule-Based Decision Support System', path: '/dss',          roles: ['Admin','Secretary'] },
-      { icon: BrainCircuit, label: 'AI Predictive Analytics',            path: '/ai-analytics', roles: ['Admin','Secretary'] },
+      { icon: BrainCircuit, label: 'Decision Support System (DSS)', path: '/ai-analytics', roles: ['Admin','Secretary'] },
     ]
   },
   {
