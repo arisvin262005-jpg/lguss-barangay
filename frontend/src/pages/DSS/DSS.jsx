@@ -79,7 +79,20 @@ export default function DSS() {
               <label className="form-label" style={{ fontWeight: 700, color: '#475569' }}>Target Resident</label>
               <select className="form-input" style={{ width: '100%' }} value={residentId} onChange={(e) => { setResidentId(e.target.value); setResult(null); }}>
                 <option value="">-- Select Registered Resident --</option>
-                {residents.map((r) => <option key={r.id} value={r.id}>{r.firstName} {r.lastName}</option>)}
+                {Object.entries(
+                  residents.reduce((acc, r) => {
+                    const brgy = r.barangay || 'Unknown Barangay';
+                    if (!acc[brgy]) acc[brgy] = [];
+                    acc[brgy].push(r);
+                    return acc;
+                  }, {})
+                ).sort(([a], [b]) => a.localeCompare(b)).map(([brgy, brgyResidents]) => (
+                  <optgroup key={brgy} label={`📍 ${brgy} (${brgyResidents.length})`}>
+                    {brgyResidents.map((r) => (
+                      <option key={r.id} value={r.id}>{r.firstName} {r.lastName}</option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
             </div>
             <div style={{ marginBottom: '1.5rem' }}>

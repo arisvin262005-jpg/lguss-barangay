@@ -13,6 +13,171 @@
       "email": "admin@barangay.gov.ph"
     },
     {
+      "id": "sec-1",
+      "firstName": "Secretary",
+      "lastName": "Barangay 1 (Poblacion)",
+      "email": "brgy1poblacion@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 1 (Poblacion)",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-2",
+      "firstName": "Secretary",
+      "lastName": "Barangay 2 (Poblacion)",
+      "email": "brgy2poblacion@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 2 (Poblacion)",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-3",
+      "firstName": "Secretary",
+      "lastName": "Barangay 3 (Poblacion)",
+      "email": "brgy3poblacion@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 3 (Poblacion)",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-4",
+      "firstName": "Secretary",
+      "lastName": "Barangay 4 (Poblacion)",
+      "email": "brgy4poblacion@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 4 (Poblacion)",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-5",
+      "firstName": "Secretary",
+      "lastName": "Barangay 5",
+      "email": "brgy5@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 5",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-6",
+      "firstName": "Secretary",
+      "lastName": "Barangay 6",
+      "email": "brgy6@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 6",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-7",
+      "firstName": "Secretary",
+      "lastName": "Barangay 7",
+      "email": "brgy7@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 7",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-8",
+      "firstName": "Secretary",
+      "lastName": "Barangay 8",
+      "email": "brgy8@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Barangay 8",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-9",
+      "firstName": "Secretary",
+      "lastName": "Payompon",
+      "email": "payompon@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Payompon",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-10",
+      "firstName": "Secretary",
+      "lastName": "Tangkalan",
+      "email": "tangkalan@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Tangkalan",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-11",
+      "firstName": "Secretary",
+      "lastName": "Fatima",
+      "email": "fatima@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Fatima",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-12",
+      "firstName": "Secretary",
+      "lastName": "San Luis",
+      "email": "sanluis@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "San Luis",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-13",
+      "firstName": "Secretary",
+      "lastName": "Balansay",
+      "email": "balansay@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Balansay",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-14",
+      "firstName": "Secretary",
+      "lastName": "Tayamaan",
+      "email": "tayamaan@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Tayamaan",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
+      "id": "sec-15",
+      "firstName": "Secretary",
+      "lastName": "Talabaan",
+      "email": "talabaan@mamburao.gov.ph",
+      "password": "$2b$10$WbEzLbs01XebcUtwJhyjV.7qP4DOtZKgUkj6fvKYayyU9RefyAt/y",
+      "role": "Secretary",
+      "barangay": "Talabaan",
+      "isVerified": true,
+      "pendingApproval": false
+    },
+    {
       "collectionType": "users",
       "createdAt": "2026-05-08T18:52:45.016Z",
       "firstName": "Brgy Payompon",
@@ -97,260 +262,6 @@
     }
   ],
   "residents": [
-    {
-      "lastName": "Ramos",
-      "education": "College Graduate",
-      "occupation": "Teacher",
-      "gender": "Female",
-      "bloodType": "O+",
-      "suffix": "",
-      "civilStatus": "Married",
-      "householdId": "hh-001",
-      "createdAt": "2024-01-15T08:00:00.000Z",
-      "contactNumber": "09171234567",
-      "relationToHead": "Head",
-      "id": "res-001",
-      "barangay": "Barangay 1 (Poblacion)",
-      "email": "ana.ramos@example.com",
-      "monthlyIncome": 25000,
-      "updatedAt": "2024-01-15T08:00:00.000Z",
-      "address": "123 Rizal Street, Purok 1",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1990-05-12",
-      "religion": "Roman Catholic",
-      "tags": {
-        "senior": false,
-        "ip": false,
-        "fourPs": false,
-        "voter": true,
-        "pwd": false,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Ana",
-      "precinctNo": "P-001",
-      "birthplace": "Mamburao",
-      "middleName": "Cruz"
-    },
-    {
-      "lastName": "Magno",
-      "education": "High School",
-      "occupation": "Farmer",
-      "gender": "Male",
-      "bloodType": "A+",
-      "suffix": "Jr.",
-      "civilStatus": "Single",
-      "householdId": "hh-002",
-      "createdAt": "2024-02-01T08:00:00.000Z",
-      "contactNumber": "09181234567",
-      "relationToHead": "Head",
-      "id": "res-002",
-      "barangay": "Barangay 1 (Poblacion)",
-      "email": "",
-      "monthlyIncome": 8000,
-      "updatedAt": "2024-02-01T08:00:00.000Z",
-      "address": "456 Mabini Street, Purok 2",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1985-08-22",
-      "religion": "Roman Catholic",
-      "tags": {
-        "senior": false,
-        "ip": false,
-        "fourPs": true,
-        "voter": true,
-        "pwd": false,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Carlos",
-      "precinctNo": "P-002",
-      "birthplace": "Mamburao",
-      "middleName": ""
-    },
-    {
-      "lastName": "dela Vega",
-      "education": "Elementary",
-      "occupation": "Housewife",
-      "gender": "Female",
-      "bloodType": "B+",
-      "suffix": "",
-      "civilStatus": "Widowed",
-      "householdId": "hh-003",
-      "createdAt": "2024-02-10T08:00:00.000Z",
-      "oscaId": "OSCA-2015-001",
-      "contactNumber": "09191234567",
-      "relationToHead": "Head",
-      "id": "res-003",
-      "barangay": "Balansay",
-      "email": "",
-      "monthlyIncome": 3000,
-      "pensionStatus": "Receiving SSSP",
-      "updatedAt": "2024-02-10T08:00:00.000Z",
-      "address": "789 Luna Street, Purok 3",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1956-11-30",
-      "religion": "Roman Catholic",
-      "tags": {
-        "senior": true,
-        "ip": false,
-        "fourPs": true,
-        "voter": true,
-        "pwd": false,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Lourdes",
-      "birthplace": "San Jose",
-      "middleName": "Santos"
-    },
-    {
-      "lastName": "Mendoza",
-      "disabilityType": "Physical (Right leg)",
-      "education": "College Level",
-      "occupation": "Jeepney Driver",
-      "gender": "Male",
-      "bloodType": "AB+",
-      "suffix": "",
-      "civilStatus": "Single",
-      "householdId": "hh-002",
-      "createdAt": "2024-03-01T08:00:00.000Z",
-      "contactNumber": "09261234567",
-      "pwdId": "PWD-2020-044",
-      "relationToHead": "Son",
-      "id": "res-004",
-      "barangay": "Fatima",
-      "email": "jose@example.com",
-      "monthlyIncome": 12000,
-      "updatedAt": "2024-03-01T08:00:00.000Z",
-      "address": "21 Bonifacio St, Purok 4",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1998-03-14",
-      "religion": "INC",
-      "tags": {
-        "senior": false,
-        "ip": false,
-        "fourPs": false,
-        "voter": false,
-        "pwd": true,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Jose",
-      "birthplace": "Mamburao",
-      "middleName": "Bautista"
-    },
-    {
-      "lastName": "Bautista",
-      "education": "High School",
-      "occupation": "Vendor",
-      "gender": "Female",
-      "bloodType": "O-",
-      "suffix": "",
-      "civilStatus": "Married",
-      "householdId": null,
-      "createdAt": "2024-03-10T08:00:00.000Z",
-      "oscaId": "OSCA-2018-019",
-      "contactNumber": "09331234567",
-      "relationToHead": "Head",
-      "id": "res-005",
-      "barangay": "Tayamaan",
-      "email": "",
-      "monthlyIncome": 6000,
-      "pensionStatus": "Not Receiving",
-      "updatedAt": "2024-03-10T08:00:00.000Z",
-      "address": "55 Quezon Blvd, Purok 1",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1952-07-08",
-      "religion": "Roman Catholic",
-      "tags": {
-        "senior": true,
-        "ip": false,
-        "fourPs": false,
-        "voter": true,
-        "pwd": false,
-        "soloPar": true
-      },
-      "collectionType": "residents",
-      "firstName": "Gloria",
-      "birthplace": "Palawan",
-      "middleName": "Pedro"
-    },
-    {
-      "lastName": "Aquino",
-      "education": "Vocational",
-      "occupation": "Carpenter",
-      "gender": "Male",
-      "bloodType": "A-",
-      "suffix": "III",
-      "civilStatus": "Married",
-      "householdId": "hh-001",
-      "createdAt": "2024-03-20T08:00:00.000Z",
-      "contactNumber": "09451234567",
-      "relationToHead": "Spouse",
-      "id": "res-006",
-      "barangay": "Calawag",
-      "email": "ramon@example.com",
-      "monthlyIncome": 15000,
-      "updatedAt": "2024-03-20T08:00:00.000Z",
-      "address": "44 MacArthur Highway, Purok 2",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "1978-12-01",
-      "religion": "Roman Catholic",
-      "tags": {
-        "senior": false,
-        "ip": true,
-        "fourPs": false,
-        "voter": true,
-        "pwd": false,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Ramon",
-      "birthplace": "Mamburao",
-      "middleName": "Lopez"
-    },
-    {
-      "lastName": "Villanueva",
-      "education": "College Graduate",
-      "occupation": "Nurse",
-      "gender": "Female",
-      "bloodType": "B-",
-      "suffix": "",
-      "civilStatus": "Single",
-      "householdId": null,
-      "createdAt": "2024-04-01T08:00:00.000Z",
-      "contactNumber": "09561234567",
-      "relationToHead": "Head",
-      "id": "res-007",
-      "barangay": "Dalahican",
-      "email": "rosario@example.com",
-      "monthlyIncome": 22000,
-      "updatedAt": "2024-04-01T08:00:00.000Z",
-      "address": "10 Gen. Lukban St, Purok 5",
-      "citizenship": "Filipino",
-      "photo": null,
-      "birthDate": "2001-05-19",
-      "religion": "Baptist",
-      "tags": {
-        "senior": false,
-        "ip": false,
-        "fourPs": false,
-        "voter": true,
-        "pwd": false,
-        "soloPar": false
-      },
-      "collectionType": "residents",
-      "firstName": "Rosario",
-      "precinctNo": "P-005",
-      "birthplace": "Mamburao",
-      "middleName": "Santos"
-    },
     {
       "lastName": "Dela Rosa",
       "education": "No Formal Education",
@@ -962,9 +873,313 @@
       "firstName": "Arvin",
       "birthplace": "wawa",
       "middleName": "yf"
+    },
+    {
+      "lastName": "Ramos",
+      "education": "College Graduate",
+      "occupation": "Teacher",
+      "gender": "Female",
+      "bloodType": "O+",
+      "suffix": "",
+      "civilStatus": "Married",
+      "householdId": "hh-001",
+      "createdAt": "2024-01-15T08:00:00.000Z",
+      "contactNumber": "09171234567",
+      "relationToHead": "Head",
+      "id": "res-001",
+      "barangay": "Barangay 1 (Poblacion)",
+      "email": "ana.ramos@example.com",
+      "monthlyIncome": 25000,
+      "updatedAt": "2024-01-15T08:00:00.000Z",
+      "address": "123 Rizal Street, Purok 1",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1990-05-12",
+      "religion": "Roman Catholic",
+      "tags": {
+        "senior": false,
+        "ip": false,
+        "fourPs": false,
+        "voter": true,
+        "pwd": false,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Ana",
+      "precinctNo": "P-001",
+      "birthplace": "Mamburao",
+      "middleName": "Cruz"
+    },
+    {
+      "lastName": "Magno",
+      "education": "High School",
+      "occupation": "Farmer",
+      "gender": "Male",
+      "bloodType": "A+",
+      "suffix": "Jr.",
+      "civilStatus": "Single",
+      "householdId": "hh-002",
+      "createdAt": "2024-02-01T08:00:00.000Z",
+      "contactNumber": "09181234567",
+      "relationToHead": "Head",
+      "id": "res-002",
+      "barangay": "Barangay 1 (Poblacion)",
+      "email": "",
+      "monthlyIncome": 8000,
+      "updatedAt": "2024-02-01T08:00:00.000Z",
+      "address": "456 Mabini Street, Purok 2",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1985-08-22",
+      "religion": "Roman Catholic",
+      "tags": {
+        "senior": false,
+        "ip": false,
+        "fourPs": true,
+        "voter": true,
+        "pwd": false,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Carlos",
+      "precinctNo": "P-002",
+      "birthplace": "Mamburao",
+      "middleName": ""
+    },
+    {
+      "lastName": "dela Vega",
+      "education": "Elementary",
+      "occupation": "Housewife",
+      "gender": "Female",
+      "bloodType": "B+",
+      "suffix": "",
+      "civilStatus": "Widowed",
+      "householdId": "hh-003",
+      "createdAt": "2024-02-10T08:00:00.000Z",
+      "oscaId": "OSCA-2015-001",
+      "contactNumber": "09191234567",
+      "relationToHead": "Head",
+      "id": "res-003",
+      "barangay": "Balansay",
+      "email": "",
+      "monthlyIncome": 3000,
+      "pensionStatus": "Receiving SSSP",
+      "updatedAt": "2024-02-10T08:00:00.000Z",
+      "address": "789 Luna Street, Purok 3",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1956-11-30",
+      "religion": "Roman Catholic",
+      "tags": {
+        "senior": true,
+        "ip": false,
+        "fourPs": true,
+        "voter": true,
+        "pwd": false,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Lourdes",
+      "birthplace": "San Jose",
+      "middleName": "Santos"
+    },
+    {
+      "lastName": "Mendoza",
+      "disabilityType": "Physical (Right leg)",
+      "education": "College Level",
+      "occupation": "Jeepney Driver",
+      "gender": "Male",
+      "bloodType": "AB+",
+      "suffix": "",
+      "civilStatus": "Single",
+      "householdId": "hh-002",
+      "createdAt": "2024-03-01T08:00:00.000Z",
+      "contactNumber": "09261234567",
+      "pwdId": "PWD-2020-044",
+      "relationToHead": "Son",
+      "id": "res-004",
+      "barangay": "Fatima",
+      "email": "jose@example.com",
+      "monthlyIncome": 12000,
+      "updatedAt": "2024-03-01T08:00:00.000Z",
+      "address": "21 Bonifacio St, Purok 4",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1998-03-14",
+      "religion": "INC",
+      "tags": {
+        "senior": false,
+        "ip": false,
+        "fourPs": false,
+        "voter": false,
+        "pwd": true,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Jose",
+      "birthplace": "Mamburao",
+      "middleName": "Bautista"
+    },
+    {
+      "lastName": "Bautista",
+      "education": "High School",
+      "occupation": "Vendor",
+      "gender": "Female",
+      "bloodType": "O-",
+      "suffix": "",
+      "civilStatus": "Married",
+      "householdId": null,
+      "createdAt": "2024-03-10T08:00:00.000Z",
+      "oscaId": "OSCA-2018-019",
+      "contactNumber": "09331234567",
+      "relationToHead": "Head",
+      "id": "res-005",
+      "barangay": "Tayamaan",
+      "email": "",
+      "monthlyIncome": 6000,
+      "pensionStatus": "Not Receiving",
+      "updatedAt": "2024-03-10T08:00:00.000Z",
+      "address": "55 Quezon Blvd, Purok 1",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1952-07-08",
+      "religion": "Roman Catholic",
+      "tags": {
+        "senior": true,
+        "ip": false,
+        "fourPs": false,
+        "voter": true,
+        "pwd": false,
+        "soloPar": true
+      },
+      "collectionType": "residents",
+      "firstName": "Gloria",
+      "birthplace": "Palawan",
+      "middleName": "Pedro"
+    },
+    {
+      "lastName": "Aquino",
+      "education": "Vocational",
+      "occupation": "Carpenter",
+      "gender": "Male",
+      "bloodType": "A-",
+      "suffix": "III",
+      "civilStatus": "Married",
+      "householdId": "hh-001",
+      "createdAt": "2024-03-20T08:00:00.000Z",
+      "contactNumber": "09451234567",
+      "relationToHead": "Spouse",
+      "id": "res-006",
+      "barangay": "Calawag",
+      "email": "ramon@example.com",
+      "monthlyIncome": 15000,
+      "updatedAt": "2024-03-20T08:00:00.000Z",
+      "address": "44 MacArthur Highway, Purok 2",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "1978-12-01",
+      "religion": "Roman Catholic",
+      "tags": {
+        "senior": false,
+        "ip": true,
+        "fourPs": false,
+        "voter": true,
+        "pwd": false,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Ramon",
+      "birthplace": "Mamburao",
+      "middleName": "Lopez"
+    },
+    {
+      "lastName": "Villanueva",
+      "education": "College Graduate",
+      "occupation": "Nurse",
+      "gender": "Female",
+      "bloodType": "B-",
+      "suffix": "",
+      "civilStatus": "Single",
+      "householdId": null,
+      "createdAt": "2024-04-01T08:00:00.000Z",
+      "contactNumber": "09561234567",
+      "relationToHead": "Head",
+      "id": "res-007",
+      "barangay": "Dalahican",
+      "email": "rosario@example.com",
+      "monthlyIncome": 22000,
+      "updatedAt": "2024-04-01T08:00:00.000Z",
+      "address": "10 Gen. Lukban St, Purok 5",
+      "citizenship": "Filipino",
+      "photo": null,
+      "birthDate": "2001-05-19",
+      "religion": "Baptist",
+      "tags": {
+        "senior": false,
+        "ip": false,
+        "fourPs": false,
+        "voter": true,
+        "pwd": false,
+        "soloPar": false
+      },
+      "collectionType": "residents",
+      "firstName": "Rosario",
+      "precinctNo": "P-005",
+      "birthplace": "Mamburao",
+      "middleName": "Santos"
     }
   ],
   "cases": [
+    {
+      "notes": "",
+      "hearingDate": "2026-05-02",
+      "description": "U2FsdGVkX18u6DCO7VkW1yPi61tGsr5F3oCEfkSxaOSer8hLoiP5Ipj05V7VG80P",
+      "complainantId": "10e3a0c8-b2aa-4414-846d-f555a03d7f86",
+      "filedDate": "2026-04-30",
+      "hearingTime": "09:00",
+      "respondentId": "2648428b-f0cf-4188-9e91-f7278a149351",
+      "caseType": "Land Dispute",
+      "collectionType": "cases",
+      "createdAt": "2026-04-30T17:30:03.487Z",
+      "hearingVenue": "Wawa hall",
+      "caseNumber": "KP-2026-002",
+      "id": "6818bafd-5391-4075-ae39-50c94a37cdd3",
+      "barangay": "Tangkalan",
+      "status": "Filed",
+      "updatedAt": "2026-04-30T17:30:03.487Z"
+    },
+    {
+      "notes": "",
+      "hearingDate": "2026-05-01",
+      "description": "U2FsdGVkX198CBR08y0mv7U3iIQ5RpFARk3PDrcdtLIxGS0fj54rlT2btPr7M+vY",
+      "complainantId": "9833a770-3754-4c62-8d9a-f105b70543ef",
+      "filedDate": "2026-04-29",
+      "respondentId": "619cff3a-8b99-4f0c-b546-0b1c8b41d8ba",
+      "caseType": "Physical Injury",
+      "collectionType": "cases",
+      "createdAt": "2026-04-29T09:11:26.458Z",
+      "caseNumber": "KP-2026-005",
+      "id": "b9cfca7c-77b9-4026-81ef-e1c25d47e618",
+      "barangay": "Barangay 2 (Poblacion)",
+      "status": "Filed",
+      "updatedAt": "2026-04-29T09:11:26.458Z"
+    },
+    {
+      "hearingDate": "2026-04-29",
+      "description": "U2FsdGVkX18kyPOqZhEIoejlAUK+32NWvgTXEpE6A9eQaBCsXPGD6j/kZZfXr2gS",
+      "complainantId": "10e3a0c8-b2aa-4414-846d-f555a03d7f86",
+      "filedDate": "2026-04-29",
+      "respondentId": "ace4c3bf-08ff-4f4d-8bac-c2c09f3fa56f",
+      "caseType": "Physical Injury",
+      "collectionType": "cases",
+      "createdAt": "2026-04-29T07:35:05.711Z",
+      "caseNumber": "KP-2026-004",
+      "id": "bd20366c-966f-4352-816a-e17be02d3bd0",
+      "barangay": "Tangkalan",
+      "notes": "",
+      "status": "Settled",
+      "updatedAt": "2026-04-29T07:38:42.354Z"
+    },
     {
       "notes": "Second mediation session scheduled",
       "hearingDate": "2024-04-25",
@@ -1018,56 +1233,6 @@
       "barangay": "Fatima",
       "status": "Filed",
       "updatedAt": "2024-04-05T08:00:00.000Z"
-    },
-    {
-      "notes": "",
-      "hearingDate": "2026-05-02",
-      "description": "U2FsdGVkX18u6DCO7VkW1yPi61tGsr5F3oCEfkSxaOSer8hLoiP5Ipj05V7VG80P",
-      "complainantId": "10e3a0c8-b2aa-4414-846d-f555a03d7f86",
-      "filedDate": "2026-04-30",
-      "hearingTime": "09:00",
-      "respondentId": "2648428b-f0cf-4188-9e91-f7278a149351",
-      "caseType": "Land Dispute",
-      "collectionType": "cases",
-      "createdAt": "2026-04-30T17:30:03.487Z",
-      "hearingVenue": "Wawa hall",
-      "caseNumber": "KP-2026-002",
-      "id": "6818bafd-5391-4075-ae39-50c94a37cdd3",
-      "barangay": "Tangkalan",
-      "status": "Filed",
-      "updatedAt": "2026-04-30T17:30:03.487Z"
-    },
-    {
-      "notes": "",
-      "hearingDate": "2026-05-01",
-      "description": "U2FsdGVkX198CBR08y0mv7U3iIQ5RpFARk3PDrcdtLIxGS0fj54rlT2btPr7M+vY",
-      "complainantId": "9833a770-3754-4c62-8d9a-f105b70543ef",
-      "filedDate": "2026-04-29",
-      "respondentId": "619cff3a-8b99-4f0c-b546-0b1c8b41d8ba",
-      "caseType": "Physical Injury",
-      "collectionType": "cases",
-      "createdAt": "2026-04-29T09:11:26.458Z",
-      "caseNumber": "KP-2026-005",
-      "id": "b9cfca7c-77b9-4026-81ef-e1c25d47e618",
-      "barangay": "Barangay 2 (Poblacion)",
-      "status": "Filed",
-      "updatedAt": "2026-04-29T09:11:26.458Z"
-    },
-    {
-      "hearingDate": "2026-04-29",
-      "description": "U2FsdGVkX18kyPOqZhEIoejlAUK+32NWvgTXEpE6A9eQaBCsXPGD6j/kZZfXr2gS",
-      "complainantId": "10e3a0c8-b2aa-4414-846d-f555a03d7f86",
-      "filedDate": "2026-04-29",
-      "respondentId": "ace4c3bf-08ff-4f4d-8bac-c2c09f3fa56f",
-      "caseType": "Physical Injury",
-      "collectionType": "cases",
-      "createdAt": "2026-04-29T07:35:05.711Z",
-      "caseNumber": "KP-2026-004",
-      "id": "bd20366c-966f-4352-816a-e17be02d3bd0",
-      "barangay": "Tangkalan",
-      "notes": "",
-      "status": "Settled",
-      "updatedAt": "2026-04-29T07:38:42.354Z"
     }
   ],
   "certifications": [
@@ -1262,6 +1427,26 @@
   ],
   "blockchain": [
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "list",
+      "collectionType": "blockchain",
+      "previousHash": "3134b9f8cc37f52dfb36133cf0a7ba794c2d9d82da18f18774eda05c30c32b23",
+      "recordType": "residents",
+      "actorRole": "Admin",
+      "action": "RESIDENTS_VIEWED",
+      "index": 135,
+      "details": {
+        "count": 25,
+        "filters": {
+          "search": "",
+          "barangayQuery": ""
+        }
+      },
+      "id": "025d5ebe-a314-4bf4-82a8-a44223bac514",
+      "hash": "d58f1c3a42c4bde8172ac8b5301bf1729af076e9a699b60be4047c1840e314dd",
+      "timestamp": "2026-05-08T18:14:47.079Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "2648428b-f0cf-4188-9e91-f7278a149351",
       "collectionType": "blockchain",
@@ -1312,6 +1497,22 @@
       "timestamp": "2026-04-24T12:31:06.722Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-014",
+      "collectionType": "blockchain",
+      "previousHash": "ea1d7cd5b18af9ebe3cc748bfeeb75cabc7588f6542d7fa00b2594fa1fe68330",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 128,
+      "details": {
+        "rejectedUser": "tayamaan@mamburao.gov.ph"
+      },
+      "id": "0838f8f4-6e51-4692-add2-ba7853901313",
+      "hash": "877370d216ade943846abe69fbfec0cbce9b921d6e1d67affb1358fe5bb0247b",
+      "timestamp": "2026-05-08T17:57:18.037Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "bd20366c-966f-4352-816a-e17be02d3bd0",
       "collectionType": "blockchain",
@@ -1342,6 +1543,23 @@
       "id": "09654f68-308e-4f04-9443-0a79149ba849",
       "hash": "53f063daaac4b2fafce85494d468da9ab85347e31ff14c7f096a1f8bedf38c0d",
       "timestamp": "2026-04-29T09:10:16.784Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "list",
+      "collectionType": "blockchain",
+      "previousHash": "e38ce138e65d3eeb0238298c303cc5f9b3302e3f955ee51d3b34bc82216dbe74",
+      "recordType": "residents",
+      "actorRole": "Admin",
+      "action": "RESIDENTS_VIEWED",
+      "index": 114,
+      "details": {
+        "count": 25,
+        "filters": {}
+      },
+      "id": "0a50919f-cb4d-4d19-8b0d-6ca684d0ba8d",
+      "hash": "fd894d424376b2d270c4bf4b2e65a5b63773303a500ddd98f757e2435f32e3fb",
+      "timestamp": "2026-05-08T17:40:41.468Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1376,6 +1594,39 @@
       "id": "0ff9b2a7-dfbf-4e68-a92e-c90192350b3a",
       "hash": "2d8dbc364151133ede925af32ff71a81b4eafca9eda5c7143d420493772f7d45",
       "timestamp": "2026-04-25T19:00:02.228Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "list",
+      "collectionType": "blockchain",
+      "previousHash": "710844107b72ae960b6d3d7916680ae2e45bb12817163ea54a3f9aa43a92d700",
+      "recordType": "residents",
+      "actorRole": "Admin",
+      "action": "RESIDENTS_VIEWED",
+      "index": 113,
+      "details": {
+        "count": 25,
+        "filters": {}
+      },
+      "id": "10e35775-86e8-47d0-9299-189bf566c0f3",
+      "hash": "e38ce138e65d3eeb0238298c303cc5f9b3302e3f955ee51d3b34bc82216dbe74",
+      "timestamp": "2026-05-08T17:40:41.452Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-009",
+      "collectionType": "blockchain",
+      "previousHash": "5e26db7c146efd01ec404580f66ee71b4044180dff0155b6ef8adf7c7b84f997",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 123,
+      "details": {
+        "rejectedUser": "payompon@mamburao.gov.ph"
+      },
+      "id": "19bd7b2b-2458-45ee-9b74-e4e03d2910ab",
+      "hash": "e7cd732c6b9c75ddf8933fd64b1c071329aec4215f190adc1e9c42f9d869005a",
+      "timestamp": "2026-05-08T17:57:06.429Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1428,6 +1679,22 @@
       "id": "223d50bc-ae3c-42a2-a8eb-be8d9432fb8d",
       "hash": "2ee3caaf319a0f27e50900759a1747eafbfdbe6afda1a10ca7a8139c2f756197",
       "timestamp": "2026-04-27T09:58:28.300Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
+      "collectionType": "blockchain",
+      "previousHash": "0a8ab358b503e44989807c3ad17d066afd2f43e9a47e3548c79dc67c0dca521f",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 133,
+      "details": {
+        "rejectedUser": "arvinadelarosa@gmail.com"
+      },
+      "id": "22917d0b-0619-4eb2-a9e2-7d51d306616a",
+      "hash": "fe5db49864318c36601acd9b6b1c8e8da44a1f640b72434a52eb2c7ce8290350",
+      "timestamp": "2026-05-08T17:57:30.318Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1513,6 +1780,22 @@
       "timestamp": "2026-04-29T07:38:26.480Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "admin-001",
+      "collectionType": "blockchain",
+      "previousHash": "68f8c09558ed4df1c8ee06de43e1b2e78720f1004ae5fc604175d693d290ebe4",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_LOGIN",
+      "index": 137,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "2a8a275e-24f1-4813-bd7e-c9d187a979da",
+      "hash": "86df65d742b7a5d346775f75c2671cc4fe10313b68cdcf25f2cfea8f9e490a89",
+      "timestamp": "2026-05-08T18:49:22.126Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "c434eafd-1e3f-4ce6-aec7-22add1973d02",
       "collectionType": "blockchain",
@@ -1545,6 +1828,26 @@
       "id": "2f7d4a97-4b06-4fa3-a48e-4f597e84db08",
       "hash": "9545a88159332838028bd062818a4adfa776c01141e4fd63738396dea1d21d82",
       "timestamp": "2026-04-30T16:04:03.454Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "list",
+      "collectionType": "blockchain",
+      "previousHash": "d58f1c3a42c4bde8172ac8b5301bf1729af076e9a699b60be4047c1840e314dd",
+      "recordType": "residents",
+      "actorRole": "Admin",
+      "action": "RESIDENTS_VIEWED",
+      "index": 136,
+      "details": {
+        "count": 25,
+        "filters": {
+          "search": "",
+          "barangayQuery": ""
+        }
+      },
+      "id": "30c13d17-29ba-4c31-9c09-de88781f8a81",
+      "hash": "68f8c09558ed4df1c8ee06de43e1b2e78720f1004ae5fc604175d693d290ebe4",
+      "timestamp": "2026-05-08T18:14:47.093Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1748,6 +2051,22 @@
       "timestamp": "2026-04-25T04:57:26.928Z"
     },
     {
+      "actor": "arvinadelarosa@gmail.com",
+      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
+      "collectionType": "blockchain",
+      "previousHash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
+      "recordType": "user",
+      "actorRole": "Secretary",
+      "action": "USER_LOGIN",
+      "index": 110,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "49323346-76d5-48eb-a8f1-e10d4169fa08",
+      "hash": "08c8d4944c8756aec70e5582db8e35ea3b2da3b15c3c961bac2f235e59d9b15e",
+      "timestamp": "2026-05-08T16:36:40.211Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "40eb1f44-34b2-4c6e-8adf-2265d53e1d2b",
       "collectionType": "blockchain",
@@ -1778,6 +2097,38 @@
       "id": "4a2610cc-4043-4754-8590-c1e7ccff1e9b",
       "hash": "e480b9ce1e369be74daa727bf8249e6903ab7d63df82e986d6be2bbea57e2d41",
       "timestamp": "2026-04-25T18:59:44.533Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-015",
+      "collectionType": "blockchain",
+      "previousHash": "877370d216ade943846abe69fbfec0cbce9b921d6e1d67affb1358fe5bb0247b",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 129,
+      "details": {
+        "rejectedUser": "talabaan@mamburao.gov.ph"
+      },
+      "id": "4b699e68-c428-40c9-8a12-756fc5b501b6",
+      "hash": "4c3a8fc9ae0d0a3169f4db212b1afcaa10ae323502c59a1dc3de1695018f65a0",
+      "timestamp": "2026-05-08T17:57:20.453Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-003",
+      "collectionType": "blockchain",
+      "previousHash": "802b6cb051b271d2a080c2b5f7b498b92e2280dc02a2980d669062ba77a28d21",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 117,
+      "details": {
+        "rejectedUser": "brgy3@mamburao.gov.ph"
+      },
+      "id": "4bfb8549-35f3-4182-bbe5-e47854f2dba1",
+      "hash": "80fdd98f1abc3b373771a2a71a33690331ff532a3a011e7fd3e82b457848c1d1",
+      "timestamp": "2026-05-08T17:56:49.140Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1942,6 +2293,38 @@
       "timestamp": "2026-04-29T09:11:26.459Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-011",
+      "collectionType": "blockchain",
+      "previousHash": "afc2359ecad462d952a0a06565d609ead515fc0e398e1d487c7bf3da78024359",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 125,
+      "details": {
+        "rejectedUser": "fatima@mamburao.gov.ph"
+      },
+      "id": "61291715-10ef-4c05-aebe-76babebc9406",
+      "hash": "c83cef0022e95fe0b218fd471fb2b646b7e7feb5bf559dd858fa0944f17fce34",
+      "timestamp": "2026-05-08T17:57:10.989Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-010",
+      "collectionType": "blockchain",
+      "previousHash": "e7cd732c6b9c75ddf8933fd64b1c071329aec4215f190adc1e9c42f9d869005a",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 124,
+      "details": {
+        "rejectedUser": "tangkalan@mamburao.gov.ph"
+      },
+      "id": "62532c40-39b8-4f4a-9d15-6d991c9367b1",
+      "hash": "afc2359ecad462d952a0a06565d609ead515fc0e398e1d487c7bf3da78024359",
+      "timestamp": "2026-05-08T17:57:08.720Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "hh-b9113019",
       "collectionType": "blockchain",
@@ -1954,6 +2337,22 @@
       "id": "641189f7-43e3-49df-9694-e6524e0f5f32",
       "hash": "0c528106b15ef15feda33f50bdb54745713f1662a64eba4401a057ec8f4a497c",
       "timestamp": "2026-04-29T12:43:47.491Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-008",
+      "collectionType": "blockchain",
+      "previousHash": "e9c6086475711885115f4fc14e896700797fefb341b2376db70c3a84d4eb3d9d",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 122,
+      "details": {
+        "rejectedUser": "brgy8@mamburao.gov.ph"
+      },
+      "id": "693ac1e5-461a-4ab7-9675-016443abbdaa",
+      "hash": "5e26db7c146efd01ec404580f66ee71b4044180dff0155b6ef8adf7c7b84f997",
+      "timestamp": "2026-05-08T17:57:04.194Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -1986,6 +2385,40 @@
       "id": "6c852eb5-79ce-414a-ba5e-44ed285c4d8e",
       "hash": "d1e21dd7d8606838699e588dd2c07e1dad2b55107eba2191ed53a1fa997aaf82",
       "timestamp": "2026-04-29T12:51:51.490Z"
+    },
+    {
+      "actor": "arvinadelarosa@gmail.com",
+      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
+      "collectionType": "blockchain",
+      "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordType": "user",
+      "actorRole": "Secretary",
+      "action": "USER_REGISTERED",
+      "index": 109,
+      "details": {
+        "role": "Secretary",
+        "barangay": "Barangay 1 (Poblacion)",
+        "email": "arvinadelarosa@gmail.com"
+      },
+      "id": "6cf374ea-68de-4ce5-8c7f-2e4f2b11a242",
+      "hash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
+      "timestamp": "2026-05-08T16:36:31.900Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-001",
+      "collectionType": "blockchain",
+      "previousHash": "fd894d424376b2d270c4bf4b2e65a5b63773303a500ddd98f757e2435f32e3fb",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 115,
+      "details": {
+        "rejectedUser": "secretary@barangay.gov.ph"
+      },
+      "id": "6ed3ea86-309e-40fa-a9b9-b2cbae449fbe",
+      "hash": "fc4763c6af5c4f88619eed3bbd6a546698ecb73486bad83f06f3e7f2bb1b8d81",
+      "timestamp": "2026-05-08T17:40:55.538Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2038,6 +2471,22 @@
       "timestamp": "2026-04-30T17:30:03.487Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "admin-001",
+      "collectionType": "blockchain",
+      "previousHash": "fe5db49864318c36601acd9b6b1c8e8da44a1f640b72434a52eb2c7ce8290350",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_LOGIN",
+      "index": 134,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "795001a3-bf2a-477a-baac-7acf313fda46",
+      "hash": "3134b9f8cc37f52dfb36133cf0a7ba794c2d9d82da18f18774eda05c30c32b23",
+      "timestamp": "2026-05-08T18:14:32.210Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "2648428b-f0cf-4188-9e91-f7278a149351",
       "collectionType": "blockchain",
@@ -2088,6 +2537,38 @@
       "id": "7c6ddda0-5fa8-4d4d-b455-249bb40b70fe",
       "hash": "9ada342bce5b7045c882f60efa9d0ef911e4358f81a41369b93e119c74c76f48",
       "timestamp": "2026-04-29T08:59:36.379Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-004",
+      "collectionType": "blockchain",
+      "previousHash": "80fdd98f1abc3b373771a2a71a33690331ff532a3a011e7fd3e82b457848c1d1",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 118,
+      "details": {
+        "rejectedUser": "brgy4@mamburao.gov.ph"
+      },
+      "id": "7ca82fca-8517-429c-a12d-82c18ec61918",
+      "hash": "4d0bcfb236562385087c986a85fc2c4ed4f6008b08a2aafa4ad1bfc28b74909d",
+      "timestamp": "2026-05-08T17:56:51.674Z"
+    },
+    {
+      "actor": "arvinadelarosa@gmail.com",
+      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
+      "collectionType": "blockchain",
+      "previousHash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
+      "recordType": "user",
+      "actorRole": "Secretary",
+      "action": "USER_LOGIN",
+      "index": 111,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "82500061-df06-4b2c-b29c-10232250decc",
+      "hash": "9eab7badb6a93e2f026334fd9d205a9d1e8bb83deaa85f97107226b2b350862e",
+      "timestamp": "2026-05-08T17:23:25.534Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2320,6 +2801,22 @@
       "timestamp": "2026-04-25T04:29:15.868Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-002",
+      "collectionType": "blockchain",
+      "previousHash": "fc4763c6af5c4f88619eed3bbd6a546698ecb73486bad83f06f3e7f2bb1b8d81",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 116,
+      "details": {
+        "rejectedUser": "brgy2@mamburao.gov.ph"
+      },
+      "id": "9c4f9ee8-0a07-4d47-80a7-0d341c1eff87",
+      "hash": "802b6cb051b271d2a080c2b5f7b498b92e2280dc02a2980d669062ba77a28d21",
+      "timestamp": "2026-05-08T17:40:58.957Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "40eb1f44-34b2-4c6e-8adf-2265d53e1d2b",
       "collectionType": "blockchain",
@@ -2350,6 +2847,22 @@
       "id": "a33d8e69-1523-4677-990c-847d4705cb85",
       "hash": "01d0f130e685b4d7932d2441e87e5dff1e29ca4c579c4a7ce1508c485464a4f6",
       "timestamp": "2026-04-23T09:11:22.709Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "tanod-001",
+      "collectionType": "blockchain",
+      "previousHash": "a7049d3b1e4c0663a395727e28ba1ca7fe52e86a73a1d13eaf0bb78d48dd0237",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 131,
+      "details": {
+        "rejectedUser": "tanod@barangay.gov.ph"
+      },
+      "id": "a7eeff51-be20-4651-8814-32eeaced4c82",
+      "hash": "906f05494a2fdffe08ba83113d20e8239660365d43677d2996c69f74587133ee",
+      "timestamp": "2026-05-08T17:57:25.144Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2399,6 +2912,22 @@
       "id": "ac7178b0-78da-4bc1-a909-8b828bf40ac9",
       "hash": "093c25b134a3b6ba638f2b404b4b81951446c5e10d9dec56cf5dde7bbfd44851",
       "timestamp": "2026-04-29T09:12:04.641Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-012",
+      "collectionType": "blockchain",
+      "previousHash": "c83cef0022e95fe0b218fd471fb2b646b7e7feb5bf559dd858fa0944f17fce34",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 126,
+      "details": {
+        "rejectedUser": "sanluis@mamburao.gov.ph"
+      },
+      "id": "ae5e8387-0248-4a07-aa6d-4f1196a360f3",
+      "hash": "0621767cfef8493eb2dc1cf261e3aa3a613b2fd6f3ef85855221241ae7ca5585",
+      "timestamp": "2026-05-08T17:57:13.113Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2475,6 +3004,22 @@
       "timestamp": "2026-04-29T09:02:21.465Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
+      "collectionType": "blockchain",
+      "previousHash": "f0c63e2af1d5c58aa02ccd839b9bbabaf4f74671bdc7e19f33a2b4e552ab7ba0",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_APPROVED",
+      "index": 140,
+      "details": {
+        "approvedUser": "payomponsec123@gmail.com"
+      },
+      "id": "b6bda15e-15a7-4cdf-b637-416e45784141",
+      "hash": "649e97b3be66ac8eec1a75ca09767d2694c5928a9cf576bb07b2304b3bab7d59",
+      "timestamp": "2026-05-08T18:53:00.577Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "ab2c62af-e4f7-46eb-be14-a15fa10114a4",
       "collectionType": "blockchain",
@@ -2489,6 +3034,38 @@
       "id": "b7f21013-ec09-480a-90a2-7267d31af69a",
       "hash": "d6487e02099ff90737d902c2f1a0e12963488120c5c80557ebf69b9b71a7b1dd",
       "timestamp": "2026-04-23T08:33:21.469Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "admin-001",
+      "collectionType": "blockchain",
+      "previousHash": "45938a5504a03b607637fb8b951c6d4d43d05669af34b8f762e0a2f93214348d",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_LOGIN",
+      "index": 142,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "b8a53d11-e525-45d7-b0cb-b3bb079ffb5e",
+      "hash": "0070459088c880a52b54f2f1aab56683696168d34d306f156f6976cc2baf21d2",
+      "timestamp": "2026-05-09T16:52:40.707Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-005",
+      "collectionType": "blockchain",
+      "previousHash": "4d0bcfb236562385087c986a85fc2c4ed4f6008b08a2aafa4ad1bfc28b74909d",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 119,
+      "details": {
+        "rejectedUser": "brgy5@mamburao.gov.ph"
+      },
+      "id": "b958a342-9e2c-4a6b-a7d7-bcaa2de3dfcc",
+      "hash": "470ca59ea6113ae6facf532bde01da3530f00806fe5ab60b9f66ff3047fe07da",
+      "timestamp": "2026-05-08T17:56:56.542Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2559,6 +3136,22 @@
       "timestamp": "2026-04-25T04:21:34.775Z"
     },
     {
+      "actor": "payomponsec123@gmail.com",
+      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
+      "collectionType": "blockchain",
+      "previousHash": "649e97b3be66ac8eec1a75ca09767d2694c5928a9cf576bb07b2304b3bab7d59",
+      "recordType": "user",
+      "actorRole": "Secretary",
+      "action": "USER_LOGIN",
+      "index": 141,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "be459ae2-7fb9-4201-9e73-24735f343d0e",
+      "hash": "45938a5504a03b607637fb8b951c6d4d43d05669af34b8f762e0a2f93214348d",
+      "timestamp": "2026-05-08T18:53:12.109Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "a466d40f-5b46-4ba0-8ceb-169b820ec1bb",
       "collectionType": "blockchain",
@@ -2611,6 +3204,22 @@
       "timestamp": "2026-04-29T07:38:05.924Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-007",
+      "collectionType": "blockchain",
+      "previousHash": "955a5c40f0bd4c66ba8a150884c2dd5ca69a35f2bbc7950aee78b0c37547b5af",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 121,
+      "details": {
+        "rejectedUser": "brgy7@mamburao.gov.ph"
+      },
+      "id": "c7ed3a5a-ef2d-4398-b83c-a49bb447bb91",
+      "hash": "e9c6086475711885115f4fc14e896700797fefb341b2376db70c3a84d4eb3d9d",
+      "timestamp": "2026-05-08T17:57:01.336Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "40eb1f44-34b2-4c6e-8adf-2265d53e1d2b",
       "collectionType": "blockchain",
@@ -2644,6 +3253,22 @@
       "timestamp": "2026-04-25T07:20:06.225Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "admin-001",
+      "collectionType": "blockchain",
+      "previousHash": "5ee16e9fffe2a732b1e9a66f9b504c7ed8696776f209b1ed15c556070610ad39",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_LOGIN",
+      "index": 139,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "cb4e74dd-78aa-4dc2-9be0-bf9b797ad5bf",
+      "hash": "f0c63e2af1d5c58aa02ccd839b9bbabaf4f74671bdc7e19f33a2b4e552ab7ba0",
+      "timestamp": "2026-05-08T18:52:53.716Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "40eb1f44-34b2-4c6e-8adf-2265d53e1d2b",
       "collectionType": "blockchain",
@@ -2658,6 +3283,22 @@
       "id": "cb52064a-8ed4-4e46-b6d5-707a4a6f2482",
       "hash": "86dac1c16f3fae68427b45cd153790b4090bb63f0a01b27b108746c9707342dc",
       "timestamp": "2026-04-25T04:56:26.214Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "admin-001",
+      "collectionType": "blockchain",
+      "previousHash": "9eab7badb6a93e2f026334fd9d205a9d1e8bb83deaa85f97107226b2b350862e",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_LOGIN",
+      "index": 112,
+      "details": {
+        "ip": "::1"
+      },
+      "id": "cc74a02b-a435-450a-b497-585de967da6d",
+      "hash": "710844107b72ae960b6d3d7916680ae2e45bb12817163ea54a3f9aa43a92d700",
+      "timestamp": "2026-05-08T17:32:11.540Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2676,6 +3317,22 @@
       "id": "ccada41b-92e6-44ad-9e12-5a9eb555c6ab",
       "hash": "1774be7154e469944def04c2540f7f3904c952d88d94cfc48bdde64b1bde7b34",
       "timestamp": "2026-04-30T17:30:27.687Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "c73a8508-c195-4a7e-8fc7-a7ded654c45b",
+      "collectionType": "blockchain",
+      "previousHash": "4c3a8fc9ae0d0a3169f4db212b1afcaa10ae323502c59a1dc3de1695018f65a0",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 130,
+      "details": {
+        "rejectedUser": "vinsec26@gmail.com"
+      },
+      "id": "cda00a2a-e6d1-401f-a836-91652879ef10",
+      "hash": "a7049d3b1e4c0663a395727e28ba1ca7fe52e86a73a1d13eaf0bb78d48dd0237",
+      "timestamp": "2026-05-08T17:57:22.998Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2708,6 +3365,22 @@
       "id": "d074749b-3dcd-4833-88d6-aaafaeb3f4c9",
       "hash": "02386b4f3432f5bdf517249fb65432da6d656b529c531f7378937a82f7a25a47",
       "timestamp": "2026-04-30T16:28:50.107Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-013",
+      "collectionType": "blockchain",
+      "previousHash": "0621767cfef8493eb2dc1cf261e3aa3a613b2fd6f3ef85855221241ae7ca5585",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 127,
+      "details": {
+        "rejectedUser": "balansay@mamburao.gov.ph"
+      },
+      "id": "d0d01c47-1764-4d5b-ae57-c567bcdf7465",
+      "hash": "ea1d7cd5b18af9ebe3cc748bfeeb75cabc7588f6542d7fa00b2594fa1fe68330",
+      "timestamp": "2026-05-08T17:57:15.406Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2766,6 +3439,22 @@
       "id": "d477a0fe-1891-4222-acfa-12ba54b42c7c",
       "hash": "71b15e00549cc570a7d61e2eac6632b95a0476de3189f125bae0701d2022a5e1",
       "timestamp": "2026-04-29T07:36:22.634Z"
+    },
+    {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "tanod-002",
+      "collectionType": "blockchain",
+      "previousHash": "906f05494a2fdffe08ba83113d20e8239660365d43677d2996c69f74587133ee",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 132,
+      "details": {
+        "rejectedUser": "tanod2@barangay.gov.ph"
+      },
+      "id": "da3254c8-7cf4-4624-b608-2a4fa6d18d20",
+      "hash": "0a8ab358b503e44989807c3ad17d066afd2f43e9a47e3548c79dc67c0dca521f",
+      "timestamp": "2026-05-08T17:57:27.834Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -2831,6 +3520,24 @@
       "id": "dbc5cd88-4b63-4fb2-a4ff-9a80487d4fbf",
       "hash": "355fe57e9d909b4eaebc33f0a92819fc18fda31cf9c88aeeff1a4df24c82a792",
       "timestamp": "2026-04-29T07:39:00.671Z"
+    },
+    {
+      "actor": "payomponsec123@gmail.com",
+      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
+      "collectionType": "blockchain",
+      "previousHash": "86df65d742b7a5d346775f75c2671cc4fe10313b68cdcf25f2cfea8f9e490a89",
+      "recordType": "user",
+      "actorRole": "Secretary",
+      "action": "USER_REGISTERED",
+      "index": 138,
+      "details": {
+        "role": "Secretary",
+        "barangay": "Payompon",
+        "email": "payomponsec123@gmail.com"
+      },
+      "id": "dc86370b-20ea-49ad-a04d-7b47b0067ef7",
+      "hash": "5ee16e9fffe2a732b1e9a66f9b504c7ed8696776f209b1ed15c556070610ad39",
+      "timestamp": "2026-05-08T18:52:45.164Z"
     },
     {
       "actor": "vindelarosa26@gmail.com",
@@ -3063,6 +3770,22 @@
       "timestamp": "2026-04-23T14:54:30.776Z"
     },
     {
+      "actor": "admin@barangay.gov.ph",
+      "recordId": "sec-006",
+      "collectionType": "blockchain",
+      "previousHash": "470ca59ea6113ae6facf532bde01da3530f00806fe5ab60b9f66ff3047fe07da",
+      "recordType": "user",
+      "actorRole": "Admin",
+      "action": "USER_REJECTED",
+      "index": 120,
+      "details": {
+        "rejectedUser": "brgy6@mamburao.gov.ph"
+      },
+      "id": "fc2c7494-acd3-4f75-bd20-d9184315b73c",
+      "hash": "955a5c40f0bd4c66ba8a150884c2dd5ca69a35f2bbc7950aee78b0c37547b5af",
+      "timestamp": "2026-05-08T17:56:58.849Z"
+    },
+    {
       "actor": "vindelarosa26@gmail.com",
       "recordId": "10e3a0c8-b2aa-4414-846d-f555a03d7f86",
       "collectionType": "blockchain",
@@ -3107,548 +3830,6 @@
       "id": "genesis-block",
       "hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "timestamp": "2026-04-23T08:32:46.495Z"
-    },
-    {
-      "actor": "arvinadelarosa@gmail.com",
-      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
-      "collectionType": "blockchain",
-      "previousHash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
-      "recordType": "user",
-      "actorRole": "Secretary",
-      "action": "USER_LOGIN",
-      "index": 110,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "49323346-76d5-48eb-a8f1-e10d4169fa08",
-      "hash": "08c8d4944c8756aec70e5582db8e35ea3b2da3b15c3c961bac2f235e59d9b15e",
-      "timestamp": "2026-05-08T16:36:40.211Z"
-    },
-    {
-      "actor": "arvinadelarosa@gmail.com",
-      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
-      "collectionType": "blockchain",
-      "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "recordType": "user",
-      "actorRole": "Secretary",
-      "action": "USER_REGISTERED",
-      "index": 109,
-      "details": {
-        "role": "Secretary",
-        "barangay": "Barangay 1 (Poblacion)",
-        "email": "arvinadelarosa@gmail.com"
-      },
-      "id": "6cf374ea-68de-4ce5-8c7f-2e4f2b11a242",
-      "hash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
-      "timestamp": "2026-05-08T16:36:31.900Z"
-    },
-    {
-      "actor": "arvinadelarosa@gmail.com",
-      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
-      "collectionType": "blockchain",
-      "previousHash": "7948b99fd06cfd52513298e153ce8a4451c8894148ae63673716a6da88f08871",
-      "recordType": "user",
-      "actorRole": "Secretary",
-      "action": "USER_LOGIN",
-      "index": 111,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "82500061-df06-4b2c-b29c-10232250decc",
-      "hash": "9eab7badb6a93e2f026334fd9d205a9d1e8bb83deaa85f97107226b2b350862e",
-      "timestamp": "2026-05-08T17:23:25.534Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "admin-001",
-      "collectionType": "blockchain",
-      "previousHash": "9eab7badb6a93e2f026334fd9d205a9d1e8bb83deaa85f97107226b2b350862e",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_LOGIN",
-      "index": 112,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "cc74a02b-a435-450a-b497-585de967da6d",
-      "hash": "710844107b72ae960b6d3d7916680ae2e45bb12817163ea54a3f9aa43a92d700",
-      "timestamp": "2026-05-08T17:32:11.540Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "list",
-      "collectionType": "blockchain",
-      "previousHash": "710844107b72ae960b6d3d7916680ae2e45bb12817163ea54a3f9aa43a92d700",
-      "recordType": "residents",
-      "actorRole": "Admin",
-      "action": "RESIDENTS_VIEWED",
-      "index": 113,
-      "details": {
-        "count": 25,
-        "filters": {}
-      },
-      "id": "10e35775-86e8-47d0-9299-189bf566c0f3",
-      "hash": "e38ce138e65d3eeb0238298c303cc5f9b3302e3f955ee51d3b34bc82216dbe74",
-      "timestamp": "2026-05-08T17:40:41.452Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "list",
-      "collectionType": "blockchain",
-      "previousHash": "e38ce138e65d3eeb0238298c303cc5f9b3302e3f955ee51d3b34bc82216dbe74",
-      "recordType": "residents",
-      "actorRole": "Admin",
-      "action": "RESIDENTS_VIEWED",
-      "index": 114,
-      "details": {
-        "count": 25,
-        "filters": {}
-      },
-      "id": "0a50919f-cb4d-4d19-8b0d-6ca684d0ba8d",
-      "hash": "fd894d424376b2d270c4bf4b2e65a5b63773303a500ddd98f757e2435f32e3fb",
-      "timestamp": "2026-05-08T17:40:41.468Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-001",
-      "collectionType": "blockchain",
-      "previousHash": "fd894d424376b2d270c4bf4b2e65a5b63773303a500ddd98f757e2435f32e3fb",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 115,
-      "details": {
-        "rejectedUser": "secretary@barangay.gov.ph"
-      },
-      "id": "6ed3ea86-309e-40fa-a9b9-b2cbae449fbe",
-      "hash": "fc4763c6af5c4f88619eed3bbd6a546698ecb73486bad83f06f3e7f2bb1b8d81",
-      "timestamp": "2026-05-08T17:40:55.538Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-002",
-      "collectionType": "blockchain",
-      "previousHash": "fc4763c6af5c4f88619eed3bbd6a546698ecb73486bad83f06f3e7f2bb1b8d81",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 116,
-      "details": {
-        "rejectedUser": "brgy2@mamburao.gov.ph"
-      },
-      "id": "9c4f9ee8-0a07-4d47-80a7-0d341c1eff87",
-      "hash": "802b6cb051b271d2a080c2b5f7b498b92e2280dc02a2980d669062ba77a28d21",
-      "timestamp": "2026-05-08T17:40:58.957Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-003",
-      "collectionType": "blockchain",
-      "previousHash": "802b6cb051b271d2a080c2b5f7b498b92e2280dc02a2980d669062ba77a28d21",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 117,
-      "details": {
-        "rejectedUser": "brgy3@mamburao.gov.ph"
-      },
-      "id": "4bfb8549-35f3-4182-bbe5-e47854f2dba1",
-      "hash": "80fdd98f1abc3b373771a2a71a33690331ff532a3a011e7fd3e82b457848c1d1",
-      "timestamp": "2026-05-08T17:56:49.140Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-004",
-      "collectionType": "blockchain",
-      "previousHash": "80fdd98f1abc3b373771a2a71a33690331ff532a3a011e7fd3e82b457848c1d1",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 118,
-      "details": {
-        "rejectedUser": "brgy4@mamburao.gov.ph"
-      },
-      "id": "7ca82fca-8517-429c-a12d-82c18ec61918",
-      "hash": "4d0bcfb236562385087c986a85fc2c4ed4f6008b08a2aafa4ad1bfc28b74909d",
-      "timestamp": "2026-05-08T17:56:51.674Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-005",
-      "collectionType": "blockchain",
-      "previousHash": "4d0bcfb236562385087c986a85fc2c4ed4f6008b08a2aafa4ad1bfc28b74909d",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 119,
-      "details": {
-        "rejectedUser": "brgy5@mamburao.gov.ph"
-      },
-      "id": "b958a342-9e2c-4a6b-a7d7-bcaa2de3dfcc",
-      "hash": "470ca59ea6113ae6facf532bde01da3530f00806fe5ab60b9f66ff3047fe07da",
-      "timestamp": "2026-05-08T17:56:56.542Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-006",
-      "collectionType": "blockchain",
-      "previousHash": "470ca59ea6113ae6facf532bde01da3530f00806fe5ab60b9f66ff3047fe07da",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 120,
-      "details": {
-        "rejectedUser": "brgy6@mamburao.gov.ph"
-      },
-      "id": "fc2c7494-acd3-4f75-bd20-d9184315b73c",
-      "hash": "955a5c40f0bd4c66ba8a150884c2dd5ca69a35f2bbc7950aee78b0c37547b5af",
-      "timestamp": "2026-05-08T17:56:58.849Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-007",
-      "collectionType": "blockchain",
-      "previousHash": "955a5c40f0bd4c66ba8a150884c2dd5ca69a35f2bbc7950aee78b0c37547b5af",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 121,
-      "details": {
-        "rejectedUser": "brgy7@mamburao.gov.ph"
-      },
-      "id": "c7ed3a5a-ef2d-4398-b83c-a49bb447bb91",
-      "hash": "e9c6086475711885115f4fc14e896700797fefb341b2376db70c3a84d4eb3d9d",
-      "timestamp": "2026-05-08T17:57:01.336Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-008",
-      "collectionType": "blockchain",
-      "previousHash": "e9c6086475711885115f4fc14e896700797fefb341b2376db70c3a84d4eb3d9d",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 122,
-      "details": {
-        "rejectedUser": "brgy8@mamburao.gov.ph"
-      },
-      "id": "693ac1e5-461a-4ab7-9675-016443abbdaa",
-      "hash": "5e26db7c146efd01ec404580f66ee71b4044180dff0155b6ef8adf7c7b84f997",
-      "timestamp": "2026-05-08T17:57:04.194Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-009",
-      "collectionType": "blockchain",
-      "previousHash": "5e26db7c146efd01ec404580f66ee71b4044180dff0155b6ef8adf7c7b84f997",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 123,
-      "details": {
-        "rejectedUser": "payompon@mamburao.gov.ph"
-      },
-      "id": "19bd7b2b-2458-45ee-9b74-e4e03d2910ab",
-      "hash": "e7cd732c6b9c75ddf8933fd64b1c071329aec4215f190adc1e9c42f9d869005a",
-      "timestamp": "2026-05-08T17:57:06.429Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-010",
-      "collectionType": "blockchain",
-      "previousHash": "e7cd732c6b9c75ddf8933fd64b1c071329aec4215f190adc1e9c42f9d869005a",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 124,
-      "details": {
-        "rejectedUser": "tangkalan@mamburao.gov.ph"
-      },
-      "id": "62532c40-39b8-4f4a-9d15-6d991c9367b1",
-      "hash": "afc2359ecad462d952a0a06565d609ead515fc0e398e1d487c7bf3da78024359",
-      "timestamp": "2026-05-08T17:57:08.720Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-011",
-      "collectionType": "blockchain",
-      "previousHash": "afc2359ecad462d952a0a06565d609ead515fc0e398e1d487c7bf3da78024359",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 125,
-      "details": {
-        "rejectedUser": "fatima@mamburao.gov.ph"
-      },
-      "id": "61291715-10ef-4c05-aebe-76babebc9406",
-      "hash": "c83cef0022e95fe0b218fd471fb2b646b7e7feb5bf559dd858fa0944f17fce34",
-      "timestamp": "2026-05-08T17:57:10.989Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-012",
-      "collectionType": "blockchain",
-      "previousHash": "c83cef0022e95fe0b218fd471fb2b646b7e7feb5bf559dd858fa0944f17fce34",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 126,
-      "details": {
-        "rejectedUser": "sanluis@mamburao.gov.ph"
-      },
-      "id": "ae5e8387-0248-4a07-aa6d-4f1196a360f3",
-      "hash": "0621767cfef8493eb2dc1cf261e3aa3a613b2fd6f3ef85855221241ae7ca5585",
-      "timestamp": "2026-05-08T17:57:13.113Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-013",
-      "collectionType": "blockchain",
-      "previousHash": "0621767cfef8493eb2dc1cf261e3aa3a613b2fd6f3ef85855221241ae7ca5585",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 127,
-      "details": {
-        "rejectedUser": "balansay@mamburao.gov.ph"
-      },
-      "id": "d0d01c47-1764-4d5b-ae57-c567bcdf7465",
-      "hash": "ea1d7cd5b18af9ebe3cc748bfeeb75cabc7588f6542d7fa00b2594fa1fe68330",
-      "timestamp": "2026-05-08T17:57:15.406Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-014",
-      "collectionType": "blockchain",
-      "previousHash": "ea1d7cd5b18af9ebe3cc748bfeeb75cabc7588f6542d7fa00b2594fa1fe68330",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 128,
-      "details": {
-        "rejectedUser": "tayamaan@mamburao.gov.ph"
-      },
-      "id": "0838f8f4-6e51-4692-add2-ba7853901313",
-      "hash": "877370d216ade943846abe69fbfec0cbce9b921d6e1d67affb1358fe5bb0247b",
-      "timestamp": "2026-05-08T17:57:18.037Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "sec-015",
-      "collectionType": "blockchain",
-      "previousHash": "877370d216ade943846abe69fbfec0cbce9b921d6e1d67affb1358fe5bb0247b",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 129,
-      "details": {
-        "rejectedUser": "talabaan@mamburao.gov.ph"
-      },
-      "id": "4b699e68-c428-40c9-8a12-756fc5b501b6",
-      "hash": "4c3a8fc9ae0d0a3169f4db212b1afcaa10ae323502c59a1dc3de1695018f65a0",
-      "timestamp": "2026-05-08T17:57:20.453Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "c73a8508-c195-4a7e-8fc7-a7ded654c45b",
-      "collectionType": "blockchain",
-      "previousHash": "4c3a8fc9ae0d0a3169f4db212b1afcaa10ae323502c59a1dc3de1695018f65a0",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 130,
-      "details": {
-        "rejectedUser": "vinsec26@gmail.com"
-      },
-      "id": "cda00a2a-e6d1-401f-a836-91652879ef10",
-      "hash": "a7049d3b1e4c0663a395727e28ba1ca7fe52e86a73a1d13eaf0bb78d48dd0237",
-      "timestamp": "2026-05-08T17:57:22.998Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "tanod-001",
-      "collectionType": "blockchain",
-      "previousHash": "a7049d3b1e4c0663a395727e28ba1ca7fe52e86a73a1d13eaf0bb78d48dd0237",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 131,
-      "details": {
-        "rejectedUser": "tanod@barangay.gov.ph"
-      },
-      "id": "a7eeff51-be20-4651-8814-32eeaced4c82",
-      "hash": "906f05494a2fdffe08ba83113d20e8239660365d43677d2996c69f74587133ee",
-      "timestamp": "2026-05-08T17:57:25.144Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "tanod-002",
-      "collectionType": "blockchain",
-      "previousHash": "906f05494a2fdffe08ba83113d20e8239660365d43677d2996c69f74587133ee",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 132,
-      "details": {
-        "rejectedUser": "tanod2@barangay.gov.ph"
-      },
-      "id": "da3254c8-7cf4-4624-b608-2a4fa6d18d20",
-      "hash": "0a8ab358b503e44989807c3ad17d066afd2f43e9a47e3548c79dc67c0dca521f",
-      "timestamp": "2026-05-08T17:57:27.834Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "16127298-c17c-4081-b388-9d665da94f6a",
-      "collectionType": "blockchain",
-      "previousHash": "0a8ab358b503e44989807c3ad17d066afd2f43e9a47e3548c79dc67c0dca521f",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_REJECTED",
-      "index": 133,
-      "details": {
-        "rejectedUser": "arvinadelarosa@gmail.com"
-      },
-      "id": "22917d0b-0619-4eb2-a9e2-7d51d306616a",
-      "hash": "fe5db49864318c36601acd9b6b1c8e8da44a1f640b72434a52eb2c7ce8290350",
-      "timestamp": "2026-05-08T17:57:30.318Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "admin-001",
-      "collectionType": "blockchain",
-      "previousHash": "fe5db49864318c36601acd9b6b1c8e8da44a1f640b72434a52eb2c7ce8290350",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_LOGIN",
-      "index": 134,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "795001a3-bf2a-477a-baac-7acf313fda46",
-      "hash": "3134b9f8cc37f52dfb36133cf0a7ba794c2d9d82da18f18774eda05c30c32b23",
-      "timestamp": "2026-05-08T18:14:32.210Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "list",
-      "collectionType": "blockchain",
-      "previousHash": "3134b9f8cc37f52dfb36133cf0a7ba794c2d9d82da18f18774eda05c30c32b23",
-      "recordType": "residents",
-      "actorRole": "Admin",
-      "action": "RESIDENTS_VIEWED",
-      "index": 135,
-      "details": {
-        "count": 25,
-        "filters": {
-          "search": "",
-          "barangayQuery": ""
-        }
-      },
-      "id": "025d5ebe-a314-4bf4-82a8-a44223bac514",
-      "hash": "d58f1c3a42c4bde8172ac8b5301bf1729af076e9a699b60be4047c1840e314dd",
-      "timestamp": "2026-05-08T18:14:47.079Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "list",
-      "collectionType": "blockchain",
-      "previousHash": "d58f1c3a42c4bde8172ac8b5301bf1729af076e9a699b60be4047c1840e314dd",
-      "recordType": "residents",
-      "actorRole": "Admin",
-      "action": "RESIDENTS_VIEWED",
-      "index": 136,
-      "details": {
-        "count": 25,
-        "filters": {
-          "search": "",
-          "barangayQuery": ""
-        }
-      },
-      "id": "30c13d17-29ba-4c31-9c09-de88781f8a81",
-      "hash": "68f8c09558ed4df1c8ee06de43e1b2e78720f1004ae5fc604175d693d290ebe4",
-      "timestamp": "2026-05-08T18:14:47.093Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "admin-001",
-      "collectionType": "blockchain",
-      "previousHash": "68f8c09558ed4df1c8ee06de43e1b2e78720f1004ae5fc604175d693d290ebe4",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_LOGIN",
-      "index": 137,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "2a8a275e-24f1-4813-bd7e-c9d187a979da",
-      "hash": "86df65d742b7a5d346775f75c2671cc4fe10313b68cdcf25f2cfea8f9e490a89",
-      "timestamp": "2026-05-08T18:49:22.126Z"
-    },
-    {
-      "actor": "payomponsec123@gmail.com",
-      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
-      "collectionType": "blockchain",
-      "previousHash": "86df65d742b7a5d346775f75c2671cc4fe10313b68cdcf25f2cfea8f9e490a89",
-      "recordType": "user",
-      "actorRole": "Secretary",
-      "action": "USER_REGISTERED",
-      "index": 138,
-      "details": {
-        "role": "Secretary",
-        "barangay": "Payompon",
-        "email": "payomponsec123@gmail.com"
-      },
-      "id": "dc86370b-20ea-49ad-a04d-7b47b0067ef7",
-      "hash": "5ee16e9fffe2a732b1e9a66f9b504c7ed8696776f209b1ed15c556070610ad39",
-      "timestamp": "2026-05-08T18:52:45.164Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "admin-001",
-      "collectionType": "blockchain",
-      "previousHash": "5ee16e9fffe2a732b1e9a66f9b504c7ed8696776f209b1ed15c556070610ad39",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_LOGIN",
-      "index": 139,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "cb4e74dd-78aa-4dc2-9be0-bf9b797ad5bf",
-      "hash": "f0c63e2af1d5c58aa02ccd839b9bbabaf4f74671bdc7e19f33a2b4e552ab7ba0",
-      "timestamp": "2026-05-08T18:52:53.716Z"
-    },
-    {
-      "actor": "admin@barangay.gov.ph",
-      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
-      "collectionType": "blockchain",
-      "previousHash": "f0c63e2af1d5c58aa02ccd839b9bbabaf4f74671bdc7e19f33a2b4e552ab7ba0",
-      "recordType": "user",
-      "actorRole": "Admin",
-      "action": "USER_APPROVED",
-      "index": 140,
-      "details": {
-        "approvedUser": "payomponsec123@gmail.com"
-      },
-      "id": "b6bda15e-15a7-4cdf-b637-416e45784141",
-      "hash": "649e97b3be66ac8eec1a75ca09767d2694c5928a9cf576bb07b2304b3bab7d59",
-      "timestamp": "2026-05-08T18:53:00.577Z"
-    },
-    {
-      "actor": "payomponsec123@gmail.com",
-      "recordId": "a030d8d8-f1af-4fbe-80d7-d394ee3e92ce",
-      "collectionType": "blockchain",
-      "previousHash": "649e97b3be66ac8eec1a75ca09767d2694c5928a9cf576bb07b2304b3bab7d59",
-      "recordType": "user",
-      "actorRole": "Secretary",
-      "action": "USER_LOGIN",
-      "index": 141,
-      "details": {
-        "ip": "::1"
-      },
-      "id": "be459ae2-7fb9-4201-9e73-24735f343d0e",
-      "hash": "45938a5504a03b607637fb8b951c6d4d43d05669af34b8f762e0a2f93214348d",
-      "timestamp": "2026-05-08T18:53:12.109Z"
     }
   ]
 }
