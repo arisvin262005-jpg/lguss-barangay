@@ -32,8 +32,8 @@ export default function Dashboard() {
   const [integrity, setIntegrity] = useState(null);
   const [offlineStats, setOfflineStats] = useState({ cached: 0, synced: 0 });
 
-  const fetchStats = () => {
-    setLoading(true);
+  const fetchStats = (showLoading = true) => {
+    if (showLoading) setLoading(true);
     Promise.allSettled([
       api.get('/reports/dashboard-stats'),
       api.get('/reports/sync')
@@ -42,20 +42,20 @@ export default function Dashboard() {
       if (os.status === 'fulfilled') setOfflineStats(os.value.data);
     })
     .catch(() => {})
-    .finally(() => setLoading(false));
+    .finally(() => { if (showLoading) setLoading(false); });
   };
 
   useEffect(() => {
-    fetchStats();
-    // Real-time auto-refresh every 5 seconds
-    const interval = setInterval(fetchStats, 5000);
+    fetchStats(true);
+    // Real-time auto-refresh every 5 seconds silently in the background
+    const interval = setInterval(() => fetchStats(false), 5000);
     return () => clearInterval(interval);
   }, []);
 
   // Also refresh when sync completes or window gains focus
   useEffect(() => {
-    const onSync = () => fetchStats();
-    const onFocus = () => { if (document.visibilityState === 'visible') fetchStats(); };
+    const onSync = () => fetchStats(false);
+    const onFocus = () => { if (document.visibilityState === 'visible') fetchStats(false); };
     window.addEventListener('sync-complete', onSync);
     document.addEventListener('visibilitychange', onFocus);
     return () => {

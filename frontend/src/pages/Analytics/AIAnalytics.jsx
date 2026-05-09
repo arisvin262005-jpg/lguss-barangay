@@ -283,9 +283,11 @@ export default function AIAnalytics() {
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(null);
 
-  const loadAll = () => {
-    setLoading(true);
-    setLastRefresh(null);
+  const loadAll = (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+      setLastRefresh(null);
+    }
 
     Promise.allSettled([
       api.get('/reports/forecast/service-demand'),
@@ -306,14 +308,14 @@ export default function AIAnalytics() {
         repeatOffenders:  results[6].status === 'fulfilled' ? results[6].value.data : null,
       });
       setLastRefresh(new Date().toLocaleTimeString('en-PH'));
-      setLoading(false);
+      if (showLoading) setLoading(false);
     });
   };
 
   useEffect(() => { 
-    loadAll(); 
-    const interval = setInterval(loadAll, 5000);
-    const onFocus = () => { if (document.visibilityState === 'visible') loadAll(); };
+    loadAll(true); 
+    const interval = setInterval(() => loadAll(false), 5000);
+    const onFocus = () => { if (document.visibilityState === 'visible') loadAll(false); };
     document.addEventListener('visibilitychange', onFocus);
     return () => {
       clearInterval(interval);
