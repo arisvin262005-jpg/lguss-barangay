@@ -227,7 +227,7 @@ export default function Certifications() {
   };
 
   return (
-    <div style={{ maxWidth:1150 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">Certifications & Issuances <small style={{ fontSize:'0.7rem', color:'#94a3b8' }}>v2.5</small></div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
         <div>

@@ -79,7 +79,7 @@ export default function DrrmGad() {
   ];
 
   return (
-    <div style={{ maxWidth:1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">DRRM & GAD Programs</div><div className="page-subtitle">Disaster Risk Reduction Management & Gender and Development</div></div>
       </div>

@@ -73,7 +73,7 @@ export default function Dashboard() {
   const ageDistData    = stats?.ageDistribution || [];
 
   return (
-    <div style={{ maxWidth: 1200 }}>
+    <div style={{ width: '100%' }}>
       {/* Page header */}
       <div className="page-header">
         <div>

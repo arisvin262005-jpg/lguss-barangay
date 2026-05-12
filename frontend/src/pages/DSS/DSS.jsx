@@ -41,7 +41,7 @@ export default function DSS() {
   const residentName = (id) => { const r = residents.find(r => r.id === id); return r ? `${r.firstName} ${r.lastName}` : id; };
 
   return (
-    <div style={{ maxWidth: 1200 }}>
+    <div style={{ width: '100%' }}>
       {/* Header */}
       <div className="page-header" style={{ marginBottom: '1.5rem' }}>
         <div>

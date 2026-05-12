@@ -60,7 +60,7 @@ export default function Households() {
   };
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div>
           <div className="page-title">Household Records</div>

@@ -21,7 +21,7 @@ export default function SeniorCitizens() {
   );
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div>
           <div className="page-title">Senior Citizens Registry</div>

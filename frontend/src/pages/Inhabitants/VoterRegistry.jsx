@@ -19,7 +19,7 @@ export default function VoterRegistry() {
   );
 
   return (
-    <div style={{ maxWidth:1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">Voter Registry</div><div className="page-subtitle">Residents tagged as registered voters</div></div>
         <div style={{ padding:'0.5rem 1.25rem',borderRadius:8,background:'rgba(22,163,74,0.08)',border:'1px solid rgba(22,163,74,0.15)',fontSize:'0.82rem',fontWeight:700,color:'#16a34a' }}>

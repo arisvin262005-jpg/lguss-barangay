@@ -19,7 +19,7 @@ export default function PWDRegistry() {
   );
 
   return (
-    <div style={{ maxWidth:1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">PWD Registry</div><div className="page-subtitle">Persons with Disability — auto-filtered by PWD tag</div></div>
         <div style={{ padding:'0.5rem 1.25rem',borderRadius:8,background:'rgba(124,58,237,0.08)',border:'1px solid rgba(124,58,237,0.15)',fontSize:'0.82rem',fontWeight:700,color:'#7c3aed' }}>

@@ -181,7 +181,7 @@ export default function Cases() {
   };
 
   return (
-    <div style={{ maxWidth: 1200 }}>
+    <div style={{ width: '100%' }}>
       {/* Header */}
       <div className="page-header">
         <div>

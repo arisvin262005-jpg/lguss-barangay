@@ -12,7 +12,7 @@ export default function SyncEngine() {
   ];
 
   return (
-    <div style={{ maxWidth: 1000 }}>
+    <div style={{ width: '100%' }}>
       {/* Header */}
       <div className="page-header" style={{ marginBottom: '1.5rem' }}>
         <div>

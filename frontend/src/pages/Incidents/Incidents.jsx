@@ -37,7 +37,7 @@ export default function Incidents() {
   };
 
   return (
-    <div style={{ maxWidth:1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">Incidents & Complaints</div><div className="page-subtitle">File and track barangay complaints including VAWC cases</div></div>
         {canFile && <button className="btn btn-primary" onClick={()=>{ setForm({ type:'General Complaint',description:'',priority:'Medium',isVawc:false,complainantId:'' }); setModal('form'); }}><Plus size={16}/>File Complaint</button>}

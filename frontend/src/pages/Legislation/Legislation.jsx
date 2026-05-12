@@ -46,7 +46,7 @@ export default function Legislation() {
   };
 
   return (
-    <div style={{ maxWidth:1100 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div><div className="page-title">Legislation Records</div><div className="page-subtitle">Barangay ordinances, resolutions, and executive orders</div></div>
         {canEdit && <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/>Add {tab}</button>}

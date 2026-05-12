@@ -90,7 +90,7 @@ export default function Reports() {
   );
 
   return (
-    <div className="animate-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="animate-in" style={{ width: '100%', margin: '0 auto' }}>
       <div className="page-header" style={{ marginBottom: '2rem' }}>
         <div>
           <h1 className="page-title">Reports & Analytics</h1>

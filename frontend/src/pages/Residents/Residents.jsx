@@ -168,7 +168,7 @@ export default function Residents() {
   ));
 
   return (
-    <div style={{ maxWidth: 1200 }}>
+    <div style={{ width: '100%' }}>
       <div className="page-header">
         <div>
           <div className="page-title">Resident Profiling</div>
