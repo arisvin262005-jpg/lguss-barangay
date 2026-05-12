@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSync } from '../context/SyncContext';
 import { usePWA } from '../context/PWAContext';
+import SmartSearch from './SmartSearch';
 import {
   LayoutDashboard, Users, Home, UserCheck, Accessibility, Vote,
   FileText, Scale, BookOpen, AlertTriangle, Building2, Shield,
@@ -321,7 +322,10 @@ export default function Layout({ children }) {
             <Menu size={18} />
           </button>
 
-          <span className="topbar-title">{currentPageName()}</span>
+          <span className="topbar-title hide-mobile">{currentPageName()}</span>
+
+          {/* Smart Search Bar */}
+          <SmartSearch />
 
           {/* Online/Offline Badge */}
           <div className={`online-badge ${isOnline ? 'online' : 'offline'}`} 

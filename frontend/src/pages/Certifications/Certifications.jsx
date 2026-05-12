@@ -32,32 +32,35 @@ export default function Certifications() {
   const [saving, setSaving] = useState(false);
   const [dssResult, setDssResult] = useState(null);
   const [dssLoading, setDssLoading] = useState(false);
-  const [localCaseWarning, setLocalCaseWarning] = useState(null);
+  const [casesInvolved, setCasesInvolved] = useState([]);
+  const [caseDecisions, setCaseDecisions] = useState({});
   const [checkingLocal, setCheckingLocal] = useState(false);
   const canEdit = hasRole('Admin','Secretary');
 
   const checkLocalCases = async (resId) => {
-    if (!resId) { setLocalCaseWarning(null); return; }
+    if (!resId) { setCasesInvolved([]); setCaseDecisions({}); return; }
     setCheckingLocal(true);
     try {
       const { data } = await api.get(`/cases/cross-check/${resId}`);
-      if (data && data.cases && data.cases.length > 0) {
-        const active = data.cases.filter(c => !['Settled', 'Dismissed'].includes(c.status));
-        setLocalCaseWarning({
-          total: data.cases.length,
-          active: active.length,
-          risk: data.summary?.riskLevel || 'CLEAR',
-          details: active.map(c => `${c.caseNumber} (${c.status})`).join(', ')
-        });
-      } else {
-        setLocalCaseWarning(null);
-      }
+      const allCases = data?.cases || [];
+      setCasesInvolved(allCases);
+      // default all to 'Accept'
+      const defaults = {};
+      allCases.forEach(c => { defaults[c.id] = 'Accept'; });
+      setCaseDecisions(defaults);
     } catch {
-      setLocalCaseWarning(null);
+      setCasesInvolved([]);
+      setCaseDecisions({});
     } finally {
       setCheckingLocal(false);
     }
   };
+
+  const setDecision = (caseId, decision) => {
+    setCaseDecisions(prev => ({ ...prev, [caseId]: decision }));
+  };
+
+  const hasDeclined = Object.values(caseDecisions).some(d => d === 'Decline');
 
   const getResidentName = (id) => {
     if (!id) return 'Unknown Resident';
@@ -324,20 +327,59 @@ export default function Certifications() {
                   </select>
                 </div>
 
-                {/* Instant Local Case Check (No AI/Internet needed) */}
-                {checkingLocal && <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>Scanning local records...</div>}
-                {!checkingLocal && localCaseWarning && (
-                  <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '0.75rem', marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                    <AlertCircle size={16} color="#dc2626" style={{ marginTop: 2 }} />
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#dc2626' }}>
-                        Local Record Alert: {localCaseWarning.active > 0 ? 'ACTIVE CASE DETECTED' : 'Case History Found'}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#7f1d1d' }}>
-                        This resident has <b>{localCaseWarning.total}</b> case(s) on record (Risk: {localCaseWarning.risk}).
-                        {localCaseWarning.active > 0 && <span> Active cases: {localCaseWarning.details}</span>}
-                      </div>
+                {/* ── CASES INVOLVED (All Barangays) ── */}
+                {checkingLocal && (
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.75rem', display:'flex', alignItems:'center', gap:'0.4rem' }}>
+                    <span style={{ width:12, height:12, border:'2px solid #cbd5e1', borderTopColor:'#1a4f8a', borderRadius:'50%', display:'inline-block', animation:'spin 0.8s linear infinite' }} />
+                    Scanning all barangay records...
+                  </div>
+                )}
+                {!checkingLocal && casesInvolved.length > 0 && (
+                  <div style={{ border:'1.5px solid #fca5a5', borderRadius:10, overflow:'hidden', marginBottom:'1rem' }}>
+                    <div style={{ background:'#fef2f2', padding:'0.55rem 0.9rem', display:'flex', alignItems:'center', gap:'0.5rem', borderBottom:'1px solid #fca5a5' }}>
+                      <AlertCircle size={15} color="#dc2626" />
+                      <span style={{ fontWeight:800, fontSize:'0.8rem', color:'#dc2626' }}>CASES INVOLVED — {casesInvolved.length} case(s) found across all barangays</span>
                     </div>
+                    <div style={{ background:'#fff', maxHeight:220, overflowY:'auto' }}>
+                      {casesInvolved.map(c => {
+                        const isActive = !['Settled','Dismissed'].includes(c.status);
+                        const dec = caseDecisions[c.id] || 'Accept';
+                        return (
+                          <div key={c.id} style={{ padding:'0.65rem 0.9rem', borderBottom:'1px solid #fee2e2', display:'flex', alignItems:'center', gap:'0.75rem', justifyContent:'space-between', background: dec==='Decline'?'#fff5f5':'#fff' }}>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', flexWrap:'wrap' }}>
+                                <span style={{ fontWeight:800, fontSize:'0.8rem', color:'#1a4f8a' }}>{c.caseNumber}</span>
+                                {c.isCrossBarangay && <span style={{ fontSize:'0.6rem', background:'#ede9fe', color:'#7c3aed', padding:'0.1rem 0.45rem', borderRadius:100, fontWeight:700 }}>📍 {c.originBarangay}</span>}
+                                <span style={{ fontSize:'0.62rem', padding:'0.1rem 0.45rem', borderRadius:100, fontWeight:700, background: isActive?'#fef2f2':'#f0fdf4', color: isActive?'#dc2626':'#16a34a', border:`1px solid ${isActive?'#fca5a5':'#bbf7d0'}` }}>{c.status}</span>
+                              </div>
+                              <div style={{ fontSize:'0.72rem', color:'#64748b', marginTop:2 }}>{c.caseType} · Role: <b style={{ color: c.involvedAs==='Respondent'?'#dc2626':'#2563eb' }}>{c.involvedAs || '—'}</b></div>
+                            </div>
+                            <div style={{ display:'flex', gap:'0.3rem', flexShrink:0 }}>
+                              <button type="button" onClick={() => setDecision(c.id,'Accept')}
+                                style={{ padding:'0.3rem 0.7rem', borderRadius:7, border:'1.5px solid', fontSize:'0.7rem', fontWeight:700, cursor:'pointer', transition:'all 0.15s',
+                                  background: dec==='Accept'?'#16a34a':'#fff',
+                                  borderColor: dec==='Accept'?'#16a34a':'#d1d5db',
+                                  color: dec==='Accept'?'#fff':'#6b7280' }}>✅ Accept</button>
+                              <button type="button" onClick={() => setDecision(c.id,'Decline')}
+                                style={{ padding:'0.3rem 0.7rem', borderRadius:7, border:'1.5px solid', fontSize:'0.7rem', fontWeight:700, cursor:'pointer', transition:'all 0.15s',
+                                  background: dec==='Decline'?'#dc2626':'#fff',
+                                  borderColor: dec==='Decline'?'#dc2626':'#d1d5db',
+                                  color: dec==='Decline'?'#fff':'#6b7280' }}>❌ Decline</button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {hasDeclined && (
+                      <div style={{ background:'#fef2f2', padding:'0.5rem 0.9rem', borderTop:'1px solid #fca5a5', fontSize:'0.73rem', color:'#dc2626', fontWeight:700 }}>
+                        ⚠️ Cannot issue certificate — one or more cases have been declined.
+                      </div>
+                    )}
+                  </div>
+                )}
+                {!checkingLocal && form.residentId && casesInvolved.length === 0 && (
+                  <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:8, padding:'0.5rem 0.9rem', marginBottom:'0.75rem', fontSize:'0.78rem', color:'#16a34a', fontWeight:700 }}>
+                    ✅ No case records found — resident is clear across all barangays.
                   </div>
                 )}
                 <div className="form-group">
@@ -371,8 +413,8 @@ export default function Certifications() {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={()=>setModal(null)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={saving||dssResult?.decision==='Deny'}>
-                  <Save size={14}/>{saving?'Issuing...':'Issue Certificate'}
+                <button type="submit" className="btn btn-primary" disabled={saving || dssResult?.decision==='Deny' || hasDeclined}>
+                  <Save size={14}/>{saving ? 'Issuing...' : hasDeclined ? 'Issuance Blocked ⛔' : 'Issue Certificate'}
                 </button>
               </div>
             </form>
