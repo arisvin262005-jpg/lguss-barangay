@@ -292,20 +292,24 @@ export default function Layout({ children }) {
               <span className="nav-item-label">Install App</span>
             </button>
           )}
-          <div className="sidebar-user" onClick={handleOpenProfile} style={{ cursor: 'pointer' }} title="Click to edit profile">
+          <div className="sidebar-user" onClick={handleOpenProfile} 
+               style={{ cursor: 'pointer', justifyContent: collapsed && !mobileOpen ? 'center' : 'flex-start' }} 
+               title="Click to edit profile">
             <div className="sidebar-avatar">
               {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
             </div>
             {(!collapsed || mobileOpen) && (
-              <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.8rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
-                <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)' }}>{user?.role} • {user?.barangay?.split(' ')[0]}</div>
-              </div>
+              <>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.8rem', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
+                  <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)' }}>{user?.role} • {user?.barangay?.split(' ')[0]}</div>
+                </div>
+                <button onClick={(e) => { e.stopPropagation(); handleLogout(); }} title="Logout"
+                  style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 6, padding: '0.35rem', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center' }}>
+                  <LogOut size={14} />
+                </button>
+              </>
             )}
-            <button onClick={handleLogout} title="Logout"
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 6, padding: '0.35rem', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center' }}>
-              <LogOut size={14} />
-            </button>
           </div>
         </div>
       </aside>
@@ -327,9 +331,12 @@ export default function Layout({ children }) {
           {/* Smart Search Bar */}
           <SmartSearch />
 
+          {/* Spacer to push items to the right */}
+          <div style={{ flex: 1 }} className="hide-mobile" />
+
           {/* Online/Offline Badge */}
           <div className={`online-badge ${isOnline ? 'online' : 'offline'}`} 
-            style={{ padding: window.innerWidth <= 480 ? '0.3rem 0.4rem' : '0.3rem 0.75rem' }}>
+            style={{ padding: window.innerWidth <= 480 ? '0.3rem 0.4rem' : '0.3rem 0.75rem', flexShrink: 0 }}>
             {isOnline ? <Wifi size={13} /> : <WifiOff size={13} />}
             <span className="hide-mobile">{isOnline ? 'Online' : 'Offline'}</span>
             {!isOnline && syncStats.pending > 0 && (
@@ -340,7 +347,7 @@ export default function Layout({ children }) {
           </div>
 
           {/* User avatar shortcut */}
-          <div onClick={handleOpenProfile} className="hide-mobile" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+          <div onClick={handleOpenProfile} className="hide-mobile" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
             title={`Edit Profile: ${user?.name} (${user?.role})`}>
             {user?.name?.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() || 'U'}
           </div>

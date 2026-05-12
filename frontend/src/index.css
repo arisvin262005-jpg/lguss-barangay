@@ -219,6 +219,8 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   display: flex;
   align-items: center;
   gap: 0.625rem;
+  width: 100%;
+  overflow: hidden;
 }
 .sidebar-avatar {
   width: 34px;
@@ -240,6 +242,8 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0; /* Important for flex children to allow shrinking */
+  position: relative;
 }
 
 .topbar {
@@ -278,7 +282,9 @@ h1,h2,h3,h4,h5 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(
 .page-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1.5rem;
+  width: 100%;
 }
 
 /* ===== GOVERNMENT CARDS ===== */
