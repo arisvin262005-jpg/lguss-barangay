@@ -1068,7 +1068,7 @@ function LoginForm({ onSwitch }) {
   };
 
   const fmt = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-  const demos = [{ role:'Admin', email:'admin@barangay.gov.ph' },{ role:'Secretary', email:'sec@barangay.gov.ph' }];
+  const demos = [{ role:'Admin', email:'admin@barangay.gov.ph' },{ role:'Secretary', email:'secretary@barangay.gov.ph' }];
 
   return (
     <div style={{ padding:'2.25rem' }}>
