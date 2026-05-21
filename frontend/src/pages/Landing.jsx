@@ -843,14 +843,23 @@ export default function Landing() {
           </AnimatedCard>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'1.5rem' }}>
             {[
-              { name:'Arvin Dela Rosa Marasigan', role:'Lead Developer & System Architect', emoji:'💻', badge:'Full Stack', color:'#2563eb', img: 'https://scontent.fmnl34-1.fna.fbcdn.net/v/t39.30808-6/481006052_673652805091887_8707769895983757953_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=b895b5&_nc_eui2=AeHBYMvqUQcvKg7CK1oMakeXQ_zhaVRgrehD_OFpVGCt6FwP9r8sSFyST0O-mEgK1JB2WpSeYoE7CVp6EjEDoq7v&_nc_ohc=gW2l2gZW0oIQ7kNvwHS5xNx&_nc_oc=Adql_j3BtBi1GOk__KoAxYac63JpZnj0IFVTfzZUQ6qWRFwUcsE45nEqp1NQUlsJLxFFn0fk-Z2aO5zTLrtusUPb&_nc_zt=23&_nc_ht=scontent.fmnl34-1.fna&_nc_gid=XRsSLzUDn2IggqweDt4JNA&_nc_ss=7b2a8&oh=00_Af70cV535JJqwnRMRBMYeyQ_PeuFdoa0oZmb7xG8NJzXAA&oe=6A05B572' },
-              { name:'Hannah Alfaro', role:'Frontend Developer & UI/UX Designer', emoji:'🎨', badge:'Frontend', color:'#8b5cf6', img: 'https://scontent.fmnl34-1.fna.fbcdn.net/v/t1.15752-9/675218204_1694104088683785_6777539584026093607_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeHw6LKfh2atawzsd3w5lomUbTCeEAmAbORtMJ4QCYBs5CeF4oroExB95byGXKgHmTlvr8zFsL6yBfFxb119XmWl&_nc_ohc=hXm8Q9fDx5IQ7kNvwFQQjlD&_nc_oc=AdrwiZw3CWg9sfQGvyrJS4IuyoD7vt1Qfs_2GJzzmQEUaeL3HLs_MKT4RykwkU1GG7g7l1Ih-5WKHT_peuHuMvOX&_nc_zt=23&_nc_ht=scontent.fmnl34-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5QFoKoM3_LXuzO8pagMtRLXpqQ6pyOEDqbagrtL2SK2_uw&oe=6A25AB1C' },
+              { name:'Arvin Dela Rosa Marasigan', role:'Lead Developer & System Architect', emoji:'💻', badge:'Full Stack', color:'#2563eb' },
+              { name:'Hannah Alfaro', role:'Frontend Developer & UI/UX Designer', emoji:'🎨', badge:'Frontend', color:'#8b5cf6' },
               { name:'Lanibel Cabrera', role:'Frontend Developer & QA Analyst', emoji:'🔍', badge:'Frontend / QA', color:'#10b981' },
             ].map((m, i) => (
               <AnimatedCard key={i} delay={i * 100}>
                 <div className="team-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                  <div className="team-avatar" style={{ overflow: 'hidden', padding: m.img ? 0 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {m.img ? <img src={m.img} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : m.emoji}
+                  <div
+                    className="team-avatar"
+                    title={m.name}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: `linear-gradient(135deg, ${m.color}, ${m.color}99)`,
+                      color: '#fff', fontSize: '1.65rem', fontWeight: 900,
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    {m.name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
                   </div>
                   <div style={{ fontWeight:900, fontSize:'1rem', color:'#0f172a', marginBottom:'0.35rem', textAlign:'center' }}>{m.name}</div>
                   <div style={{ fontSize:'0.82rem', color:'#64748b', lineHeight:1.5, marginBottom:'1rem', textAlign:'center' }}>{m.role}</div>
