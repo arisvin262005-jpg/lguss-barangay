@@ -63,7 +63,7 @@ function DashboardCard({ icon: Icon, color, title, subtitle, children, loading }
 
 /* ── 1. Service Demand Forecast ── */
 function ServiceDemandPanel({ data }) {
-  if (!data) return null;
+  if (!data?.monthData?.length) return <PanelEmpty message="Add certification records to enable service demand forecasting." />;
   const max = Math.max(...data.monthData.map(m => m.count), 1);
   return (
     <div>
@@ -87,16 +87,21 @@ function ServiceDemandPanel({ data }) {
   );
 }
 
+function PanelEmpty({ message }) {
+  return <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>{message}</div>;
+}
+
 /* ── 2. Demographic Trends ── */
 function DemographicPanel({ data }) {
-  if (!data) return null;
-  const groups = Object.entries(data.current.ageGroups);
-  const total = data.current.total || 1;
+  if (!data?.current?.ageGroups) return <PanelEmpty message="Add resident records to enable demographic projections." />;
+  const current = data.current;
+  const groups = Object.entries(current.ageGroups);
+  const total = current.total || 1;
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
-        <StatCard label="Total Residents" value={data.current.total} color={BLUE} />
-        <StatCard label="Seniors (Projected)" value={data.sectorGrowth.find(s=>s.sector==='Senior Citizens')?.projected || 0} color={ORANGE} sub="+9% Growth" />
+        <StatCard label="Total Residents" value={current.total} color={BLUE} />
+        <StatCard label="Seniors (Projected)" value={data.sectorGrowth?.find(s=>s.sector==='Senior Citizens')?.projected || 0} color={ORANGE} sub="+9% Growth" />
       </div>
       <div style={{ background: '#fff', padding: '1rem', borderRadius: 12, border: '1px solid #e2e8f0' }}>
         <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '1rem' }}>Age Group 3-Year Projection</div>
@@ -122,7 +127,8 @@ function DemographicPanel({ data }) {
 
 /* ── 3. Incident Hotspot Forecast ── */
 function HotspotPanel({ data }) {
-  if (!data) return null;
+  if (!data?.zones) return <PanelEmpty message="Add incident records to enable hotspot analysis." />;
+  const zones = data.zones || [];
   return (
     <div>
       {data.topRiskZone && (
@@ -137,8 +143,8 @@ function HotspotPanel({ data }) {
         </div>
       )}
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        {data.zones.map((z, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.85rem 1rem', borderBottom: i < data.zones.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+        {zones.map((z, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.85rem 1rem', borderBottom: i < zones.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: (RISK_COLOR[z.riskLevel] || BLUE) + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.75rem', color: RISK_COLOR[z.riskLevel] || BLUE }}>{i + 1}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1e293b' }}>{z.barangay}</div>
@@ -150,7 +156,7 @@ function HotspotPanel({ data }) {
             </div>
           </div>
         ))}
-        {data.zones.length === 0 && <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>Insufficient data for hotspot modeling.</div>}
+        {zones.length === 0 && <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>Insufficient data for hotspot modeling.</div>}
       </div>
     </div>
   );
@@ -158,13 +164,15 @@ function HotspotPanel({ data }) {
 
 /* ── 4. Health Risk Forecast ── */
 function HealthRiskPanel({ data }) {
-  if (!data) return null;
-  const { summary, outbreakRisk, highRiskResidents } = data;
+  if (!data?.summary) return <PanelEmpty message="Add resident health tags to enable risk forecasting." />;
+  const summary = data.summary;
+  const outbreakRisk = data.outbreakRisk || { level: 'LOW', type: '—', season: '—' };
+  const highRiskResidents = data.highRiskResidents || [];
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <StatCard label="High Health Risk" value={summary.highRisk} color={RED} sub="2+ Vulnerabilities" />
-        <StatCard label="Moderate Risk" value={summary.moderateRisk} color={ORANGE} sub="1 Vulnerability" />
+        <StatCard label="High Health Risk" value={summary.highRisk ?? 0} color={RED} sub="2+ Vulnerabilities" />
+        <StatCard label="Moderate Risk" value={summary.moderateRisk ?? 0} color={ORANGE} sub="1 Vulnerability" />
       </div>
       <div style={{ background: outbreakRisk.level === 'HIGH' ? '#fef2f2' : '#fffbeb', border: `1px solid ${outbreakRisk.level === 'HIGH' ? '#fca5a5' : '#fde68a'}`, borderRadius: 12, padding: '1rem', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: 6 }}>
@@ -197,14 +205,15 @@ function HealthRiskPanel({ data }) {
 
 /* ── 5. Calamity Vulnerability ── */
 function CalamityPanel({ data }) {
-  if (!data) return null;
-  const { summary, households } = data;
+  if (!data?.summary) return <PanelEmpty message="Add household records to enable calamity vulnerability scoring." />;
+  const summary = data.summary;
+  const households = data.households || [];
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <StatCard label="Priority 1" value={summary.priority1} color={RED} sub="Critical Evac" />
-        <StatCard label="Priority 2" value={summary.priority2} color={ORANGE} sub="High Need" />
-        <StatCard label="Priority 3" value={summary.priority3} color={GREEN} sub="Standard" />
+        <StatCard label="Priority 1" value={summary.priority1 ?? 0} color={RED} sub="Critical Evac" />
+        <StatCard label="Priority 2" value={summary.priority2 ?? 0} color={ORANGE} sub="High Need" />
+        <StatCard label="Priority 3" value={summary.priority3 ?? 0} color={GREEN} sub="Standard" />
       </div>
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '1rem' }}>
         <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>Vulnerable Households</div>
@@ -228,15 +237,18 @@ function CalamityPanel({ data }) {
 
 /* ── 6. Repeat Offender Pattern Detection (Panel Requirement) ── */
 function RepeatOffenderPanel({ data }) {
-  if (!data) return <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', fontSize: '0.85rem' }}>Add KP Case records to enable pattern detection.</div>;
-  const { summary, repeatOffenders, topCaseTypes, peakMonth } = data;
+  if (!data?.summary) return <PanelEmpty message="Add KP Case records to enable pattern detection." />;
+  const summary = data.summary;
+  const repeatOffenders = data.repeatOffenders || [];
+  const topCaseTypes = data.topCaseTypes || [];
+  const peakMonth = data.peakMonth || { month: '—', count: 0 };
   const riskColor = { HIGH: RED, MODERATE: ORANGE, LOW: GREEN };
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.65rem', marginBottom: '1rem' }}>
-        <StatCard label="Repeat Respondents" value={summary.total} color={RED} sub="≥2 KP cases" />
-        <StatCard label="HIGH Risk" value={summary.highRisk} color={ORANGE} sub="Score ≥ 8" />
-        <StatCard label="Cases Scanned" value={summary.totalCasesAnalyzed} color={BLUE} sub="Total KP records" />
+        <StatCard label="Repeat Respondents" value={summary.total ?? 0} color={RED} sub="≥2 KP cases" />
+        <StatCard label="HIGH Risk" value={summary.highRisk ?? 0} color={ORANGE} sub="Score ≥ 8" />
+        <StatCard label="Cases Scanned" value={summary.totalCasesAnalyzed ?? 0} color={BLUE} sub="Total KP records" />
       </div>
       {/* Privacy note */}
       <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, padding: '0.6rem 0.9rem', marginBottom: '1rem', fontSize: '0.72rem', color: '#92400e', display: 'flex', gap: '0.5rem' }}>

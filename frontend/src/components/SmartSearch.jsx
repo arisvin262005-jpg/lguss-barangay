@@ -194,7 +194,7 @@ function Results({ result, navigate, close }) {
   return (
     <div style={{ padding: '0.5rem 0.75rem' }}>
       <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem', padding: '0 0.25rem' }}>
-        {result.total} result{result.total !== 1 ? 's' : ''} found
+        {result.total ?? 0} result{(result.total ?? 0) !== 1 ? 's' : ''} found
       </div>
       {result.items.map((item, i) => (
         <div key={item.id || i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 0.5rem', borderRadius: 7, cursor: 'pointer', transition: 'background 0.15s' }}
@@ -205,7 +205,7 @@ function Results({ result, navigate, close }) {
           <span style={{ fontSize: '0.8rem', color: '#334155', fontWeight: 500 }}>{getLabel(item)}</span>
         </div>
       ))}
-      {result.total > result.items.length && (
+      {(result.total ?? 0) > (result.items?.length ?? 0) && (
         <button onClick={() => { navigate(result.path); close(); }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#1a4f8a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: '0.4rem 0.5rem' }}>
           <ArrowRight size={13} /> View all {result.total} results

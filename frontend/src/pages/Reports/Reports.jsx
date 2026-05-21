@@ -63,12 +63,28 @@ export default function Reports() {
     ]);
 
     const okCount = results.filter((r) => r.status === 'fulfilled').length;
+    const mergeTime = (raw, fb) => ({
+      ...fb,
+      ...(raw && typeof raw === 'object' ? raw : {}),
+      totalHoursSaved: Number(raw?.totalHoursSaved ?? fb.totalHoursSaved) || 0,
+      certificationsIssued: Number(raw?.certificationsIssued ?? fb.certificationsIssued) || 0,
+      timeSavedPercent: Number(raw?.timeSavedPercent ?? fb.timeSavedPercent) || 0,
+      avgSystemProcessingMins: Number(raw?.avgSystemProcessingMins ?? fb.avgSystemProcessingMins) || 0,
+      avgManualProcessingMins: Number(raw?.avgManualProcessingMins ?? fb.avgManualProcessingMins) || 45,
+    });
+    const mergeDups = (raw, fb) => ({
+      ...fb,
+      ...(raw && typeof raw === 'object' ? raw : {}),
+      duplicateReductionRate: Number(raw?.duplicateReductionRate ?? fb.duplicateReductionRate) || 0,
+      repeatInvolvedParties: Number(raw?.repeatInvolvedParties ?? fb.repeatInvolvedParties) || 0,
+      totalResidents: Number(raw?.totalResidents ?? fb.totalResidents) || 0,
+    });
     const next = {
-      certs: pick(results[0], (r) => r.data?.data ?? [], fallback.certs),
-      cases: pick(results[1], (r) => r.data?.summary ?? EMPTY_CASES, fallback.cases),
-      residents: pick(results[2], (r) => r.data?.data ?? [], fallback.residents),
-      time: pick(results[3], (r) => r.data ?? fallback.time, fallback.time),
-      dups: pick(results[4], (r) => r.data ?? fallback.dups, fallback.dups),
+      certs: pick(results[0], (r) => (Array.isArray(r.data?.data) ? r.data.data : []), fallback.certs),
+      cases: pick(results[1], (r) => (r.data?.summary && typeof r.data.summary === 'object' ? r.data.summary : EMPTY_CASES), fallback.cases),
+      residents: pick(results[2], (r) => (Array.isArray(r.data?.data) ? r.data.data : []), fallback.residents),
+      time: pick(results[3], (r) => mergeTime(r.data, fallback.time), fallback.time),
+      dups: pick(results[4], (r) => mergeDups(r.data, fallback.dups), fallback.dups),
     };
 
     setData(next);
@@ -175,29 +191,29 @@ export default function Reports() {
       <div className="grid-3" style={{ marginBottom: '2.5rem' }}>
         <ReportCard title="Time Saved (DSS)" icon={TrendingUp} color="#16a34a">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{data.time.timeSavedPercent}%</span>
+            <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{data.time?.timeSavedPercent ?? 0}%</span>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>faster processing</span>
           </div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.6, background: 'var(--surface-2)', padding: '0.75rem', borderRadius: 8 }}>
-            System average: <strong>{data.time.avgSystemProcessingMins} mins</strong> vs Manual: <strong>{data.time.avgManualProcessingMins} mins</strong>.
+            System average: <strong>{data.time?.avgSystemProcessingMins ?? 0} mins</strong> vs Manual: <strong>{data.time?.avgManualProcessingMins ?? 45} mins</strong>.
             <br/><br/>
-            Total of <strong>{data.time.totalHoursSaved.toFixed(1)} hours</strong> saved across <strong>{data.time.certificationsIssued}</strong> certifications.
+            Total of <strong>{(data.time?.totalHoursSaved ?? 0).toFixed(1)} hours</strong> saved across <strong>{data.time?.certificationsIssued ?? 0}</strong> certifications.
           </div>
         </ReportCard>
 
         <ReportCard title="KP Effectiveness" icon={Scale} color="#0284c7">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0284c7', lineHeight: 1 }}>{data.dups.duplicateReductionRate}%</span>
+            <span style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0284c7', lineHeight: 1 }}>{data.dups?.duplicateReductionRate ?? 0}%</span>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>dispute reduction</span>
           </div>
           <div style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.6, background: 'var(--surface-2)', padding: '0.75rem', borderRadius: 8 }}>
-            <strong>{data.dups.repeatInvolvedParties}</strong> repeat offenders successfully flagged by the Decision Support System over a total base of <strong>{data.dups.totalResidents}</strong> recorded residents.
+            <strong>{data.dups?.repeatInvolvedParties ?? 0}</strong> repeat offenders successfully flagged by the Decision Support System over a total base of <strong>{data.dups?.totalResidents ?? 0}</strong> recorded residents.
           </div>
         </ReportCard>
 
         <ReportCard title="Cases Overview" icon={BarChart3} color="#d97706">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.5rem' }}>
-            {Object.entries(data.cases).map(([status, count]) => (
+            {Object.entries(data.cases || EMPTY_CASES).map(([status, count]) => (
               <div key={status} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: 'var(--surface-2)', borderRadius: 6, border: '1px solid var(--border)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{status}</span>
                 <span style={{ fontWeight: 800, color: 'var(--text)', fontSize: '1.1rem' }}>{count}</span>

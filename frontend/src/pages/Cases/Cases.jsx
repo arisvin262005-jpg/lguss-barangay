@@ -346,12 +346,13 @@ export default function Cases() {
                 </div>
               )}
               {!crossCheck.loading && crossCheck.data && (() => {
-                const { summary, cases: xCases } = crossCheck.data;
+                const summary = crossCheck.data.summary || { totalCases: 0, crossBarangayCases: 0, activeCases: 0, riskLevel: 'CLEAR', asComplainant: 0, asRespondent: 0, barangaysInvolved: [] };
+                const xCases = crossCheck.data.cases || [];
                 const RISK_COL = { HIGH:'#dc2626', MODERATE:'#d97706', CLEAR:'#16a34a' };
                 return (
                   <div>
                     <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'0.6rem', marginBottom:'1rem' }}>
-                      {[['Total Cases',summary.totalCases,'#1a4f8a'],['Cross-Barangay',summary.crossBarangayCases,'#7c3aed'],['Active Cases',summary.activeCases,'#dc2626']].map(([l,v,c]) => (
+                      {[['Total Cases',summary.totalCases ?? 0,'#1a4f8a'],['Cross-Barangay',summary.crossBarangayCases ?? 0,'#7c3aed'],['Active Cases',summary.activeCases ?? 0,'#dc2626']].map(([l,v,c]) => (
                         <div key={l} style={{ background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:9, padding:'0.75rem', textAlign:'center' }}>
                           <div style={{ fontSize:'1.5rem', fontWeight:900, color:c }}>{v}</div>
                           <div style={{ fontSize:'0.68rem', color:'#64748b', fontWeight:700 }}>{l}</div>
@@ -362,7 +363,7 @@ export default function Cases() {
                       <ShieldAlert size={20} color={RISK_COL[summary.riskLevel]} />
                       <div>
                         <div style={{ fontWeight:800, color:RISK_COL[summary.riskLevel], fontSize:'0.9rem' }}>Risk Level: {summary.riskLevel}</div>
-                        <div style={{ fontSize:'0.73rem', color:'#64748b' }}>Complainant in {summary.asComplainant} case(s) · Respondent in {summary.asRespondent} case(s) · Barangays: {summary.barangaysInvolved.join(', ') || '—'}</div>
+                        <div style={{ fontSize:'0.73rem', color:'#64748b' }}>Complainant in {summary.asComplainant ?? 0} case(s) · Respondent in {summary.asRespondent ?? 0} case(s) · Barangays: {(summary.barangaysInvolved || []).join(', ') || '—'}</div>
                       </div>
                     </div>
                     {xCases.length === 0 ? (
