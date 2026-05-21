@@ -35,6 +35,7 @@ import Settings    from './pages/Settings/Settings';
 
 // Smart tools (existing pages from previous build)
 import DSS            from './pages/DSS/DSS';
+import AIDrafting     from './pages/AIDrafting/AIDrafting';
 import SyncEngine     from './pages/Sync/SyncEngine';
 // Blockchain and GPS Tracking removed per panel recommendation
 import Reports        from './pages/Reports/Reports';
@@ -110,6 +111,7 @@ export default function App() {
 
             {/* Smart tools */}
             <Route path="/dss"      element={<ProtectedLayout roles={['Admin','Secretary']}><DSS /></ProtectedLayout>} />
+            <Route path="/ai-drafting" element={<ProtectedLayout roles={['Admin','Secretary']}><AIDrafting /></ProtectedLayout>} />
             <Route path="/sync"     element={<ProtectedLayout><SyncEngine /></ProtectedLayout>} />
             <Route path="/reports"  element={<ProtectedLayout roles={['Admin','Secretary']}><Reports /></ProtectedLayout>} />
             <Route path="/ai-analytics" element={<ProtectedLayout roles={['Admin','Secretary']}><AIAnalytics /></ProtectedLayout>} />

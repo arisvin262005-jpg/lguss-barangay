@@ -232,7 +232,7 @@ export default function Certifications() {
         <div><div className="page-title">Certifications & Issuances <small style={{ fontSize:'0.7rem', color:'#94a3b8' }}>v2.5</small></div><div className="page-subtitle">Issue and manage barangay certifications with DSS eligibility check</div></div>
         <div>
           <button className="btn btn-secondary" onClick={fetchData} style={{ marginRight: '0.5rem' }}><Clock size={16}/> Refresh</button>
-          {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setLocalCaseWarning(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
+          {canEdit && <button className="btn btn-primary" onClick={()=>{ setForm({residentId:'',certType:'Barangay Clearance',purpose:''}); setDssResult(null); setModal('form'); }}><Plus size={16}/>Issue Certificate</button>}
         </div>
       </div>
 

@@ -7,9 +7,17 @@ const path = require('path');
 
 const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
 
-const passwordHash = '$2b$10$D3a/q.G1sn9ytaZILLNa2.zFPlCTL1/LIj..h9QFvLVtA.C0b44zO'; // Correct bcrypt hash for "password123"
+const passwordHash = '$2b$10$qdh3AjB7JbO071Bfd2k2IuB4n4HFjsKGMwXE5ARy6GZDWoGOkW3.C'; // bcrypt hash for "password123"
 
 let users = [
+  // README / capstone demo accounts (same password as production barangay accounts)
+  { id: 'demo-admin', firstName: 'System', lastName: 'Administrator', email: 'admin@barangay.gov.ph',
+    password: passwordHash, barangay: 'LGU Mamburao', role: 'Admin', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'demo-sec', firstName: 'Barangay', lastName: 'Secretary', email: 'secretary@barangay.gov.ph',
+    password: passwordHash, barangay: 'Barangay 1 (Poblacion)', role: 'Secretary', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+  { id: 'demo-tanod', firstName: 'Juan', lastName: 'Tanod', email: 'tanod@barangay.gov.ph',
+    password: passwordHash, barangay: 'Barangay 1 (Poblacion)', role: 'Tanod', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
+
   // Master Admin (Only One)
   { id: 'admin-001', firstName: 'CRPS', lastName: 'Administrator', email: 'admin@mamburao.gov.ph',
     password: passwordHash, barangay: 'LGU Mamburao', role: 'Admin', isVerified: true, createdAt: '2024-01-01T00:00:00.000Z' },
@@ -191,62 +199,61 @@ let gadPrograms = [
 let dssLogs = [];
 let syncQueue = [];
 
-const admin = require('firebase-admin');
+// ═══════════════════════════════════════════════════════════════════════
+// PROTOTYPE MODE: Firebase disabled for capstone/demo purposes
+// ═══════════════════════════════════════════════════════════════════════
+const PROTOTYPE_MODE = process.env.PROTOTYPE_MODE !== 'false'; // Enabled by default
+let firestore = null; // Will remain null in prototype mode
 
-// Initialize Firebase App — fully isolated so any failure never crashes the server
-let firestore = null;
-try {
-  let credential;
-
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // Cloud deployment (Render/Railway): pass JSON string as env var
-    const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    credential = admin.credential.cert(parsed);
-  } else {
-    // Local development: use serviceAccountKey.json file
-    try {
-      const serviceAccount = require('../../serviceAccountKey.json');
-      credential = admin.credential.cert(serviceAccount);
-    } catch {
-      console.warn('[Firebase] serviceAccountKey.json not found. Running with in-memory data only.');
+if (!PROTOTYPE_MODE) {
+  // If someone explicitly disables prototype mode, try to init Firebase
+  const admin = require('firebase-admin');
+  try {
+    let credential;
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      credential = admin.credential.cert(parsed);
+    } else {
+      try {
+        const serviceAccount = require('../../serviceAccountKey.json');
+        credential = admin.credential.cert(serviceAccount);
+      } catch {
+        console.warn('[Firebase] serviceAccountKey.json not found.');
+      }
     }
-  }
-
-  if (credential) {
-    // Only initialize if not already initialized (prevents re-init errors on hot reload)
-    if (!admin.apps.length) {
+    if (credential && !admin.apps.length) {
       admin.initializeApp({
         credential,
         databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://lguss-mamburao-default-rtdb.firebaseio.com',
       });
+      firestore = admin.firestore();
+      console.log('[Firebase] ✅ Firestore connected.');
     }
-    firestore = admin.firestore();
-    console.log('[Firebase] ✅ Firestore connected.');
-  } else {
-    console.warn('[Firebase] No credentials found. Running with in-memory data only.');
+  } catch (err) {
+    console.error('[Firebase] Initialization failed:', err.message);
   }
-} catch (err) {
-  console.error('[Firebase] Initialization failed (non-fatal):', err.message);
-  firestore = null;
+} else {
+  console.log('🔷 PROTOTYPE MODE ACTIVE — Firebase disabled');
+  console.log('   📝 Using mock data only');
+  console.log('   ✅ Login with demo accounts (password: password123)');
 }
 
+// ✅ PROTOTYPE MODE: Sync functions are disabled (no-ops)
 async function syncToFirebase(collection, record) {
-  if (!firestore) return;
+  if (!firestore || PROTOTYPE_MODE) return; // Skip if prototype mode or no firestore
   try {
     const docRef = firestore.collection(collection).doc(record.id);
     await docRef.set({ ...record, collectionType: collection }, { merge: true });
-    console.log(`[Firebase] Successfully synced ${record.id} to Firestore collection '${collection}'!`);
   } catch (err) {
     console.error(`[Firebase] Sync Error for ${record.id}:`, err.message);
   }
 }
 
 async function deleteFromFirebase(collection, id) {
-  if (!firestore) return;
+  if (!firestore || PROTOTYPE_MODE) return; // Skip if prototype mode or no firestore
   try {
     const docRef = firestore.collection(collection).doc(id);
     await docRef.delete();
-    console.log(`[Firebase] Successfully removed ${id} from Firestore!`);
   } catch (err) {
     console.error(`[Firebase] Delete Error for ${id}:`, err.message);
   }
@@ -311,6 +318,12 @@ function saveToLocalDisk() {
 }
 
 function loadFromLocalDisk() {
+  // ✅ PROTOTYPE MODE: Skip loading from disk, always use fresh hardcoded mock data
+  if (PROTOTYPE_MODE) {
+    console.log('[Local DB] Skipping disk load - using fresh mock data in PROTOTYPE_MODE');
+    return;
+  }
+
   try {
     if (fs.existsSync(LOCAL_DB_PATH)) {
       const savedData = JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
@@ -329,8 +342,14 @@ function loadFromLocalDisk() {
 // Load local disk data immediately on boot so offline mode is fully functional
 loadFromLocalDisk();
 
-// ── STARTUP: Restore data from Firestore (prevents data loss on Render restart) ──
+// ── STARTUP: Restore data from Firestore ──
+// ✅ PROTOTYPE MODE: This function is disabled (uses local data only)
 async function restoreFromFirebase() {
+  if (PROTOTYPE_MODE) {
+    console.log('[Init] ✅ Prototype mode active. Using local mock data.');
+    return;
+  }
+  
   if (!firestore) {
     console.warn('[Firebase] No Firestore connection. Running with default in-memory data only.');
     return;
@@ -356,8 +375,7 @@ async function restoreFromFirebase() {
               db[col].push(doc);
             }
           });
-          // FORCE SYNC: If there are hardcoded default accounts (like the 16 new ones) 
-          // that are not yet in Firebase, upload them now.
+          // FORCE SYNC: If there are hardcoded default accounts that are not yet in Firebase, upload them now
           db[col].forEach(record => {
             if (record && record.id && !firestoreIds.has(record.id)) {
               console.log(`[Firebase] Auto-syncing missing local record to cloud: ${record.id}`);
@@ -366,7 +384,7 @@ async function restoreFromFirebase() {
           });
         }
         console.log(`[Firebase] Merged ${docs.length} records into '${col}'`);
-        saveToLocalDisk(); // Save merged data to local disk so it's available offline later
+        saveToLocalDisk();
       } else {
         // No Firestore data yet — seed defaults into Firestore
         console.log(`[Firebase] No Firestore data for '${col}', seeding defaults...`);
@@ -375,7 +393,6 @@ async function restoreFromFirebase() {
         }
       }
     } catch (err) {
-      // Never crash the server on restore failure
       console.error(`[Firebase] Failed to restore '${col}' (non-fatal):`, err.message);
     }
   }

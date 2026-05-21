@@ -8,7 +8,7 @@ export default function Chatbot() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([
-    { role: 'assistant', text: 'Hello! I am the CRPS Assistant. How can I help you today?' }
+    { role: 'assistant', text: 'Hello! I am the BeMIS Assistant. How can I help you today?' }
   ]);
   const messagesEndRef = useRef(null);
 
@@ -42,7 +42,7 @@ export default function Chatbot() {
       setHistory(prev => [...prev, { role: 'assistant', text: res.data.reply || 'No readable response.' }]);
     } catch (err) {
       let errText = err.response?.data?.error || err.message || 'Sorry, there was an issue connecting to the AI brain.';
-      if (err.response?.status === 503) errText = 'NVIDIA API key configuration missing on server.';
+      if (err.response?.status === 503) errText = 'Local Llama LLM service is starting up or offline.';
       setHistory(prev => [...prev, { role: 'assistant', text: errText, error: true }]);
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ export default function Chatbot() {
       <button 
         onClick={() => { setIsOpen(true); setIsMinimized(false); }}
         className="chatbot-fab hover-float"
-        title="Chat with CRPS AI"
+        title="Chat with BeMIS AI"
         style={{
           position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999,
           width: '60px', height: '60px', borderRadius: '50%',
@@ -97,8 +97,8 @@ export default function Chatbot() {
           <Bot size={20} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>CRPS AI</div>
-          {!isMinimized && <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>Powered by NVIDIA</div>}
+          <div style={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>BeMIS AI</div>
+          {!isMinimized && <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>Llama LLM (Offline)</div>}
         </div>
         {!isMinimized && (
           <div style={{ display: 'flex', gap: '0.25rem' }}>

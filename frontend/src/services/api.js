@@ -72,7 +72,11 @@ const createOfflineLoginResponse = (config) => {
   let credentialsOk = false;
 
   // 0. Hardcoded System Default Accounts (Zero-internet PWA installs)
+  const demoPasswords = ['password123', 'admin123'];
   const defaultAccounts = [
+    { email: 'admin@barangay.gov.ph', role: 'Admin', barangay: 'LGU Mamburao', name: 'System Administrator' },
+    { email: 'secretary@barangay.gov.ph', role: 'Secretary', barangay: 'Barangay 1 (Poblacion)', name: 'Barangay Secretary' },
+    { email: 'tanod@barangay.gov.ph', role: 'Tanod', barangay: 'Barangay 1 (Poblacion)', name: 'Juan Tanod' },
     { email: 'admin@mamburao.gov.ph', role: 'Admin', barangay: 'LGU Mamburao', name: 'CRPS Administrator' },
     { email: 'brgy1@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 1 (Poblacion)', name: 'Monica Robles' },
     { email: 'brgy2@mamburao.gov.ph', role: 'Secretary', barangay: 'Barangay 2 (Poblacion)', name: 'Shiela Villalobos' },
@@ -92,7 +96,7 @@ const createOfflineLoginResponse = (config) => {
   ];
 
   const hardcodedMatch = defaultAccounts.find(a => a.email === payload.email);
-  if (hardcodedMatch && payload.password === 'admin123') {
+  if (hardcodedMatch && demoPasswords.includes(payload.password)) {
     offlineUser = { ...hardcodedMatch, id: 'offline-default-' + Date.now(), isOfflineMode: true };
     credentialsOk = true;
   }

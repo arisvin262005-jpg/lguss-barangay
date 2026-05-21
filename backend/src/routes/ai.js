@@ -69,7 +69,7 @@ function localChatFallback(message) {
     return 'Para mag-register ng bagong account, pumunta sa /register page. Ang mga role ay: Admin (full access), Secretary (barangay-level access), at Tanod (patrol access). Ang admin ang nag-a-approve ng mga bagong account.';
 
   if (msg.includes('password') || msg.includes('demo'))
-    return 'Ang demo password para sa lahat ng built-in accounts ay: admin123\n\nAdmin: admin@barangay.gov.ph\nSecretary: secretary@barangay.gov.ph\nTanod: tanod@barangay.gov.ph';
+    return 'Ang demo password para sa lahat ng built-in accounts ay: password123\n\nAdmin: admin@barangay.gov.ph\nSecretary: secretary@barangay.gov.ph\nTanod: tanod@barangay.gov.ph';
 
   // Generic fallback
   return 'Pasensya na, ngayon ay offline mode lang ang aking sagot. Para sa mas detalyadong tugon, siguraduhing may koneksyon sa internet para magamit ang NVIDIA AI. Pero pwede mo akong tanungin tungkol sa: mga residente, certifications, cases, offline sync, blockchain audit, DRRM, reports, o patrol tracking.';

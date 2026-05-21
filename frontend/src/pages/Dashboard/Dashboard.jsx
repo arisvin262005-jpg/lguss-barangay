@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSync } from '../../context/SyncContext';
 import api from '../../services/api';
 import { usePWA } from '../../context/PWAContext';
-import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit, Download, MonitorCheck, Shield } from 'lucide-react';
+import { Users, Home, FileText, Scale, RefreshCw, TrendingUp, Plus, AlertCircle, Wifi, WifiOff, BrainCircuit, Download, MonitorCheck, Shield, QrCode, BarChart3, Settings } from 'lucide-react';
 
 const PIE_COLORS = ['#2563a8','#16a34a','#d97706','#dc2626','#7c3aed'];
 
@@ -78,9 +78,14 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <div className="page-title">{greeting}, {user?.name?.split(' ')[0]}! 👋</div>
-          <div className="page-subtitle">{user?.barangay} • {user?.role} • {new Date().toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          <div className="page-subtitle">
+            {hasRole('Admin')
+              ? 'LGU-wide monitoring — all barangays under Mamburao'
+              : user?.barangay}
+            {' • '}{user?.role} • {new Date().toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {installPrompt && !isInstalled && (
             <button 
               onClick={showInstallPrompt} 
@@ -90,8 +95,16 @@ export default function Dashboard() {
               <Download size={16} /> Install App
             </button>
           )}
+          {hasRole('Admin') && (
+            <>
+              <Link to="/reports" className="btn btn-outline btn-sm" style={{ textDecoration: 'none' }}><BarChart3 size={14} /> Municipal Reports</Link>
+              <Link to="/ai-analytics" className="btn btn-outline btn-sm" style={{ textDecoration: 'none', borderColor: '#7c3aed', color: '#7c3aed' }}><BrainCircuit size={14} /> AI Insights</Link>
+              <Link to="/settings" className="btn btn-primary btn-sm" style={{ textDecoration: 'none' }}><Settings size={14} /> User Approvals</Link>
+            </>
+          )}
           {hasRole('Secretary') && (
             <>
+              <Link to="/residents?scan=true" className="btn btn-sm" style={{ background: '#7c3aed', color: '#fff', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', textDecoration: 'none' }}><QrCode size={14} /> Scan Resident QR</Link>
               <Link to="/residents" className="btn btn-outline btn-sm"><Plus size={14} /> Add Resident</Link>
               <Link to="/cases"     className="btn btn-outline btn-sm"><Plus size={14} /> File Case</Link>
               <Link to="/certifications" className="btn btn-primary btn-sm"><Plus size={14} /> Issue Cert</Link>
@@ -108,7 +121,7 @@ export default function Dashboard() {
               <MonitorCheck size={28} color="#10b981" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1e293b' }}>Install CRPS on your {window.innerWidth < 768 ? 'Phone' : 'Desktop'}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1e293b' }}>Install BeMIS on your {window.innerWidth < 768 ? 'Phone' : 'Desktop'}</div>
               <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Access records instantly even without internet. Guaranteed 100% offline-first performance.</div>
             </div>
           </div>

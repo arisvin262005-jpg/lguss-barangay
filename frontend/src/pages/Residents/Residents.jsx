@@ -44,6 +44,7 @@ export default function Residents() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [showQR, setShowQR] = useState(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const qrRef = useRef(null);
 
   const canEdit = hasRole('Admin', 'Secretary');
@@ -70,6 +71,14 @@ export default function Residents() {
     window.addEventListener('sync-complete', handleSyncComplete);
     return () => window.removeEventListener('sync-complete', handleSyncComplete);
   }, [search, filterBarangay]);
+
+  // Automatically open QR Code Scanner if routed via '?scan=true'
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('scan') === 'true') {
+      setScannerOpen(true);
+    }
+  }, [window.location.search]);
 
 
   const filtered = residents.filter(r => !filterTag || r.tags?.[filterTag]);
@@ -179,6 +188,7 @@ export default function Residents() {
             <>
               <button className="btn btn-secondary btn-sm" onClick={exportExcel}><Download size={14} /> Excel</button>
               <button className="btn btn-secondary btn-sm" onClick={exportPDF}><Download size={14} /> PDF</button>
+              <button className="btn" style={{ background: '#7c3aed', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem', border: 'none' }} onClick={() => setScannerOpen(true)}><QrCode size={15} /> Scan QR</button>
               <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Add Resident</button>
             </>
           )}
@@ -407,6 +417,96 @@ export default function Residents() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>{tagBadge(selected.tags)}</div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* QR Code Scanner Simulator Modal */}
+      {scannerOpen && (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setScannerOpen(false)}>
+          <div className="modal" style={{ maxWidth: 420 }}>
+            <div className="modal-header">
+              <span className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#7c3aed', fontWeight: 800 }}>
+                <QrCode size={18} />
+                Barangay QR Scanner Simulator
+              </span>
+              <button onClick={() => setScannerOpen(false)} className="btn-icon"><X size={16}/></button>
+            </div>
+            <div className="modal-body" style={{ textAlign: 'center' }}>
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                height: 200,
+                background: '#0f172a',
+                borderRadius: 12,
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1.25rem'
+              }}>
+                {/* Scanner pulse scanline animation */}
+                <div style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '4px',
+                  background: 'linear-gradient(to bottom, rgba(34, 197, 94, 0), rgba(34, 197, 94, 0.8), rgba(34, 197, 94, 0))',
+                  top: 0,
+                  left: 0,
+                  animation: 'scanLine 2.5s infinite linear',
+                  boxShadow: '0 0 10px #22c55e'
+                }} />
+                
+                {/* Camera corner targets */}
+                <div style={{ position: 'absolute', top: 20, left: 20, width: 24, height: 24, borderTop: '4px solid #22c55e', borderLeft: '4px solid #22c55e' }} />
+                <div style={{ position: 'absolute', top: 20, right: 20, width: 24, height: 24, borderTop: '4px solid #22c55e', borderRight: '4px solid #22c55e' }} />
+                <div style={{ position: 'absolute', bottom: 20, left: 20, width: 24, height: 24, borderBottom: '4px solid #22c55e', borderLeft: '4px solid #22c55e' }} />
+                <div style={{ position: 'absolute', bottom: 20, right: 20, width: 24, height: 24, borderBottom: '4px solid #22c55e', borderRight: '4px solid #22c55e' }} />
+
+                <div style={{ color: '#22c55e', fontSize: '0.8rem', fontWeight: 600, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="pulse" style={{ display: 'inline-block', width: 8, height: 8, background: '#22c55e', borderRadius: '50%' }} />
+                  [ CAMERA SIMULATOR LIVE ]
+                  <span style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Align resident's QR code within corners</span>
+                </div>
+              </div>
+
+              <style>{`
+                @keyframes scanLine {
+                  0% { top: 0%; }
+                  50% { top: 100%; }
+                  100% { top: 0%; }
+                }
+                .pulse {
+                  animation: pulseGlow 1.5s infinite ease-in-out;
+                  background: #22c55e;
+                  border-radius: 50%;
+                  box-shadow: 0 0 8px #22c55e;
+                }
+                @keyframes pulseGlow {
+                  0%, 100% { transform: scale(1); opacity: 0.5; }
+                  50% { transform: scale(1.3); opacity: 1; }
+                }
+              `}</style>
+
+              <label className="form-label" style={{ textAlign: 'left', fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>Select Resident to Simulate Scan</label>
+              <select className="form-select" style={{ marginBottom: '1.25rem', width: '100%', padding: '0.6rem 0.75rem' }} onChange={(e) => {
+                const targetResId = e.target.value;
+                if (targetResId) {
+                  const targetRes = residents.find(r => r.id === targetResId);
+                  if (targetRes) {
+                    setScannerOpen(false);
+                    // Open view profile instantly!
+                    openView(targetRes);
+                  }
+                }
+              }}>
+                <option value="">-- Choose Resident ID Badge --</option>
+                {filtered.map(r => (
+                  <option key={r.id} value={r.id}>
+                    {r.lastName}, {r.firstName} (ID: {r.id.substring(0, 8)})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

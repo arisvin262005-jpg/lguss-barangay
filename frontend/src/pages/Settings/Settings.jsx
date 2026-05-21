@@ -298,7 +298,7 @@ export default function SettingsPage() {
         <div className="gov-card gov-card-body">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             {[
-              ['System Name', 'Centralized Residents Profiling System (CRPS)'],
+              ['System Name', 'Barangay Management and Information System (BeMIS)'],
               ['Municipality', MUNICIPALITY.name],
               ['Province', MUNICIPALITY.province],
               ['Region', MUNICIPALITY.region],
@@ -308,7 +308,7 @@ export default function SettingsPage() {
               ['Sync Architecture', 'Firebase Real-time Sync + Local JSON fallback'],
               ['Authentication', 'JWT httpOnly Cookie + RBAC'],
               ['Roles', 'Admin (1 singleton) • Secretary (per barangay)'],
-              ['Version', 'v2.0 — Extended BIMS Edition'],
+              ['Version', 'v2.0 — BeMIS Edition'],
               ['DILG Standard', 'BIMS Extension for Mamburao'],
             ].map(([l, v]) => (
               <div key={l}>

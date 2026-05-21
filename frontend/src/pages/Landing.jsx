@@ -27,9 +27,10 @@ const getStrength = (pwd) => {
 
 /* ─── Subsystems data ─── */
 const SUBSYSTEMS = [
-  { icon: Server,       title: 'Offline-First Engine',      desc: 'Saves transactions natively using LocalStorage and seamlessly syncs to Firebase Firestore upon internet restoration.',    color: '#3b82f6', bg: '#eff6ff' },
-  { icon: Target,       title: 'Decision Support System',   desc: 'Rule-based mechanism that analyzes past offenses and KP case records to restrict or flag certifications automatically, ensuring compliance with barangay rules.', color: '#8b5cf6', bg: '#f5f3ff' },
-  { icon: BrainCircuit, title: 'AI Predictive Analytics',  desc: 'Identifies crime patterns within the municipality using forecasting to optimize patrol scheduling.',         color: '#06b6d4', bg: '#ecfeff' },
+  { icon: Server,       title: 'Offline-First Engine',      desc: 'Saves transactions natively using LocalStorage and seamlessly syncs to the server upon internet restoration. Fully operational with zero internet.',    color: '#3b82f6', bg: '#eff6ff' },
+  { icon: Target,       title: 'Rule-Based Decision Support',desc: 'Automated rule engine that analyzes past offenses and KP case records to restrict or flag certifications — ensuring compliance with barangay policies.', color: '#8b5cf6', bg: '#f5f3ff' },
+  { icon: BrainCircuit, title: 'AI Analytics (Llama LLM)',  desc: 'Powered by an offline Llama large language model — identifies patterns in barangay data, generates governance insights, and supports decision-making without internet.',         color: '#06b6d4', bg: '#ecfeff' },
+  { icon: Sparkles,     title: 'AI Document Drafting',      desc: 'AI-powered drafting assistant (Llama LLM) that auto-generates barangay certificates, clearances, and official documents based on resident data.',  color: '#a855f7', bg: '#faf5ff' },
   { icon: Scale,        title: 'Katarungang Pambarangay',  desc: 'Secure digital mediation management for filing cases, scheduling hearings, and generating summons.',          color: '#10b981', bg: '#ecfdf5' },
   { icon: Users,        title: 'Resident Profiling',        desc: 'Organizes and tracks comprehensive resident and household demographic data conforming to DILG standards.',    color: '#f59e0b', bg: '#fffbeb' },
   { icon: FileText,     title: 'Issuance Management',       desc: 'Handles the automated generation of clearances, permits, and certificates with digital logging.',            color: '#ef4444', bg: '#fef2f2' },
@@ -37,10 +38,10 @@ const SUBSYSTEMS = [
 ];
 
 const STATS = [
-  { value: 15,    suffix: '',  label: 'Barangays Covered',    icon: Map,      color: '#3b82f6' },
-  { value: 100,   suffix: '%', label: 'System Uptime',       icon: Wifi,     color: '#10b981' },
-  { value: 7,     suffix: '',  label: 'Integrated Modules',  icon: Database, color: '#8b5cf6' },
-  { value: 2024,  suffix: '',  label: 'Year Deployed',       icon: Star,     color: GOLD      },
+  { value: 15,   suffix: '',  label: 'Barangays Covered',   icon: Map,        color: '#3b82f6' },
+  { value: 100,  suffix: '%', label: 'System Uptime',       icon: Wifi,       color: '#10b981' },
+  { value: 8,    suffix: '',  label: 'Integrated Modules',  icon: Database,   color: '#8b5cf6' },
+  { value: 2,    suffix: '',  label: 'AI-Powered Features', icon: BrainCircuit, color: '#a855f7' },
 ];
 
 /* ─── Animated counter hook ─── */
@@ -427,12 +428,12 @@ export default function Landing() {
       <header className={`lp-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="lp-container lp-nav">
           <div className="lp-logo-group" style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
-            <img src="/assets/astig_logo.png" alt="CRPS" style={{ width:40, height:40, objectFit:'contain', mixBlendMode: 'multiply' }} />
+            <img src="/assets/astig_logo.png" alt="BeMIS" style={{ width:40, height:40, objectFit:'contain', mixBlendMode: 'multiply' }} />
             <img src="https://gimgs2.nohat.cc/thumb/f/640/barangay-3-balansay-mamburao-municipal-gymnasium-logo-appraisals-pennant--5281772497534976.jpg" alt="Mamburao" style={{ width:38, height:38, borderRadius:'50%', objectFit:'cover', border:'2px solid #e2e8f0' }} />
             <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:40, height:40, objectFit:'contain' }} />
             <div className="lp-logo-text">
               <div style={{ fontWeight:900, fontSize:'1.1rem', color:GOV_BLUE, lineHeight:1.2, letterSpacing:'-0.01em' }}>
-                CRPS — Mamburao
+                BeMIS — Mamburao
               </div>
               <div style={{ fontSize:'0.7rem', color:'#64748b', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.08em' }}>
                 DILG · Occ. Mindoro
@@ -566,8 +567,8 @@ export default function Landing() {
             transition:'all 0.8s ease 0.4s',
           }}>
             A <strong style={{ color:'#60a5fa' }}>next-generation digital platform</strong> unifying governance,
-            service delivery, and AI-driven analytics for the <strong style={{ color:'#fff' }}>15 barangays of Mamburao</strong>.
-            Fully operational even without internet.
+            service delivery, and <strong style={{ color:'#c084fc' }}>offline AI (Llama LLM)</strong> for the <strong style={{ color:'#fff' }}>15 barangays of Mamburao</strong>.
+            Fully operational — even without internet.
           </p>
 
           {/* CTA Buttons */}
@@ -603,10 +604,10 @@ export default function Landing() {
             opacity: heroVisible ? 1 : 0, transition:'all 0.8s ease 0.7s',
           }}>
             {[
-              { icon: Shield,     label: 'DILG Compliant' },
-              { icon: Database,   label: 'LocalStorage + Firebase' },
-              { icon: Link2,      label: 'SHA-256 Blockchain' },
-              { icon: BrainCircuit, label: 'NVIDIA Llama AI' },
+              { icon: Shield,       label: 'DILG Compliant' },
+              { icon: Database,     label: 'Offline-First Storage' },
+              { icon: BrainCircuit, label: 'Llama AI (Offline)' },
+              { icon: Sparkles,     label: 'AI Document Drafting' },
             ].map((b, i) => (
               <div key={i} style={{ display:'flex', alignItems:'center', gap:'0.4rem', color:'rgba(255,255,255,0.45)', fontSize:'0.8rem', fontWeight:600 }}>
                 <b.icon size={14} /> {b.label}
@@ -636,8 +637,8 @@ export default function Landing() {
               <span className="section-tag">Core Modules</span>
               <h2 className="section-heading" style={{ margin:'0 auto 1rem', textAlign:'center' }}>CRPS Subsystems & Capabilities</h2>
               <p className="section-subtext" style={{ margin:'0 auto', textAlign:'center' }}>
-                Nine advanced modules engineered to eliminate delays, overcome internet limitations,
-                and guarantee data integrity in every barangay transaction.
+                Eight powerful modules — including two AI tools (Llama LLM) — engineered to
+                eliminate delays, overcome internet limitations, and deliver smarter governance offline.
               </p>
             </div>
           </AnimatedCard>
@@ -684,8 +685,8 @@ export default function Landing() {
               </p>
               <p style={{ color:'#475569', fontSize:'1.05rem', lineHeight:1.75, marginBottom:'2rem' }}>
                 Traditional manual logbooks result in processing delays and data integrity failures.
-                By adopting an offline-capable digital solution reinforced by
-                <strong> Blockchain audit trails</strong> and <strong>NVIDIA Llama AI</strong>, we ensure
+                By adopting an offline-capable digital solution powered by
+                <strong> Llama LLM (offline AI)</strong> and a robust data integrity engine, we ensure
                 uninterrupted public service and fully transparent governance.
               </p>
               <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
@@ -707,9 +708,9 @@ export default function Landing() {
             <AnimatedCard delay={150} style={{ display:'flex', flexDirection:'column', gap:'1.25rem' }}>
               {[
                 { label:'Barangays Unified Under One System', value:'15 Brgy.', icon:Map, color:'#3b82f6', bg:'#eff6ff' },
-                { label:'Guaranteed System Uptime via PouchDB', value:'100%', icon:Wifi, color:'#10b981', bg:'#ecfdf5' },
-                { label:'Local AI Pattern Detection via NVIDIA NIM', value:'LLaMA 3.3', icon:BrainCircuit, color:'#8b5cf6', bg:'#f5f3ff' },
-                { label:'Blockchain Audit Trail per Transaction', value:'SHA-256', icon:Shield, color:GOV_BLUE, bg:'#eff6ff' },
+                { label:'Guaranteed System Uptime (Offline-First)', value:'100%', icon:Wifi, color:'#10b981', bg:'#ecfdf5' },
+                { label:'AI-Powered Analytics & Document Drafting (Offline)', value:'Llama LLM', icon:BrainCircuit, color:'#8b5cf6', bg:'#f5f3ff' },
+                { label:'DILG-Compliant Barangay Management Modules', value:'8 Modules', icon:Shield, color:GOV_BLUE, bg:'#eff6ff' },
               ].map((item, i) => {
                 const Icon = item.icon;
                 return (
@@ -861,7 +862,7 @@ export default function Landing() {
                 <div style={{ color:'rgba(255,255,255,0.7)', fontSize:'0.88rem', lineHeight:1.6 }}>Polytechnic University / Mamburao, Occidental Mindoro</div>
               </div>
               <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
-                {['DILG ISTMS','Offline-First','Firebase Sync','AI Analytics'].map(t => (
+                {['DILG ISTMS','Offline-First','AI Analytics','AI Drafting','Llama LLM'].map(t => (
                   <span key={t} style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#e2e8f0', padding:'0.35rem 0.85rem', borderRadius:100, fontSize:'0.75rem', fontWeight:700 }}>{t}</span>
                 ))}
               </div>
@@ -898,12 +899,15 @@ export default function Landing() {
             <p style={{ fontSize:'0.88rem', color:'#64748b', lineHeight:1.7, marginBottom:'1.5rem' }}>
               Spearheaded by DILG's ISTMS, designed to enhance local governance through unified, AI-powered digital systems.
             </p>
-            <div style={{ display:'flex', gap:'0.5rem' }}>
-              <div style={{ background:'rgba(37,99,235,0.2)', border:'1px solid rgba(96,165,250,0.25)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.72rem', fontWeight:700, color:'#60a5fa' }}>
-                🤖 NVIDIA Llama 3.3
+            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
+              <div style={{ background:'rgba(168,85,247,0.2)', border:'1px solid rgba(168,85,247,0.3)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.72rem', fontWeight:700, color:'#c084fc' }}>
+                🤖 Llama AI (Offline)
               </div>
               <div style={{ background:'rgba(16,185,129,0.2)', border:'1px solid rgba(52,211,153,0.25)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.72rem', fontWeight:700, color:'#34d399' }}>
                 📡 Offline-First
+              </div>
+              <div style={{ background:'rgba(37,99,235,0.2)', border:'1px solid rgba(96,165,250,0.25)', borderRadius:8, padding:'0.4rem 0.8rem', fontSize:'0.72rem', fontWeight:700, color:'#60a5fa' }}>
+                ✨ AI Drafting
               </div>
             </div>
           </div>
@@ -980,19 +984,23 @@ function StatsStrip() {
 const FAQS = [
   {
     q: 'How does the Offline-First architecture actually work?',
-    a: 'The system stores all records locally on the user\'s device using IndexedDB (via PouchDB). Barangay secretaries can add residents, file cases, and issue certificates even if the network is unplugged. Once internet is detected, it automatically replicates local data to the central CouchDB cloud securely.'
+    a: 'The system stores all records locally on the user\'s device using LocalStorage/IndexedDB. Barangay secretaries can add residents, file cases, and issue certificates even with zero internet connection. Once internet is restored, it automatically syncs data to the central server securely.'
   },
   {
-    q: 'How reliable is the data security of this LGUSS?',
-    a: 'We implemented Role-Based Access Control (RBAC) ensuring secretaries only access their own barangay\'s records. The centralized database ensures data integrity across the municipality while keeping each barangay\'s operations strictly isolated.'
+    q: 'How reliable is the data security of this system?',
+    a: 'We implemented Role-Based Access Control (RBAC) ensuring each role (Admin, Secretary) only accesses what they are permitted to. The system maintains a full audit log of every change, ensuring data integrity across the municipality.'
   },
   {
-    q: 'Does this system use real AI?',
-    a: 'Yes. Aside from a Rule-Based DSS that flags offenders during certificate issuance, the system now integrates the NVIDIA NIM API (meta/llama-3.3-70b-instruct) — a state-of-the-art large language model that analyzes barangay case patterns and generates real-time governance recommendations.'
+    q: 'What AI features are available in this system?',
+    a: 'There are two AI tools available for Admin and Secretary: (1) AI Decision Support System — analyzes barangay case patterns and resident data to generate governance insights and flag risks. (2) AI Document Drafting — automatically drafts barangay clearances, certificates, and official documents based on resident records. Both are powered by an offline Llama LLM, meaning no internet is needed for AI.'
   },
   {
-    q: 'Can the AI analytics work without the internet?',
-    a: 'The local risk-scoring and repeat offender detection are fully offline. The NVIDIA Llama AI feature requires an internet connection to call the NVIDIA NIM API, but the system gracefully falls back to local analysis when offline.'
+    q: 'Can the AI work without internet?',
+    a: 'Yes! This is a key feature of this prototype. The AI is powered by an offline Llama large language model (LLM) running locally — meaning AI-powered analytics and document drafting function even without any internet connection. This is designed to match the planned production system which runs Llama on C# .NET desktop applications.'
+  },
+  {
+    q: 'Is this the final production system?',
+    a: 'This React/JavaScript version is a prototype for demonstration and validation purposes. The production system will be a C# .NET desktop application with the same features, including a fully offline Llama LLM integration for AI-powered governance support.'
   },
 ];
 

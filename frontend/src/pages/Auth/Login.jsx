@@ -118,6 +118,11 @@ export default function Login() {
 
 
 
+          <div style={{ marginTop: '1.25rem', padding: '0.75rem 1rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, fontSize: '0.75rem', color: '#1e40af', lineHeight: 1.6 }}>
+            <strong>Demo login</strong> (password: <code style={{ fontWeight: 800 }}>password123</code>)<br />
+            Admin: admin@barangay.gov.ph · Secretary: secretary@barangay.gov.ph · Tanod: tanod@barangay.gov.ph
+          </div>
+
           <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
             No account? <Link to="/register" style={{ color: '#1a4f8a', fontWeight: 800, textDecoration: 'none', marginLeft: '0.2rem' }}>Register Now</Link>
           </div>

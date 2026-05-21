@@ -10,91 +10,110 @@ import {
   Heart, Bot, BarChart3, Settings,
   ChevronRight, LogOut, Wifi, WifiOff, RefreshCw,
   Menu, X, Bell, User, ClipboardList, Calendar,
-  BrainCircuit, Download
+  BrainCircuit, Download, Gift, Stethoscope, DollarSign,
+  FileCheck, Megaphone, Zap, TrendingUp, QrCode
 } from 'lucide-react';
 
+// Admin = LGU monitoring & system control | Secretary = barangay operations (data entry)
+const ROLES = { ADMIN: 'Admin', SEC: 'Secretary' };
+
 const NAV_GROUPS = [
+  // ── ADMIN (LGU / CRPS): monitor all barangays, approve users, watch sync ──
+  {
+    label: 'LGU Monitoring',
+    roles: [ROLES.ADMIN],
+    items: [
+      { icon: LayoutDashboard, label: 'Municipal Dashboard',   path: '/dashboard',    roles: [ROLES.ADMIN] },
+      { icon: BarChart3,       label: 'Reports & Analytics',   path: '/reports',      roles: [ROLES.ADMIN] },
+      { icon: BrainCircuit,    label: 'AI Insights & Forecasts', path: '/ai-analytics', roles: [ROLES.ADMIN] },
+    ]
+  },
+  {
+    label: 'System Administration',
+    roles: [ROLES.ADMIN],
+    items: [
+      { icon: Settings,  label: 'User Approvals & Settings', path: '/settings', roles: [ROLES.ADMIN] },
+      { icon: RefreshCw, label: 'Sync Monitor',              path: '/sync',     roles: [ROLES.ADMIN] },
+    ]
+  },
+
+  // ── SECRETARY: daily barangay encoding & issuances ──
   {
     label: null,
+    roles: [ROLES.SEC],
     items: [
-      { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['Admin','Secretary'] },
+      { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: [ROLES.SEC] },
+      { icon: QrCode,          label: '📷 QR Code Scanner', path: '/residents?scan=true', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Inhabitants',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: Home,         label: 'Household Records',  path: '/households',     roles: ['Secretary'] },
-      { icon: Users,        label: 'Resident Profiling', path: '/residents',      roles: ['Secretary'] },
-      { icon: UserCheck,    label: 'Senior Citizens',    path: '/senior-citizens',roles: ['Secretary'] },
-      { icon: Accessibility,label: 'PWD Registry',       path: '/pwd',            roles: ['Secretary'] },
-      { icon: Vote,         label: 'Voter Registry',     path: '/voters',         roles: ['Secretary'] },
+      { icon: Home,          label: 'Household Records',  path: '/households',      roles: [ROLES.SEC] },
+      { icon: Users,         label: 'Resident Profiling', path: '/residents',       roles: [ROLES.SEC] },
+      { icon: UserCheck,     label: 'Senior Citizens',    path: '/senior-citizens', roles: [ROLES.SEC] },
+      { icon: Accessibility, label: 'PWD Registry',       path: '/pwd',             roles: [ROLES.SEC] },
+      { icon: Vote,          label: 'Voter Registry',     path: '/voters',          roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Issuances',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: FileText,      label: 'Certifications', path: '/certifications',  roles: ['Secretary'] },
+      { icon: FileText, label: 'Certifications', path: '/certifications', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Katarungang Pambarangay',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: Scale,    label: 'Case List',          path: '/cases',       roles: ['Secretary'] },
-      { icon: Calendar, label: 'Hearing Schedule',   path: '/hearings',    roles: ['Secretary'] },
+      { icon: Scale,    label: 'Case List',        path: '/cases',    roles: [ROLES.SEC] },
+      { icon: Calendar, label: 'Hearing Schedule', path: '/hearings', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Legislation',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: BookOpen, label: 'Ordinances & Resolutions', path: '/legislation', roles: ['Secretary'] },
+      { icon: BookOpen, label: 'Ordinances & Resolutions', path: '/legislation', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Incidents & Complaints',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: AlertTriangle, label: 'File & Track Complaints', path: '/incidents', roles: ['Secretary'] },
+      { icon: AlertTriangle, label: 'File & Track Complaints', path: '/incidents', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Asset & Infrastructure',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: Building2, label: 'Barangay Assets', path: '/assets', roles: ['Secretary'] },
+      { icon: Building2, label: 'Barangay Assets', path: '/assets', roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'DRRM & GAD',
-    roles: ['Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: Shield, label: 'DRRM & GAD Programs', path: '/drrm', roles: ['Secretary'] },
+      { icon: Shield, label: 'DRRM & GAD Programs', path: '/drrm', roles: [ROLES.SEC] },
     ]
   },
   {
-    label: 'Smart Tools',
-    roles: ['Admin','Secretary'],
+    label: 'Smart Tools (AI)',
+    roles: [ROLES.SEC],
     items: [
-      { icon: Bot,          label: 'Rule-Based Decision Support System', path: '/dss',          roles: ['Admin','Secretary'] },
-      { icon: BrainCircuit, label: 'Decision Support System (DSS)', path: '/ai-analytics', roles: ['Admin','Secretary'] },
+      { icon: BrainCircuit, label: '🤖 AI Decision Support',  path: '/ai-analytics', roles: [ROLES.SEC] },
+      { icon: Zap,          label: '✨ AI Document Drafting', path: '/ai-drafting',  roles: [ROLES.SEC] },
+      { icon: Bot,          label: '⚙️ Rule-Based DSS',       path: '/dss',          roles: [ROLES.SEC] },
     ]
   },
   {
     label: 'Reports',
-    roles: ['Admin','Secretary'],
+    roles: [ROLES.SEC],
     items: [
-      { icon: BarChart3, label: 'Reports & Analytics', path: '/reports', roles: ['Admin','Secretary'] },
-      { icon: RefreshCw, label: 'Sync Engine',         path: '/sync',    roles: ['Admin','Secretary'] },
-    ]
-  },
-  {
-    label: 'Administration',
-    roles: ['Admin'],
-    items: [
-      { icon: Settings, label: 'Settings', path: '/settings', roles: ['Admin'] },
+      { icon: BarChart3, label: 'Reports & Analytics', path: '/reports', roles: [ROLES.SEC] },
     ]
   },
 ];
@@ -178,11 +197,13 @@ export default function Layout({ children }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const navBasePath = (path) => path.split('?')[0];
+
   // Auto-open the group that contains the active path
   useEffect(() => {
     const active = {};
     NAV_GROUPS.forEach((g) => {
-      if (g.items?.some((i) => location.pathname.startsWith(i.path))) active[g.label] = true;
+      if (g.items?.some((i) => location.pathname.startsWith(navBasePath(i.path)))) active[g.label] = true;
     });
     setOpenGroups(active);
   }, [location.pathname]);
@@ -197,7 +218,7 @@ export default function Layout({ children }) {
   const currentPageName = () => {
     for (const g of NAV_GROUPS) {
       for (const item of g.items || []) {
-        if (location.pathname.startsWith(item.path)) return item.label;
+        if (location.pathname.startsWith(navBasePath(item.path))) return item.label;
       }
     }
     return 'Barangay Management System';
@@ -221,8 +242,8 @@ export default function Layout({ children }) {
           </div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
-              <div className="sidebar-title">CRPS System</div>
-              <div className="sidebar-sub">Centralized Residents Profiling</div>
+              <div className="sidebar-title">BeMIS</div>
+              <div className="sidebar-sub">Barangay Management & Information</div>
             </div>
           )}
           {mobileOpen && (
@@ -259,7 +280,7 @@ export default function Layout({ children }) {
                 {(!collapsed || mobileOpen) && <div className="nav-group-label">{group.label}</div>}
 
                 {visibleItems.map((item) => {
-                  const isActive = location.pathname.startsWith(item.path);
+                  const isActive = location.pathname.startsWith(navBasePath(item.path));
                   return (
                     <NavLink key={item.path} to={item.path}
                       className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
@@ -333,6 +354,16 @@ export default function Layout({ children }) {
 
           {/* Spacer to push items to the right */}
           <div style={{ flex: 1 }} className="hide-mobile" />
+
+          {/* Notification Bell */}
+          <button className="btn-icon" title="Notifications" style={{ position: 'relative', marginRight: '0.5rem' }}>
+            <Bell size={18} />
+            {pendingCount > 0 && (
+              <span style={{ position: 'absolute', top: -6, right: -6, background: '#dc2626', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
+                {pendingCount}
+              </span>
+            )}
+          </button>
 
           {/* Online/Offline Badge */}
           <div className={`online-badge ${isOnline ? 'online' : 'offline'}`} 

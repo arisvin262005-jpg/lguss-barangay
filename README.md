@@ -52,9 +52,11 @@ The frontend runs at: `http://localhost:5173`
 The backend runs at: `http://localhost:5000`
 
 ### 5. Demo Accounts
-* **Admin:** admin@barangay.gov.ph / admin123
-* **Secretary:** secretary@barangay.gov.ph / admin123
-* **Tanod:** tanod@barangay.gov.ph / admin123
+* **Admin:** admin@barangay.gov.ph / password123
+* **Secretary:** secretary@barangay.gov.ph / password123
+* **Tanod:** tanod@barangay.gov.ph / password123
+
+*(Mamburao LGU accounts also work, e.g. `admin@mamburao.gov.ph` / `password123`)*
 
 ## Notes
 - To use actual CouchDB instead of the in-memory array backend, modify the `syncService.js` and `db.js`.
