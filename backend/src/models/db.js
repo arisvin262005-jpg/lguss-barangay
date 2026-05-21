@@ -7,7 +7,7 @@ const path = require('path');
 
 const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
 
-const passwordHash = '$2b$10$qdh3AjB7JbO071Bfd2k2IuB4n4HFjsKGMwXE5ARy6GZDWoGOkW3.C'; // bcrypt hash for "password123"
+const passwordHash = '$2b$10$nFuqh2ND7ldyaT1tg2d3P.TpuIdzxvKd7/8IG4GtYBOG3472xC.8.'; // bcrypt hash for "password123"
 
 let users = [
   // README / capstone demo accounts (same password as production barangay accounts)
@@ -265,7 +265,10 @@ const db = {
   dssLogs, syncQueue, blockchain: [],
 
   findById:    (collection, id)     => db[collection].find((r) => r && r.id === id),
-  findByEmail: (email)              => db.users.find((u) => u && u.email === email),
+  findByEmail: (email) => {
+    const normalized = (email || '').trim().toLowerCase();
+    return db.users.find((u) => u && u.email && u.email.trim().toLowerCase() === normalized);
+  },
   
   insert: (collection, record) => {
     const newRecord = { ...record, id: record.id || uuidv4(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };

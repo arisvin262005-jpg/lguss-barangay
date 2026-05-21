@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../models/db');
 const { addBlock } = require('../services/blockchain');
 const { v4: uuidv4 } = require('uuid');
+const { findDemoUser, normalizeEmail } = require('../config/demoUsers');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_here';
 const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '30m';
@@ -39,38 +40,74 @@ const register = async (req, res) => {
   }
 };
 
+const issueLoginSession = (res, user, email, req) => {
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role, barangay: user.barangay, name: `${user.firstName} ${user.lastName}` },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookie('token', token, {
+    httpOnly: true,
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
+    maxAge: 30 * 60 * 1000,
+  });
+  try {
+    addBlock({
+      action: 'USER_LOGIN',
+      recordType: 'user',
+      recordId: user.id,
+      actor: email,
+      actorRole: user.role,
+      details: { ip: req.ip || '0.0.0.0' },
+    });
+  } catch {}
+  res.json({
+    message: 'Login successful',
+    token,
+    user: {
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      role: user.role,
+      barangay: user.barangay,
+    },
+  });
+};
+
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const password = req.body.password || '';
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    // Built-in demo accounts — no external database required
+    const demoUser = findDemoUser(email, password);
+    if (demoUser) {
+      return issueLoginSession(res, demoUser, email, req);
+    }
+
     const user = db.findByEmail(email);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    
+
     if (!user.password) {
       console.error(`[Login] User ${email} has no password set in database.`);
-      return res.status(401).json({ error: 'Invalid credentials (missing password)' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
     if (!user.isVerified) {
-      return res.status(403).json({ error: 'Your account is pending approval by the Administrator. Please wait for confirmation.' });
+      return res.status(403).json({
+        error: 'Your account is pending approval by the Administrator. Please wait for confirmation.',
+      });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, barangay: user.barangay, name: `${user.firstName} ${user.lastName}` },
-      JWT_SECRET, { expiresIn: JWT_EXPIRES }
-    );
-    const isProd = process.env.NODE_ENV === 'production';
-    const cookieOptions = {
-      httpOnly: true,
-      sameSite: isProd ? 'none' : 'lax',
-      secure: isProd,
-      maxAge: 30 * 60 * 1000
-    };
-    
-    res.cookie('token', token, cookieOptions);
-    addBlock({ action: 'USER_LOGIN', recordType: 'user', recordId: user.id, actor: email, actorRole: user.role, details: { ip: req.ip || '0.0.0.0' } });
-    res.json({ message: 'Login successful', token, user: { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, barangay: user.barangay } });
+    issueLoginSession(res, user, email, req);
   } catch (err) {
     console.error('[Login Error]', err);
     res.status(500).json({ error: 'Login failed', details: err.message });

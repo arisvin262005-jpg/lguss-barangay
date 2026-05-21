@@ -95,7 +95,8 @@ const createOfflineLoginResponse = (config) => {
     { email: 'talabaan@mamburao.gov.ph', role: 'Secretary', barangay: 'Talabaan', name: 'Maureen Callejo' }
   ];
 
-  const hardcodedMatch = defaultAccounts.find(a => a.email === payload.email);
+  const loginEmail = (payload.email || '').trim().toLowerCase();
+  const hardcodedMatch = defaultAccounts.find(a => a.email.toLowerCase() === loginEmail);
   if (hardcodedMatch && demoPasswords.includes(payload.password)) {
     offlineUser = { ...hardcodedMatch, id: 'offline-default-' + Date.now(), isOfflineMode: true };
     credentialsOk = true;
@@ -307,10 +308,14 @@ api.interceptors.response.use(
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
     const isAuthRoute  = err.config?.url?.includes('/auth/');
 
-    // ── Hybrid Fail-over: login network failure → offline mode ──
+    // ── Hybrid Fail-over: login network failure OR bad server auth → offline demo ──
     const isLoginAttempt = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
-    if (isLoginAttempt && isOfflineErr) {
-      return Promise.resolve(createOfflineLoginResponse(err.config));
+    if (isLoginAttempt && (isOfflineErr || err.response?.status === 401 || err.response?.status >= 500)) {
+      try {
+        return Promise.resolve(createOfflineLoginResponse(err.config));
+      } catch {
+        // fall through to normal error handling
+      }
     }
 
     const is401 = err.response?.status === 401;

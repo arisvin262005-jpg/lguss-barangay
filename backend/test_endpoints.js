@@ -44,13 +44,13 @@ async function run() {
   console.log(`[1] GET  /api/health           → ${health.status} ${health.body.status === 'OK' ? '✅' : '❌'}`);
 
   // 2. Admin login
-  const adminLogin = await post('/api/auth/login', { email: 'admin@barangay.gov.ph', password: 'admin123' });
+  const adminLogin = await post('/api/auth/login', { email: 'admin@barangay.gov.ph', password: 'password123' });
   const adminOk = adminLogin.status === 200 && adminLogin.body.token;
   console.log(`[2] POST /api/auth/login (admin)   → ${adminLogin.status} ${adminOk ? '✅ Token received' : '❌ ' + JSON.stringify(adminLogin.body)}`);
   const token = adminLogin.body.token;
 
   // 3. Secretary login
-  const secLogin = await post('/api/auth/login', { email: 'secretary@barangay.gov.ph', password: 'admin123' });
+  const secLogin = await post('/api/auth/login', { email: 'secretary@barangay.gov.ph', password: 'password123' });
   console.log(`[3] POST /api/auth/login (secretary)→ ${secLogin.status} ${secLogin.status === 200 ? '✅' : '❌ ' + JSON.stringify(secLogin.body)}`);
 
   if (!token) { console.log('\n❌ Cannot continue without token.'); return; }
