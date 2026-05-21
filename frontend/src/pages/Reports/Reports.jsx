@@ -1,37 +1,92 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { FileDown, Download, BarChart3, TrendingUp, Users, Scale, FileText } from 'lucide-react';
+import { FileDown, Download, BarChart3, TrendingUp, Users, Scale, FileText, RefreshCw, AlertCircle } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Papa from 'papaparse';
+
+const EMPTY_CASES = { Filed: 0, Mediation: 0, Settled: 0, Escalated: 0, Dismissed: 0 };
+
+const buildEmptyReports = () => ({
+  certs: [],
+  cases: { ...EMPTY_CASES },
+  residents: [],
+  time: {
+    timeSavedPercent: 0,
+    avgSystemProcessingMins: 0,
+    avgManualProcessingMins: 45,
+    totalHoursSaved: 0,
+    certificationsIssued: 0,
+  },
+  dups: { duplicateReductionRate: 0, repeatInvolvedParties: 0, totalResidents: 0 },
+});
+
+/** Demo KPIs when API is unavailable (offline demo login / server waking up) */
+const buildDemoReports = () => ({
+  certs: [],
+  cases: { Filed: 2, Mediation: 1, Settled: 5, Escalated: 0, Dismissed: 1 },
+  residents: [],
+  time: {
+    timeSavedPercent: 82.2,
+    avgSystemProcessingMins: 8,
+    avgManualProcessingMins: 45,
+    totalHoursSaved: 12.5,
+    certificationsIssued: 20,
+  },
+  dups: { duplicateReductionRate: 67.3, repeatInvolvedParties: 3, totalResidents: 150 },
+});
+
+const pick = (result, mapFn, fallback) =>
+  result.status === 'fulfilled' ? mapFn(result.value) : fallback;
 
 export default function Reports() {
   const { hasRole, user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [usingDemo, setUsingDemo] = useState(false);
 
-  useEffect(() => {
+  const loadReports = useCallback(async () => {
     if (!hasRole('Admin', 'Secretary')) { setLoading(false); return; }
-    Promise.all([
+    setLoading(true);
+    setLoadError('');
+
+    const fallback = user?.isOfflineMode ? buildDemoReports() : buildEmptyReports();
+
+    const results = await Promise.allSettled([
       api.get('/reports/certifications'),
       api.get('/reports/cases'),
       api.get('/reports/residents'),
       api.get('/reports/time-saved'),
       api.get('/reports/duplicates'),
-    ]).then(([certRes, caseRes, resRes, timeRes, dupRes]) => {
-      setData({
-        certs: certRes.data.data,
-        cases: caseRes.data.summary,
-        residents: resRes.data.data,
-        time: timeRes.data,
-        dups: dupRes.data,
-      });
-    }).catch(() => {}).finally(() => setLoading(false));
-  }, [hasRole]);
+    ]);
+
+    const okCount = results.filter((r) => r.status === 'fulfilled').length;
+    const next = {
+      certs: pick(results[0], (r) => r.data?.data ?? [], fallback.certs),
+      cases: pick(results[1], (r) => r.data?.summary ?? EMPTY_CASES, fallback.cases),
+      residents: pick(results[2], (r) => r.data?.data ?? [], fallback.residents),
+      time: pick(results[3], (r) => r.data ?? fallback.time, fallback.time),
+      dups: pick(results[4], (r) => r.data ?? fallback.dups, fallback.dups),
+    };
+
+    setData(next);
+    setUsingDemo(user?.isOfflineMode || okCount === 0);
+    if (okCount === 0) {
+      setLoadError(
+        user?.isOfflineMode
+          ? 'Offline demo mode — showing sample KPIs. Connect online for live municipal data.'
+          : 'Could not reach the reports API. The server may be waking up — click Retry or check your connection.'
+      );
+    }
+    setLoading(false);
+  }, [hasRole, user?.isOfflineMode]);
+
+  useEffect(() => { loadReports(); }, [loadReports]);
 
   if (!hasRole('Admin', 'Secretary')) return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-light)' }}>Access Restricted</div>;
-  if (loading || !data) return (
+  if (loading) return (
     <div style={{ padding: '4rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div className="animate-spin" style={{ width: 40, height: 40, border: '4px solid rgba(26,79,138,0.2)', borderTopColor: '#1a4f8a', borderRadius: '50%', marginBottom: '1rem' }} />
       <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Loading reports and generating analytics...</span>
@@ -89,6 +144,14 @@ export default function Reports() {
     </div>
   );
 
+  if (!data) return (
+    <div style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+      <AlertCircle size={40} color="#d97706" style={{ margin: '0 auto 1rem' }} />
+      <p style={{ fontWeight: 700, marginBottom: '1rem' }}>Reports could not be loaded.</p>
+      <button type="button" className="btn btn-primary" onClick={loadReports}><RefreshCw size={16} /> Retry</button>
+    </div>
+  );
+
   return (
     <div className="animate-in" style={{ width: '100%', margin: '0 auto' }}>
       <div className="page-header" style={{ marginBottom: '2rem' }}>
@@ -96,7 +159,17 @@ export default function Reports() {
           <h1 className="page-title">Reports & Analytics</h1>
           <p className="page-subtitle">Exportable community data and key performance indicators.</p>
         </div>
+        <button type="button" className="btn btn-outline btn-sm" onClick={loadReports} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <RefreshCw size={14} /> Refresh
+        </button>
       </div>
+
+      {loadError && (
+        <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 10, padding: '0.85rem 1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: '0.9rem', color: '#92400e' }}>
+          <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+          <span>{loadError}{usingDemo ? ' (Demo KPIs shown below.)' : ''}</span>
+        </div>
+      )}
 
       {/* KPI Row */}
       <div className="grid-3" style={{ marginBottom: '2.5rem' }}>
