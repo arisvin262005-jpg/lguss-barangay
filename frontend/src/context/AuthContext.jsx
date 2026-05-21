@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import api from '../services/api';
+import api, { tryOfflineDemoLogin } from '../services/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -97,10 +97,20 @@ export const AuthProvider = ({ children }) => {
 
   // ── 4. Login — persist immediately, never overwritten by fetchMe ──
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
-    if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
-    persistUser(data.user);
-    return data;
+    try {
+      const { data } = await api.post('/auth/login', { email, password });
+      if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
+      persistUser(data.user);
+      return data;
+    } catch (err) {
+      const offline = await tryOfflineDemoLogin(email, password);
+      if (offline?.user) {
+        if (offline.token) sessionStorage.setItem(TOKEN_KEY, offline.token);
+        persistUser(offline.user);
+        return offline;
+      }
+      throw err;
+    }
   };
 
   // ── 5. Logout — clear everything ──

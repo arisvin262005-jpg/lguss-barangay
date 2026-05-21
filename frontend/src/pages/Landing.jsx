@@ -1062,7 +1062,8 @@ function LoginForm({ onSwitch }) {
         startLockoutTimer(); 
         setError('Security Lockout (DILG Standard): Too many attempts. Please wait 15 minutes or use Offline Demo Access.'); 
       }
-      else if (!err.response) setError('Server connection lost or waking up. You can continue using Offline Mode / Demo Access for now.');
+      else if (!err.response) setError('Server is waking up (Render cold start). Demo accounts still work — please try again in a few seconds.');
+      else if (err.response?.status === 429) setError('Server rate limit reached. Demo login will still work — click Sign In again.');
       else setError((err.response?.data?.error || 'Invalid credentials') + `. ${5 - n} security attempt(s) remaining.`);
     } finally { setLoading(false); }
   };

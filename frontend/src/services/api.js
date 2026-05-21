@@ -146,11 +146,10 @@ const createOfflineLoginResponse = (config) => {
   }
 
   if (!credentialsOk || !offlineUser) {
-    toast.error('❌ Offline login failed — incorrect credentials or account not cached.', { duration: 5000 });
-    return Promise.reject({ response: { status: 401, data: { error: 'Offline: credentials not found. Please login while online first.' } } });
+    return Promise.reject({ response: { status: 401, data: { error: 'Invalid credentials' } } });
   }
 
-  toast.success('⚡ Offline Mode — using cached session', { icon: '📱', duration: 4000 });
+  toast.success('⚡ Demo access — server busy, using built-in account', { icon: '📱', duration: 4000 });
 
   return {
     data: {
@@ -318,17 +317,24 @@ api.interceptors.response.use(
     }
     return res;
   },
-  (err) => {
+  async (err) => {
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
     const isAuthRoute  = err.config?.url?.includes('/auth/');
 
-    // ── Hybrid Fail-over: only on network/server errors (not wrong password 401) ──
+    // ── Login fail-over: demo accounts work even when server is rate-limited or outdated ──
     const isLoginAttempt = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
-    if (isLoginAttempt && (isOfflineErr || (err.response?.status && err.response.status >= 500))) {
+    const loginStatus = err.response?.status;
+    const shouldTryDemoLogin = isLoginAttempt && (
+      isOfflineErr ||
+      loginStatus === 401 ||
+      loginStatus === 429 ||
+      (loginStatus && loginStatus >= 500)
+    );
+    if (shouldTryDemoLogin) {
       try {
-        return Promise.resolve(createOfflineLoginResponse(err.config));
+        return await createOfflineLoginResponse(err.config);
       } catch {
-        // fall through to normal error handling
+        // fall through — wrong password or unknown email
       }
     }
 
@@ -345,8 +351,8 @@ api.interceptors.response.use(
       return Promise.reject(err);
     }
 
-    // ── 429 Rate-limit: show friendly message ──
-    if (is429) {
+    // ── 429 Rate-limit (non-login routes only) ──
+    if (is429 && !isLoginAttempt) {
       toast.error('⚠️ Too many attempts. Please wait 15 minutes.', { position: 'bottom-right', duration: 6000 });
       return Promise.reject(err);
     }
@@ -361,6 +367,16 @@ api.interceptors.response.use(
   }
 );
 
+
+/** Client-side demo login — used when AuthContext login needs a direct fallback */
+export const tryOfflineDemoLogin = async (email, password) => {
+  try {
+    const res = await createOfflineLoginResponse({ data: JSON.stringify({ email, password }) });
+    return res?.data || null;
+  } catch {
+    return null;
+  }
+};
 
 export default api;
 
