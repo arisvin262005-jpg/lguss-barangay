@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api, { tryOfflineDemoLogin } from '../services/api';
+import { seedOfflineDemoCache } from '../seed/offlineDemoCache';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
@@ -23,8 +24,10 @@ export const AuthProvider = ({ children }) => {
 
   const persistUser = (u) => {
     setUser(u);
-    if (u) sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
-    else {
+    if (u) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(u));
+      seedOfflineDemoCache(u);
+    } else {
       sessionStorage.removeItem(SESSION_KEY);
       sessionStorage.removeItem(TOKEN_KEY);
     }

@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const LOCAL_DB_PATH = path.join(__dirname, '../../data/local_db.json');
+const { applyCapstoneSeed } = require('../seed/capstoneOralDefense');
 
 const passwordHash = '$2b$10$nFuqh2ND7ldyaT1tg2d3P.TpuIdzxvKd7/8IG4GtYBOG3472xC.8.'; // bcrypt hash for "password123"
 
@@ -344,6 +345,11 @@ function loadFromLocalDisk() {
 
 // Load local disk data immediately on boot so offline mode is fully functional
 loadFromLocalDisk();
+
+// Capstone / pre-oral defense — rich demo data (Admin + Secretary Brgy 1 aligned)
+if (process.env.CAPSTONE_SEED !== 'false') {
+  applyCapstoneSeed(db, saveToLocalDisk);
+}
 
 // ── STARTUP: Restore data from Firestore ──
 // ✅ PROTOTYPE MODE: This function is disabled (uses local data only)

@@ -123,7 +123,16 @@ const getCaseSummary = (req, res) => {
     const safeCases = Array.isArray(db.cases) ? db.cases : [];
     let cases = role === ROLES.ADMIN ? safeCases : safeCases.filter((c) => c && c.barangay === barangay);
     const summary = { Filed: 0, Mediation: 0, Settled: 0, Escalated: 0, Dismissed: 0 };
-    cases.forEach((c) => { if (c && c.status && summary[c.status] !== undefined) summary[c.status]++; });
+    const caseStatusMap = {
+      'Under Mediation': 'Mediation',
+      'Mediation Scheduled': 'Mediation',
+      'Escalated to Court': 'Escalated',
+    };
+    cases.forEach((c) => {
+      if (!c?.status) return;
+      const key = caseStatusMap[c.status] || c.status;
+      if (summary[key] !== undefined) summary[key]++;
+    });
     res.json({ summary, total: cases.length, byBarangay: cases.reduce((acc, c) => { if (c && c.barangay) { acc[c.barangay] = (acc[c.barangay] || 0) + 1; } return acc; }, {}), generatedAt: new Date().toISOString() });
   } catch (err) {
     console.error('[getCaseSummary Error]', err);
