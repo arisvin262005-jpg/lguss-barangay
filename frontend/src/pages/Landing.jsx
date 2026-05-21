@@ -90,11 +90,18 @@ function AnimatedCard({ children, delay = 0, style = {} }) {
 
 /* ═══════════════════════════════════════════════════════════ */
 export default function Landing() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [authModal, setAuthModal] = useState(null);
   const [scrolled, setScrolled]   = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { installPrompt, isInstalled, showInstallPrompt } = usePWA();
+
+  // Already signed in — go straight to dashboard (prevents bounce back to landing)
+  useEffect(() => {
+    if (!loading && user) navigate('/dashboard', { replace: true });
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 100);

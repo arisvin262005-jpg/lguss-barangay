@@ -66,8 +66,9 @@ export const AuthProvider = ({ children }) => {
         persistUser(data);
       }
     } catch {
-      // Server unreachable but no saved session → user is a guest
-      setUser(null);
+      // Do not wipe a session created while /auth/me was in flight (e.g. user just logged in)
+      const latestSession = sessionStorage.getItem(SESSION_KEY);
+      if (!latestSession) setUser(null);
     } finally {
       setLoading(false);
       fetchMeRunning.current = false;

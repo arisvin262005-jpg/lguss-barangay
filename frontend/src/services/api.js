@@ -15,6 +15,20 @@ const getBaseURL = () => {
   return '/api';
 };
 
+const SESSION_KEY = 'lguss_user_session';
+const TOKEN_KEY   = 'lguss_jwt_token';
+const OFFLINE_TOKEN = 'OFFLINE_DEMO';
+
+const isOfflineSession = () => {
+  try {
+    if (sessionStorage.getItem(TOKEN_KEY) === OFFLINE_TOKEN) return true;
+    const u = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+    return !!u?.isOfflineMode;
+  } catch {
+    return false;
+  }
+};
+
 const api = axios.create({
   baseURL: getBaseURL(),
   withCredentials: true,
@@ -66,7 +80,6 @@ const hashPassword = (str) => {
 // ─────────────────────────────────────────────────────────────
 const createOfflineLoginResponse = (config) => {
   const payload = JSON.parse(config.data || '{}');
-  const SESSION_KEY  = 'lguss_user_session';
   const CREDS_KEY    = 'lguss_offline_creds';
   let offlineUser = null;
   let credentialsOk = false;
@@ -113,7 +126,7 @@ const createOfflineLoginResponse = (config) => {
 
   // 2. Match against last saved session (email only, for backward compat)
   try {
-    const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
+    const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
     if (saved && saved.email === payload.email) {
       offlineUser = saved;
       if (!credentialsOk) credentialsOk = true; // trust existing session email match
@@ -142,6 +155,7 @@ const createOfflineLoginResponse = (config) => {
   return {
     data: {
       message: 'Login successful (Offline Fail-over)',
+      token: OFFLINE_TOKEN,
       user: { ...offlineUser, isOfflineMode: true },
     },
     status: 200, statusText: 'OK', config, headers: {},
@@ -153,8 +167,8 @@ const createOfflineLoginResponse = (config) => {
 // ─────────────────────────────────────────────────────────────
 api.interceptors.request.use((config) => {
   // Attach JWT Bearer token on every request
-  const token = sessionStorage.getItem('lguss_jwt_token');
-  if (token) {
+  const token = sessionStorage.getItem(TOKEN_KEY);
+  if (token && token !== OFFLINE_TOKEN) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -163,7 +177,7 @@ api.interceptors.request.use((config) => {
 
   // ── Use navigator.onLine BUT allow localhost to bypass offline interceptors ──
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const isOffline = !navigator.onLine && !isLocalhost;
+  const isOffline = (!navigator.onLine && !isLocalhost) || isOfflineSession();
 
   // ── Offline Login ──
   if (isLoginEndpoint && isOffline) {
@@ -192,7 +206,7 @@ api.interceptors.request.use((config) => {
       else cachedData = JSON.parse(JSON.stringify(cachedData)); // deep clone
 
       // FORCE FILTERING (Security Layer): Ensure offline users only see their own barangay
-      const user = JSON.parse(localStorage.getItem('lguss_user_session') || 'null');
+      const user = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
       if (user && user.role !== 'Admin') {
         const filterFn = (item) => !item.barangay || item.barangay === user.barangay;
         if (Array.isArray(cachedData)) cachedData = cachedData.filter(filterFn);
@@ -308,9 +322,9 @@ api.interceptors.response.use(
     const isOfflineErr = !navigator.onLine || err.code === 'ECONNABORTED' || err.message === 'Network Error';
     const isAuthRoute  = err.config?.url?.includes('/auth/');
 
-    // ── Hybrid Fail-over: login network failure OR bad server auth → offline demo ──
+    // ── Hybrid Fail-over: only on network/server errors (not wrong password 401) ──
     const isLoginAttempt = err.config?.url?.includes('/auth/login') && err.config?.method === 'post';
-    if (isLoginAttempt && (isOfflineErr || err.response?.status === 401 || err.response?.status >= 500)) {
+    if (isLoginAttempt && (isOfflineErr || (err.response?.status && err.response.status >= 500))) {
       try {
         return Promise.resolve(createOfflineLoginResponse(err.config));
       } catch {
@@ -321,11 +335,13 @@ api.interceptors.response.use(
     const is401 = err.response?.status === 401;
     const is429 = err.response?.status === 429;
 
-    // ── 401 Unauthorized: token expired or secret changed ──
-    if (is401 && !isAuthRoute) {
-      localStorage.removeItem('lguss_user_session');
-      localStorage.removeItem('lguss_jwt_token');
-      window.location.href = '/';
+    // ── 401 Unauthorized: clear session only for real online sessions ──
+    if (is401 && !isAuthRoute && !isOfflineSession()) {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      if (!window.location.pathname.startsWith('/')) {
+        window.location.href = '/';
+      }
       return Promise.reject(err);
     }
 
