@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8">
+<title>BeMIS Capstone Defense Script (Taglish)</title>
+<style>
+  @page { margin: 2.54cm; }
+  body {
+    font-family: 'Calibri', 'Arial', sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    max-width: 18cm;
+    margin: 0 auto;
+    padding: 1cm;
+  }
+  h1 { font-size: 16pt; color: #0a3161; text-align: center; margin-bottom: 6pt; page-break-before: avoid; }
+  h2 { font-size: 13pt; color: #0a3161; margin-top: 16pt; border-bottom: 2px solid #0a3161; padding-bottom: 4pt; }
+  h3 { font-size: 12pt; color: #1a4f8a; margin-top: 12pt; }
+  p  { margin: 6pt 0; text-align: justify; }
+  li { margin: 3pt 0; }
+  blockquote { font-size: 10.5pt; }
+  code { background: #f1f5f9; padding: 1pt 4pt; font-family: Consolas, monospace; font-size: 10pt; }
+  table { font-size: 10pt; }
+  th, td { vertical-align: top; }
+  .cover-note {
+    background: #fffbeb;
+    border: 1px solid #f59e0b;
+    padding: 12pt;
+    margin-bottom: 18pt;
+    font-size: 10pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="cover-note">
+<strong>📄 Paano makuha ang DOCX:</strong><br/>
+1. Buksan ang file na ito sa <strong>Microsoft Word</strong><br/>
+2. File → <strong>Save As</strong> → piliin <strong>Word Document (.docx)</strong><br/>
+3. O i-print bilang PDF para sa defense packet<br/><br/>
+<strong>Source:</strong> CAPSTONE_DEFENSE_SCRIPT_TAGLISH.md · I-run: <code>node generate_defense_script_doc.js</code> para i-update ang HTML
+</div>
+
+<h1>BeMIS — Capstone Defense Script (Taglish)</h1>
+<h2>Barangay Management & Information System · Mamburao, Occidental Mindoro</h2>
+<br/>
+<p><strong>Para sa panel defense · Basahin habang nagde-demo sa screen<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">**Paano gamitin:** Basahin nang natural — huwag word-for-word kung awkward. Ituro ang screen habang nagsasalita. Total demo: **18–25 minuto**.</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>CREDENTIALS (I-print o ilagay sa second monitor)</h2>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Role</th><th style="background:#e8eef5;font-weight:bold;">Email</th><th style="background:#e8eef5;font-weight:bold;">Password</th></tr>
+<tr><td><strong>Admin (LGU)<strong></td><td><code>admin@mamburao.gov.ph<code> o <code>admin@barangay.gov.ph<code></td><td><code>password123<code></td></tr>
+<tr><td><strong>Secretary (Barangay 1)<strong></td><td><code>brgy1@mamburao.gov.ph<code> o <code>secretary@barangay.gov.ph<code></td><td><code>password123<code></td></tr>
+</table>
+<br/>
+<p><strong>URL:<strong> <code>http://localhost:5173<code> (frontend) · <code>http://localhost:5000/api/health<code> (backend check)</p>
+<br/>
+<p><strong>I-run bago defense:<strong> Backend + Frontend (<code>npm run dev<code> sa <code>backend<code> at <code>frontend<code>)</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 0 — OPENING (30–45 segundo)</h1>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">*[Tumingin sa panel, smile, steady voice]*</blockquote>
+<br/>
+<p>"Magandang umaga/hapon po sa aming mga panelists at evaluators.</p>
+<br/>
+<p>Kami po ay magpapakita ng <strong>BeMIS — Barangay Management and Information System<strong>, isang <strong>offline-first, web-based platform<strong> para sa <strong>LGU Mamburao, Occidental Mindoro<strong>.</p>
+<br/>
+<p>Ang problema po na sinusubukan naming sagutin: <strong>manu-mano pa ang records<strong> sa karamihan ng barangay — notebook, Excel, at hiwalay-hiwalay na files. Kapag may humingi ng clearance, <strong>matagal<strong>; kapag wala internet, <strong>tumitigil ang trabaho<strong>; at mahirap para sa munisipyo na <strong>mag-monitor ng lahat ng 15 barangay<strong> nang sabay-sabay.</p>
+<br/>
+<p>Ang solusyon po namin: <strong>isang sistema<strong> na may <strong>Secretary side<strong> para sa daily encoding sa barangay, at <strong>Admin side<strong> para sa <strong>LGU monitoring at user control<strong> — hindi pareho ang trabaho nila, at <strong>hindi pareho ang menu<strong> nila sa sidebar."</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 1 — CONCEPT NG SYSTEM (1 minuto, walang click pa)</h1>
+<br/>
+<p><strong>Sabihin mo:<strong></p>
+<br/>
+<p>"Apat po ang pinaka-core concept na dapat maalala ng panel:</p>
+<br/>
+<p>1. <strong>Offline-First<strong> — Kahit walang internet, puwede pa ring mag-login at mag-save ang Secretary. Naka-queue ang data at <strong>nagsi-sync<strong> kapag bumalik ang connection.</p>
+<br/>
+<p>2. <strong>Role-Based Access Control (RBAC)<strong> — Ang <strong>Secretary<strong> ay nakakakita lang ng sarili niyang barangay. Ang <strong>Admin (LGU)<strong> ay nagmo-monitor ng <strong>buong munisipyo<strong> — stats, reports, approvals — hindi siya yung taong nagma-manual ng resident form araw-araw.</p>
+<br/>
+<p>3. <strong>Decision Support System (DSS)<strong> — Bago mag-issue ng clearance, chine-check ng system kung may <strong>pending KP case<strong> o liability ang resident — rule-based, transparent.</p>
+<br/>
+<p>4. <strong>AI Analytics (LGU level)<strong> — Para sa forecasting at insights — crime patterns, demographics, service demand — para sa <strong>planning<strong>, hindi lang display ng listahan."</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 2 — LANDING PAGE (`http://localhost:5173/`)</h1>
+<br/>
+<p><strong>Oras:<strong> ~2 minuto · <strong>Walang login muna<strong></p>
+<br/>
+<h3>Ano ang ipapakita (sunod-sunod i-scroll)</h3>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">#</th><th style="background:#e8eef5;font-weight:bold;">Sa screen</th><th style="background:#e8eef5;font-weight:bold;">Sabihin (Taglish)</th></tr>
+<tr><td>1</td><td><strong>Gov.ph banner<strong> sa taas</td><td>"Official digital platform po ito ng LGU Mamburao — aligned sa government web standards."</td></tr>
+<tr><td>2</td><td><strong>Header logos<strong> (BeMIS, Mamburao, Bagong Pilipinas)</td><td>"Tatlong branding: system name, munisipyo, at national identity — professional at government-grade ang dating."</td></tr>
+<tr><td>3</td><td><strong>Navigation:<strong> Home, Modules, Background, Coverage, FAQs</td><td>"Public-facing muna ang landing page — kahit hindi pa logged in, makikita na ang features at coverage."</td></tr>
+<tr><td>4</td><td><strong>Hero section<strong> (background + headline)</td><td>"Dito namin ipinapaliwanag ang <strong>purpose<strong>: digital barangay governance para sa Mamburao — hindi lang website, <strong>working portal<strong>."</td></tr>
+<tr><td>5</td><td><strong>7 Core Modules<strong> (cards)</td><td>"Pitong subsystem: <strong>Offline Engine<strong>, <strong>DSS<strong>, <strong>AI Analytics<strong>, <strong>Katarungang Pambarangay<strong>, <strong>Resident Profiling<strong>, <strong>Issuance<strong>, <strong>DRRM & GAD<strong> — complete barangay operations."</td></tr>
+<tr><td>6</td><td><strong>Statistics<strong> (15 barangays, modules, uptime)</td><td>"Sakop po namin ang <strong>15 barangays<strong> ng Mamburao — isa per Secretary account sa prototype."</td></tr>
+<tr><td>7</td><td><strong>Background / About section<strong></td><td>"Research context: bakit kailangan ng digitalization sa probinsya."</td></tr>
+<tr><td>8</td><td><strong>Coverage / Barangays<strong></td><td>"Listahan ng barangay branches — each may dedicated Secretary login."</td></tr>
+<tr><td>9</td><td><strong>FAQs<strong></td><td>"Common questions ng users — offline, security, roles."</td></tr>
+<tr><td>10</td><td><strong>Portal Access<strong> button</td><td>"Dito papasok ang authorized users — Secretary at Admin. Hindi open sa publiko ang data."</td></tr>
+</table>
+<br/>
+<h3>Script (buo, humanized)</h3>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Panelists, ito po ang **public face** ng BeMIS. Makikita ninyo na **hindi ito internal tool lang** — may landing page na nag-e-explain kung ano ang system, para sa LGU, barangay officials, at kahit sa defense natin ngayon.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Ang pinaka-importante dito sa hero: **Offline-First**. Alam naman po natin sa probinsya, **hindi stable ang internet**. Kaya ang design namin: **save muna locally**, sync later — hindi titigil ang barangay kahit walang signal.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[I-scroll sa Modules section]</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Dito po ang **pitong modules** — from resident database hanggang disaster planning. Hindi po ito single feature — **integrated platform** po.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[I-scroll sa FAQs kung may oras]</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">At kapag handa na ang user, i-click lang ang **Portal Access** para sa secure login."</blockquote>
+<br/>
+<p><strong>Click:<strong> <code>Portal Access<code> → lalabas ang login modal (hintayin, huwag mag-login agad kung gusto mo ipaliwanag muna ang form)</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 3 — LOGIN, REGISTRATION, AT SECURITY</h1>
+<br/>
+<p><strong>Oras:<strong> ~2 minuto</p>
+<br/>
+<h3>Login form — ano ang ipapaliwanag</h3>
+<br/>
+<p>"Sa login modal po:</p>
+<li><strong>Email + Password<strong> — standard secure authentication</li>
+<li><strong>JWT token<strong> sa backend — encrypted session</li>
+<li><strong>Rate limiting<strong> — after 5 failed attempts, 15-minute lockout — protection laban sa brute force</li>
+<li><strong>Demo accounts<strong> sa ibaba (kung visible) para sa testing"</li>
+<br/>
+<h3>RBAC — importante ito sa panel</h3>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Dalawang mundo po sa system natin:</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">**SECRETARY** = **Barangay encoder**. Siya ang nag-a-add ng resident, nag-i-issue ng cert, nagfa-file ng KP case — **sa sarili niyang barangay lang**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">**ADMIN** = **LGU / CRPS level**. Siya ang **nagmo-monitor**, nag-a-**approve ng accounts**, tumitingin sa **reports at AI insights** — **hindi** siya dapat mag-encode ng household records araw-araw. Kaya **iba ang sidebar** niya — monitoring menu lang."</blockquote>
+<br/>
+<h3>Registration (optional, 30 sec)</h3>
+<br/>
+<p>"I-click ang Register kung may oras: bagong Secretary magre-register → <strong>pending approval<strong> muna → <strong>Admin ang mag-a-approve<strong> sa Settings. Hindi automatic ang access — may control ang LGU."</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 4 — SECRETARY SIDE (Main demo · 10–12 minuto)</h1>
+<br/>
+<p><strong>Login:<strong> <code>brgy1@mamburao.gov.ph<code> / <code>password123<code></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ngayon po, magde-demo tayo bilang **Barangay Secretary ng Barangay 1 (Poblacion)** — siya ang **frontline user**."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.1 Secretary Sidebar — ano ang nasa menu</h2>
+<br/>
+<p><strong>Ipakita ang sidebar at sabihin:<strong></p>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Group</th><th style="background:#e8eef5;font-weight:bold;">Menu</th><th style="background:#e8eef5;font-weight:bold;">Para saan</th></tr>
+<tr><td>*(walang label)*</td><td>Dashboard</td><td>Overview ng <strong>sariling barangay<strong></td></tr>
+<tr><td></td><td>QR Code Scanner</td><td>Mabilis na hanap ng resident</td></tr>
+<tr><td><strong>Inhabitants<strong></td><td>Household Records</td><td>Pamilya / bahay</td></tr>
+<tr><td></td><td>Resident Profiling</td><td>Individual records, DILG-style</td></tr>
+<tr><td></td><td>Senior Citizens</td><td>OSCA / senior list</td></tr>
+<tr><td></td><td>PWD Registry</td><td>Persons with disability</td></tr>
+<tr><td></td><td>Voter Registry</td><td>Precinct / voter tags</td></tr>
+<tr><td><strong>Issuances<strong></td><td>Certifications</td><td>Clearance, indigency, etc.</td></tr>
+<tr><td><strong>Katarungang Pambarangay<strong></td><td>Case List</td><td>Blotter / mediation</td></tr>
+<tr><td></td><td>Hearing Schedule</td><td>Schedule ng lupon</td></tr>
+<tr><td><strong>Legislation<strong></td><td>Ordinances & Resolutions</td><td>Legal records</td></tr>
+<tr><td><strong>Incidents & Complaints<strong></td><td>File & Track</td><td>Complaints log</td></tr>
+<tr><td><strong>Asset & Infrastructure<strong></td><td>Barangay Assets</td><td>Inventory</td></tr>
+<tr><td><strong>DRRM & GAD<strong></td><td>Programs</td><td>Disaster + gender programs</td></tr>
+<tr><td><strong>Smart Tools (AI)<strong></td><td>AI Decision Support</td><td>Analytics</td></tr>
+<tr><td></td><td>AI Document Drafting</td><td>Draft ordinances/resolutions</td></tr>
+<tr><td></td><td>Rule-Based DSS</td><td>Clearance eligibility rules</td></tr>
+<tr><td><strong>Reports<strong></td><td>Reports & Analytics</td><td>Export, charts</td></tr>
+</table>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito po ang **operational menu** — lahat ng kailangan ng Secretary sa araw-araw. Notice po: **walang Settings** dito — hindi niya job ang mag-approve ng users."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.2 Dashboard (Secretary)</h2>
+<br/>
+<p><strong>Path:<strong> Dashboard (default after login)</p>
+<br/>
+<p><strong>Ipakita:<strong></p>
+<li>Stat cards: Residents, Households, Pending Certs, Active KP Cases</li>
+<li>Charts: Monthly certifications, Case status pie, Age distribution</li>
+<li>Recent Activity feed</li>
+<li><strong>Quick action buttons:<strong> Scan QR, Add Resident, File Case, Issue Cert</li>
+<li><strong>Online/Offline badge<strong> sa topbar</li>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito ang **command center** ng Secretary. Isang tingin lang — alam na niya kung ilan ang pending certs, active cases, at trends.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[Ituro ang Offline badge kung naka-offline, o sabihin theoretically]</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Kahit **offline**, tumatakbo pa rin ang dashboard gamit ang **cached data** — hindi blank ang screen.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[Click 'Issue Cert' o sabihin na dito papunta sa main feature]"</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.3 Inhabitants Module</h2>
+<br/>
+<p><strong>Path:<strong> Inhabitants → Resident Profiling</p>
+<br/>
+<p><strong>Ipakita:<strong></p>
+<li>Search, filter, table ng residents</li>
+<li><strong>Add Resident<strong> button → form (demographics, household link, tags: senior, PWD, 4Ps, voter)</li>
+<li>Validation sa required fields</li>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Core database po ito ng barangay. Complete demographic data — aligned sa **DILG profiling standards**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">May **tags** po: Senior, PWD, Voter — para automatic filtering sa ibang modules, hindi na manual filter sa Excel."</blockquote>
+<br/>
+<p><strong>Quick pass:<strong> Household Records → "Grouped by pamilya, may head of household."</p>
+<br/>
+<p><strong>Quick pass:<strong> Senior Citizens / PWD / Voters → "Auto-filtered lists para sa OSCA, PDAO, at COMELEC reporting."</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.4 Issuances — Certifications (PINAKA-IMPORTANTE · 3–4 min)</h2>
+<br/>
+<p><strong>Path:<strong> Issuances → Certifications</p>
+<br/>
+<p><strong>Ipakita:<strong></p>
+<p>1. List ng certificates (status: Pending, Released, etc.)</p>
+<p>2. Click <strong>Issue Certificate<strong> / New</p>
+<p>3. Piliin ang resident</p>
+<p>4. <strong>DSS Check<strong> (kung may button) — ipakita approve/reject</p>
+<p>5. Certificate type, purpose</p>
+<p>6. Process → Release</p>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito po ang **pinaka-visible benefit** sa constituents: **mabilis na clearance**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Pero may **rules** tayo — hindi basta-basta approve. Tawagin namin itong **Decision Support System**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[Gawin ang DSS check]</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Kapag may **active KP case** ang resident, **hihinto ang system** at sasabihin kung bakit — **transparent**, hindi secret rejection. Consistent ang decision, hindi depende sa mood ng nagta-type.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Kapag approved, may **log history** — kailan kumuha, sino nag-issue — accountability."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.5 Katarungang Pambarangay</h2>
+<br/>
+<p><strong>Path:<strong> Katarungang Pambarangay → Case List</p>
+<br/>
+<p><strong>Ipakita:<strong></p>
+<li>Case number, complainant, respondent, status (Under Mediation, etc.)</li>
+<li>Privacy: sensitive fields protected by role</li>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Digital **KP case management** — blotter, mediation status, hearing.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Sumusunod po kami sa **Data Privacy Act** — sensitive case details ay **role-protected**. Hindi lahat ng user nakakabasa ng particulars.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[Open Hearing Schedule] — calendar view ng mga hearing."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.6 Legislation, Incidents, Assets, DRRM (1–2 min combined)</h2>
+<br/>
+<p><strong>Pasadahan nang mabilis — isang bawat isa, 15–20 sec:<strong></p>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Module</th><th style="background:#e8eef5;font-weight:bold;">One-liner</th></tr>
+<tr><td><strong>Legislation<strong></td><td>"Ordinansa at resolusyon — searchable digital archive."</td></tr>
+<tr><td><strong>Incidents<strong></td><td>"Complaint filing at tracking — hindi nawawala sa notebook."</td></tr>
+<tr><td><strong>Assets<strong></td><td>"Inventory ng barangay equipment at properties."</td></tr>
+<tr><td><strong>DRRM & GAD<strong></td><td>"Disaster plans at gender programs — DILG compliance modules."</td></tr>
+</table>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.7 Smart Tools (Secretary)</h2>
+<br/>
+<p><strong>Path:<strong> Rule-Based DSS (<code>/dss<code>)</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Hiwalay na page ang **rules engine** — pwedeng i-configure ang criteria para sa clearance eligibility."</blockquote>
+<br/>
+<p><strong>Path:<strong> AI Document Drafting</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Tumutulong mag-draft ng ordinance/resolution text — productivity tool para sa Secretary."</blockquote>
+<br/>
+<p><strong>Path:<strong> AI Decision Support (<code>/ai-analytics<code>)</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Charts at forecasts — pwede ring gamitin ng Secretary sa barangay level; mas malawak ang view ng Admin."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.8 Reports (Secretary)</h2>
+<br/>
+<p><strong>Path:<strong> Reports & Analytics</p>
+<br/>
+<p><strong>Ipakita:<strong> Export options, charts, masterlist</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"PDF/CSV export para sa barangay assembly, DILG submission, o backup."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>4.9 Offline Demo (kung kaya · optional pero malakas sa panel)</h2>
+<br/>
+<p>1. I-disconnect WiFi o i-toggle offline sa browser DevTools</p>
+<p>2. Mag-add ng record o mag-issue ng cert</p>
+<p>3. Ipakita ang toast: "Saved to offline queue"</p>
+<p>4. I-reconnect → Sync</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito po ang **offline-first** in action — hindi namatay ang system, **naka-queue**, tapos **nagsync** pag may internet."</blockquote>
+<br/>
+<p><strong>Logout<strong> ang Secretary — "Next, Admin side."</p>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 5 — ADMIN SIDE (LGU Monitoring · 5–7 minuto)</h1>
+<br/>
+<p><strong>Login:<strong> <code>admin@mamburao.gov.ph<code> / <code>password123<code></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Maglo-logout po tayo at mag-login bilang **LGU Administrator**. Iba po ang mindset: **monitoring at control**, hindi encoding."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.1 Admin Sidebar — dapat ito ang nakikita ng panel</h2>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Group</th><th style="background:#e8eef5;font-weight:bold;">Menu</th><th style="background:#e8eef5;font-weight:bold;">Bakit nandito</th></tr>
+<tr><td><strong>LGU Monitoring<strong></td><td>Municipal Dashboard</td><td>Stats ng <strong>lahat<strong> ng barangay</td></tr>
+<tr><td></td><td>Reports & Analytics</td><td>Municipality-wide reports</td></tr>
+<tr><td></td><td>AI Insights & Forecasts</td><td>Predictive analytics</td></tr>
+<tr><td><strong>System Administration<strong></td><td>User Approvals & Settings</td><td>Approve Secretaries, manage users</td></tr>
+<tr><td></td><td>Sync Monitor</td><td>Offline queue / sync health</td></tr>
+</table>
+<br/>
+<p><strong>Script (importante):<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Notice po panelists: **wala** dito ang Resident Profiling, Certifications, Cases — kasi **hindi job ng Admin** ang mag-type ng resident sa araw-araw. Ang Secretary ang encoder; ang Admin ang **nagmo-monitor at nag-a-approve**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Kung kailangan ng LGU ng municipal report, nandito ang **Reports** at **AI Insights** — **bird's eye view**, hindi duplicate ng barangay menu."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.2 Municipal Dashboard (Admin)</h2>
+<br/>
+<p><strong>Ipakita:<strong></p>
+<li>Same stat cards pero <strong>LGU-wide totals<strong> (all barangays combined)</li>
+<li>AI Insight banner → link to detailed analysis</li>
+<li>Quick buttons: <strong>Municipal Reports<strong>, <strong>AI Insights<strong>, <strong>User Approvals<strong> (hindi Add Resident)</li>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito ang **LGU command center**. Total residents, cases, certs — **buong Mamburao**, hindi isang barangay lang.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Subtitle po: *LGU-wide monitoring — all barangays under Mamburao* — para clear ang role."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.3 Reports & Analytics (Admin)</h2>
+<br/>
+<p><strong>Path:<strong> Reports & Analytics</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Dito nakikita ng Admin ang **consolidated data** — trends per barangay, exports para sa municipal planning at DILG reporting."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.4 AI Insights & Forecasts (Admin)</h2>
+<br/>
+<p><strong>Path:<strong> AI Insights & Forecasts</p>
+<br/>
+<p><strong>Ipakita (kung available ang data):<strong></p>
+<li>Demographic trends</li>
+<li>Hotspot / risk scoring</li>
+<li>Repeat offenders insight</li>
+<li>Service demand forecast</li>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Ito ang **research contribution** namin beyond manual encoding: **pattern detection** — aling barangay ang mataas ang incidents, repeat offenders, anong buwan peak ang cases — para sa **Tanod deployment** at **budget planning**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Rule-based DSS para sa clearance; **AI analytics** para sa **municipal-level forecasting** — magkaiba po ang purpose, hindi duplicate."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.5 User Approvals & Settings (Admin)</h2>
+<br/>
+<p><strong>Path:<strong> User Approvals & Settings</p>
+<br/>
+<p><strong>Ipakita ang tabs:<strong></p>
+<p>1. <strong>Pending Approvals<strong> — list ng nag-register na Secretary → Approve / Reject</p>
+<p>2. <strong>User Management<strong> — active accounts, Add Secretary</p>
+<p>3. <strong>Barangay Profiles<strong> — barangay config</p>
+<p>4. <strong>System Info<strong> — app metadata</p>
+<br/>
+<p><strong>Script:<strong></p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Dito po ang **gatekeeping** ng LGU. Hindi pwedeng mag-register ang kahit sino at automatic access — **Admin approval required**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">[Kung may pending, i-approve live] — real-time, may accountability.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Pwede ring **direct create** ng Secretary account para sa 15 barangays — `brgy1@mamburao.gov.ph` hanggang `brgy15`, etc."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h2>5.6 Sync Monitor (Admin)</h2>
+<br/>
+<p><strong>Path:<strong> Sync Monitor</p>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Dito nakikita ng Admin kung may **pending offline records** na hindi pa nasesync — municipal IT oversight, hindi barangay-level lang."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 6 — TECHNICAL HIGHLIGHTS (Kung may tanong · 2 min)</h1>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Topic</th><th style="background:#e8eef5;font-weight:bold;">Sagot (Taglish)</th></tr>
+<tr><td><strong>Tech stack<strong></td><td>React + Vite frontend, Node.js + Express backend, JWT auth, PouchDB offline sa browser</td></tr>
+<tr><td><strong>Security<strong></td><td>bcrypt passwords, JWT, RBAC, rate limiting, barangay data isolation</td></tr>
+<tr><td><strong>Encryption<strong></td><td>AES-256 sa sensitive fields (backend config)</td></tr>
+<tr><td><strong>Validation<strong></td><td>Required fields, dropdowns para consistent data (gender, civil status)</td></tr>
+<tr><td><strong>Scalability<strong></td><td>Ready for CouchDB/Firebase sync; prototype mode uses mock DB para sa demo</td></tr>
+<tr><td><strong>DILG alignment<strong></td><td>Profiling, KP, certs, DRRM, GAD — e-governance modules</td></tr>
+</table>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 7 — ANTICIPATED Q&A (Panel)</h1>
+<br/>
+<h3>"Bakit offline-first?"</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Sa Occidental Mindoro, unstable ang connectivity. Ang barangay hindi pwedeng tumigil mag-issue ng cert kapag walang signal. Save locally, sync later — **continuity of service**."</blockquote>
+<br/>
+<h3>"AI ba talaga o rules lang?"</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"May **Rule-Based DSS** po para sa clearance — clear rules, predictable. May **AI Analytics** po para sa forecasting at patterns — magkaibang layer. Honest po kami sa terminology."</blockquote>
+<br/>
+<h3>"Paano ninyo pinoprotektahan ang KP case data?"</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"RBAC — Secretary at Admin lang ang full access sa case details. Barangay isolation — Secretary A hindi nakikita ang records ng Secretary B."</blockquote>
+<br/>
+<h3>"Ano ang difference ng Admin at Secretary?"</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Secretary = **encoder** sa isang barangay. Admin = **LGU monitor** — approvals, municipal stats, sync oversight. **Iba ang sidebar** dahil iba ang trabaho."</blockquote>
+<br/>
+<h3>"Production-ready na ba?"</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Prototype po na **production-oriented** — complete flows, security layers, documented. Ready for deployment sa LGU server with CouchDB at proper hosting."</blockquote>
+<br/>
+<h3>"GPS / Blockchain?" (kung itanong)</h3>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"May prototype po kami niyan sa research phase; sa current build, **naka-focus** kami sa offline sync, DSS, at core barangay modules na **actively demoable** ngayon. Puwedeng i-integrate sa Phase 2."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>BAHAGI 8 — CLOSING (30 segundo)</h1>
+<br/>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">"Panelists, ang BeMIS po ay **hindi lang database** — ito ay **e-governance platform**: offline-ready, role-based, may decision support at analytics, at may malinaw na **hati** between **barangay operations (Secretary)** at **LGU monitoring (Admin)**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Tinutulungan po namin ang Mamburao na **mas mabilis ang serbisyo**, **mas organized ang records**, at **mas transparent ang governance**.</blockquote>
+<p>></p>
+<blockquote style="border-left:4px solid #1a4f8a;padding:8pt 12pt;margin:8pt 0;background:#f0f6fc;font-style:italic;">Maraming salamat po. Handa po kami sa inyong mga tanong."</blockquote>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<h1>QUICK DEMO ORDER (Cheat sheet · 20 min)</h1>
+<br/>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;margin:10pt 0;">
+<tr><th style="background:#e8eef5;font-weight:bold;">Min</th><th style="background:#e8eef5;font-weight:bold;">Action</th></tr>
+<tr><td>0–2</td><td>Landing page scroll + explain offline + 7 modules</td></tr>
+<tr><td>2–3</td><td>Portal Access → explain login/RBAC</td></tr>
+<tr><td>3–12</td><td>Login Secretary → Dashboard → Residents → <strong>Certifications + DSS<strong> → Cases → quick pass other modules</td></tr>
+<tr><td>12–13</td><td>Logout</td></tr>
+<tr><td>13–18</td><td>Login Admin → Dashboard → Reports → AI Insights → <strong>Settings/Approvals<strong> → Sync</td></tr>
+<tr><td>18–20</td><td>Closing + Q&A</td></tr>
+</table>
+<br/>
+<hr style="margin:18pt 0;border:none;border-top:1px solid #ccc;"/>
+<br/>
+<p>*Document version: May 2026 · BeMIS Capstone Defense Team*</p>
+<br/>
+
+
+</body>
+</html>
