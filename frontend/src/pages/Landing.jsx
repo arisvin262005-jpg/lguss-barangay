@@ -435,7 +435,6 @@ export default function Landing() {
       <header className={`lp-header ${scrolled ? 'scrolled' : ''}`}>
         <div className="lp-container lp-nav">
           <div className="lp-logo-group" style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
-            <img src="/assets/astig_logo.png" alt="BeMIS" style={{ width:40, height:40, objectFit:'contain', mixBlendMode: 'multiply' }} />
             <img src="https://gimgs2.nohat.cc/thumb/f/640/barangay-3-balansay-mamburao-municipal-gymnasium-logo-appraisals-pennant--5281772497534976.jpg" alt="Mamburao" style={{ width:38, height:38, borderRadius:'50%', objectFit:'cover', border:'2px solid #e2e8f0' }} />
             <img src="https://labforall.bagongpilipinas.ph/wp-content/uploads/2023/06/Bagong-Pilipinas-Logo-1966x2048.png" alt="Bagong Pilipinas" style={{ width:40, height:40, objectFit:'contain' }} />
             <div className="lp-logo-text">

@@ -235,11 +235,6 @@ export default function Layout({ children }) {
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         {/* Header */}
         <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: '#fff', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src="/assets/astig_logo.png" alt="System Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </div>
-          </div>
           {(!collapsed || mobileOpen) && (
             <div style={{ overflow: 'hidden' }}>
               <div className="sidebar-title">BeMIS</div>
